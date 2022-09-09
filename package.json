@@ -10,6 +10,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@invertase/react-native-apple-authentication": "^2.2.2",
+    "@react-native-google-signin/google-signin": "^8.0.0",
     "axios": "^0.27.2",
     "formik": "^2.2.9",
     "react": "17.0.2",

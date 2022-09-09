@@ -8,6 +8,6 @@ import App from './App';
 import {name as appName} from './app.json';
 import setupAxios from './src/shared/SetupAxios';
 
-setupAxios(axios);
+//setupAxios(axios);
 
 AppRegistry.registerComponent(appName, () => App);
