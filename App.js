@@ -68,7 +68,7 @@ const App: () => Node = () => {
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar backgroundColor="#0074cc" barStyle="light-content" />
-      <Home/>
+      <Login/>
     </SafeAreaView>
   );
 };
