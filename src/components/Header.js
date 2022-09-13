@@ -8,7 +8,8 @@ export default class Header extends Component {
     return (
       <View style={styles.header}>
         <TouchableOpacity style={[styles.backIconWrap]}>
-        <FIcon name="arrow-left" size={25} color="#333" />
+        {/* <FIcon name="arrow-left" size={25} color="#333" /> */}
+        <FIcon name="menu" size={25} color="#fff" />
           {/* <Image
             resizeMode="stretch"
             source={require('../assets/images/back.png')}
@@ -24,22 +25,22 @@ export default class Header extends Component {
 
 
         </TouchableOpacity>
-        {/* <View>
+        <View>
 
         <Image
-            resizeMode="stretch"
-            source={require('../assets/images/food_net_new_1.png')}
+            resizeMode="contain"
+            source={require('../assets/images/logo.png')}
             style={[styles.logoSmall]}
           />
-        </View> */}
-        <Text style={styles.headerTitle}>Baby Care</Text>
-        <TouchableOpacity style={styles.cart}>
+        </View>
+        {/* <Text style={styles.headerTitle}>Baby Care</Text> */}
+        {/* <TouchableOpacity style={styles.cart}>
         <FIcon name="shopping-cart" size={25} color={COLORS.green} />
         
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity style={styles.user}>
-        <FIcon name="search" size={25} color={COLORS.green} />
+        <FIcon name="search" size={25} color="#fff" />
         {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
         </TouchableOpacity>
 
@@ -65,16 +66,16 @@ const styles = StyleSheet.create({
     fontFamily:'Montserrat-SemiBold'
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 8,
-    backgroundColor:'#fff',
-    flex:1
+   
+    backgroundColor:COLORS.blue,
+    flex:1,
+    alignItems:'center',
+    color:'#fff',
+    justifyContent:'center'
   },
   logoSmall:{
-    width:120,
-    height:56,
+    width:40,
+    height:36,
  
   },
   userIcon:{
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
   },
   user:{
     position: 'absolute',
-    right:60,
+    right:15,
     top: 20,
   },
   cart:{
