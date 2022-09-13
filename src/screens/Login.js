@@ -18,10 +18,11 @@ import axios from 'axios';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 
-const API_URL = process.env.API_URL || 'https://newapi.lykapp.com/LYKAPI/index.php?';
-export const LOGIN_URL = `${API_URL}/V0/LU/signIn`;
+const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
+export const LOGIN_URL = `${API_URL}/SignIn_2_0`;
+export const SOCIAL_LOGIN_URL = `https://api.lykapp.com/lykjwt/index.php?/user/socialLogin`;
 
-export default function login() {
+export default function Login({ navigation }) {
   const [userInfo, setuserInfo] = useState();
   const [loggedIn, setLoggedIn] = useState();
   useEffect(() => {
@@ -61,6 +62,15 @@ export default function login() {
       const { user } = await appleAuthAndroid.signIn();
       setLoggedIn(true);
       setuserInfo(user);
+      axios.post(SOCIAL_LOGIN_URL, { email: user.email, socialMedia: 'apple' }).then(res => {
+        alert(JSON.stringify(res.data));
+        navigation.push('Home');
+      }, err => {
+        let errors = {};
+        errors.message = 'Invalid username or password!';
+        alert(err)
+      }).catch(err => {
+      })
       // Send the authorization code to your backend for verification
     }
     catch (error) {
@@ -72,6 +82,15 @@ export default function login() {
       const { user } = await GoogleSignin.signIn();
       setLoggedIn(true);
       setuserInfo(user);
+      axios.post(SOCIAL_LOGIN_URL, { email: user.email, identity: user.id, socialMedia: 'googleplus' }).then(res => {
+        alert(JSON.stringify(res.data));
+        navigation.push('Home');
+      }, err => {
+        let errors = {};
+        errors.message = 'Invalid username or password!';
+        alert(err)
+      }).catch(err => {
+      })
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
@@ -115,25 +134,22 @@ export default function login() {
       <Formik
         initialValues={{ identity: '', password: '', countryCode: '+91', countryISO: 'in' }}
         onSubmit={(values, { setSubmitting }) => {
-            axios.post(LOGIN_URL, { ...values, type: 'mobile' },{
-              headers:{
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Accept": "application/json"
-              }
-            }).then(res => {
-              setSubmitting(false);
-              alert(res.data);
-            }, err => {
-              let errors = {};
-              errors.message = 'Invalid username or password!';
-              alert(err);
-            }).catch(err=>{
-            })
+          axios.post(LOGIN_URL, { ...values, type: 'mobile' }).then(res => {
+            setSubmitting(false);
+            alert(JSON.stringify(res.data));
+            navigation.push('Home');
+          }, err => {
+            let errors = {};
+            errors.message = 'Invalid username or password!';
+            alert(err);
+          }).catch(err => {
+          })
         }}
       >
         {({
           handleChange,
           handleSubmit,
+          isSubmitting
         }) => (
           <ScrollView contentContainerStyle={styles.scView}>
             <Text style={styles.loginText}>Log In</Text>
@@ -185,7 +201,7 @@ export default function login() {
 
             <TouchableOpacity><Text style={styles.rememberPassText}>Remember Password</Text></TouchableOpacity>
 
-            <TouchableOpacity style={globalStyles.gradBt} onPress={handleSubmit}>
+            <TouchableOpacity style={globalStyles.gradBt} onPress={handleSubmit} disabled={isSubmitting}>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
