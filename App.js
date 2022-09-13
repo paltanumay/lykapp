@@ -27,6 +27,9 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import Login from './src/screens/Login';
 import Signup from './src/screens/Signup';
+import Home from './src/screens/Home';
+import Intro from './src/screens/Intro';
+import Selectcountry from './src/screens/Selectcountry';
 
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -59,12 +62,13 @@ const App: () => Node = () => {
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
   };
 
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar backgroundColor="#0074cc" barStyle="light-content" />
-      <Login/>
+      <Home/>
     </SafeAreaView>
   );
 };

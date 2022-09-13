@@ -1,0 +1,131 @@
+{
+  "project_info": {
+    "project_number": "1095347807692",
+    "firebase_url": "https://lyk-app.firebaseio.com",
+    "project_id": "lyk-app",
+    "storage_bucket": "lyk-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095347807692:android:b6d0ab2e0953fd322a6969",
+        "android_client_info": {
+          "package_name": "com.lykapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1095347807692-qe0qgvjgsbpi4p9tr7dnkr1h80jjtd9g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lykapp",
+            "certificate_hash": "d3cc2d6b81abb5a9da758396b773b06d8d4e49a9"
+          }
+        },
+        {
+          "client_id": "1095347807692-ut8j0g8sqltl0srjk1h5klhb6ril5ord.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5F2r8cFgW19KLpoULUoHkrTTYpsqwdR0"
+        },
+        {
+          "current_key": "AIzaSyCV-I4eADckCdMdjUo8q2-bZa2gITG4Yb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1095347807692-021spa5aj1alvumccgq6s4c8h7e6fib1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1095347807692-68jiheecj6g0rmjo5m1qilbvp54p6hrg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pcus.LYK",
+                "app_store_id": "1133184542"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095347807692:android:eaf88f3143a67c99",
+        "android_client_info": {
+          "package_name": "com.mm.parentconcern"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1095347807692-aannf4t2nq76v3v3sp1eliq25djgpefj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mm.parentconcern",
+            "certificate_hash": "43808255f2dd30ee81a5e0872dec4f03cea57b68"
+          }
+        },
+        {
+          "client_id": "1095347807692-e0vl7incn52mp8t3c6ap2ob9vq017ojf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mm.parentconcern",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1095347807692-h6j2bq343qhe0n3ka4dgm3u5raa372l0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mm.parentconcern",
+            "certificate_hash": "13e83ff1330b4ced77d2cd1f86f70d7537836fc9"
+          }
+        },
+        {
+          "client_id": "1095347807692-ocjdpsm1iqv4u341aqok9css8lmsc3r6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mm.parentconcern",
+            "certificate_hash": "2217a88f1a0d3242fa5f12921a6972b2fd0fc345"
+          }
+        },
+        {
+          "client_id": "1095347807692-ut8j0g8sqltl0srjk1h5klhb6ril5ord.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5F2r8cFgW19KLpoULUoHkrTTYpsqwdR0"
+        },
+        {
+          "current_key": "AIzaSyCV-I4eADckCdMdjUo8q2-bZa2gITG4Yb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1095347807692-021spa5aj1alvumccgq6s4c8h7e6fib1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1095347807692-68jiheecj6g0rmjo5m1qilbvp54p6hrg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pcus.LYK",
+                "app_store_id": "1133184542"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
