@@ -6,12 +6,10 @@
  * @flow strict-local
  */
 
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import type {Node} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
@@ -19,16 +17,15 @@ import {
 } from 'react-native';
 
 import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
+  Colors
 } from 'react-native/Libraries/NewAppScreen';
+import Sidebar from './src/components/Sidebar';
+import Intro from './src/screens/Intro';
 import Login from './src/screens/Login';
+import Selectcountry from './src/screens/Selectcountry';
 import Signup from './src/screens/Signup';
 
-const Section = ({children, title}): Node => {
+const Section = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -54,18 +51,25 @@ const Section = ({children, title}): Node => {
   );
 };
 
-const App: () => Node = () => {
+const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const Stack = createNativeStackNavigator();
+
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar backgroundColor="#0074cc" barStyle="light-content" />
-      <Login/>
-    </SafeAreaView>
+      <NavigationContainer>
+      <Stack.Navigator initialRouteName="Intro">
+        <Stack.Screen options={{headerShown: false}} name="Sidenav" component={Sidebar} />
+        <Stack.Screen options={{headerShown: false}} name="Login" component={Login} />
+        <Stack.Screen options={{headerShown: false}} name="Intro" component={Intro} />
+        <Stack.Screen options={{headerShown: false}} name="Country" component={Selectcountry} />
+        <Stack.Screen options={{headerShown: false}} name="SignUp" component={Signup} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

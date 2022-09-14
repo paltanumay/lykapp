@@ -38,6 +38,11 @@ export const globalStyles = StyleSheet.create({
   lineBtText:{
     color:'#333'
   },
+  innerPagesContainer:{
+    flex:10,
+   backgroundColor:'#e7ebf6'
+
+  },
 
 });
 {
