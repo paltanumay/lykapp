@@ -18,7 +18,6 @@ export default class Home extends Component {
   render() {
     return (
       <>
-        <Header />
         <View style={globalStyles.innerPagesContainer}>
           <ScrollView
             showsVerticalScrollIndicator={false}

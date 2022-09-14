@@ -64,7 +64,7 @@ export default function Login({ navigation }) {
       setuserInfo(user);
       axios.post(SOCIAL_LOGIN_URL, { email: user.email, socialMedia: 'apple' }).then(res => {
         alert(JSON.stringify(res.data));
-        navigation.push('Home');
+        navigation.push('Sidenav');
       }, err => {
         let errors = {};
         errors.message = 'Invalid username or password!';
@@ -84,7 +84,7 @@ export default function Login({ navigation }) {
       setuserInfo(user);
       axios.post(SOCIAL_LOGIN_URL, { email: user.email, identity: user.id, socialMedia: 'googleplus' }).then(res => {
         alert(JSON.stringify(res.data));
-        navigation.push('Home');
+        navigation.push('Sidenav');
       }, err => {
         let errors = {};
         errors.message = 'Invalid username or password!';
@@ -137,7 +137,7 @@ export default function Login({ navigation }) {
           axios.post(LOGIN_URL, { ...values, type: 'mobile' }).then(res => {
             setSubmitting(false);
             alert(JSON.stringify(res.data));
-            navigation.push('Home');
+            navigation.push('Sidenav');
           }, err => {
             let errors = {};
             errors.message = 'Invalid username or password!';

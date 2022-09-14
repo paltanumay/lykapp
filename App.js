@@ -10,8 +10,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import {
-  SafeAreaView,
-  StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
@@ -21,7 +19,7 @@ import {
 import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
-import Home from './src/screens/Home';
+import Sidebar from './src/components/Sidebar';
 import Intro from './src/screens/Intro';
 import Login from './src/screens/Login';
 import Selectcountry from './src/screens/Selectcountry';
@@ -65,7 +63,7 @@ const App = () => {
   return (
       <NavigationContainer>
       <Stack.Navigator initialRouteName="Intro">
-        <Stack.Screen options={{headerShown: false}} name="Home" component={Home} />
+        <Stack.Screen options={{headerShown: false}} name="Sidenav" component={Sidebar} />
         <Stack.Screen options={{headerShown: false}} name="Login" component={Login} />
         <Stack.Screen options={{headerShown: false}} name="Intro" component={Intro} />
         <Stack.Screen options={{headerShown: false}} name="Country" component={Selectcountry} />
