@@ -35,7 +35,7 @@ export default function Intro({ navigation }) {
                 <Text style={globalStyles.buttonText}> Sign Up</Text>
               </LinearGradient>
             </TouchableOpacity>
-            <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Login')}>
+            <TouchableOpacity style={[globalStyles.gradBt, styles.btcont]} onPress={() => navigation.push('Login')}>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -45,7 +45,7 @@ export default function Intro({ navigation }) {
               </LinearGradient>
             </TouchableOpacity>
 
-            <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Country')}>
+            <TouchableOpacity style={[globalStyles.gradBt, styles.btcont]} onPress={() => navigation.push('Country')}>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -91,7 +91,9 @@ const styles = StyleSheet.create({
   btWraps: {
     alignItems: 'center',
     marginTop: 35,
-    marginBottom: 45
+    marginBottom: 45,
+    width:'100%',
+ 
   },
   loginImgWrap: {
     alignItems: 'center'
