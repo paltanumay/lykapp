@@ -175,6 +175,8 @@ export default function Login({ navigation }) {
 
             <View style={styles.phoneInputWrap}>
               <PhoneInput
+                containerStyle={{ width: '100%', height: 50, padding: 0, }}
+                textContainerStyle={{ paddingVertical: 0, paddingHorizontal: 0, margin: 0, backgroundColor: '#fff' }}
                 defaultCode="IN"
                 layout="second"
                 onChangeText={handleChange('identity')}
@@ -371,5 +373,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato-Bold',
 
     marginVertical: 15
+  },
+  input: {
+    fontSize: 14,
+    fontFamily: 'Lato-Regular',
   }
 });

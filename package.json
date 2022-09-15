@@ -19,6 +19,7 @@
     "formik": "^2.2.9",
     "react": "17.0.2",
     "react-native": "0.66.4",
+    "react-native-app-intro-slider-custom": "^1.0.0",
     "react-native-gesture-handler": "^2.6.0",
     "react-native-linear-gradient": "^2.6.2",
     "react-native-phone-number-input": "^2.1.0",

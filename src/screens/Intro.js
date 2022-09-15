@@ -10,8 +10,10 @@ import React, { Component } from 'react';
 import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import LinearGradient from 'react-native-linear-gradient';
+// import AppIntroSlider from 'react-native-app-intro-slider';
 
 export default function Intro({ navigation }) {
+  
   return (
     <View style={{ backgroundColor: '#f8fcff', flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, }}>
