@@ -137,6 +137,7 @@ export default function Login({ navigation }) {
           axios.post(LOGIN_URL, { ...values, type: 'mobile' }).then(res => {
             setSubmitting(false);
             alert(JSON.stringify(res.data));
+            if(res.data.response.userDetails)
             navigation.push('Sidenav');
           }, err => {
             let errors = {};
@@ -149,6 +150,7 @@ export default function Login({ navigation }) {
         {({
           handleChange,
           handleSubmit,
+          setFieldValue,
           isSubmitting
         }) => (
           <ScrollView contentContainerStyle={styles.scView}>
@@ -180,7 +182,7 @@ export default function Login({ navigation }) {
                 defaultCode="IN"
                 layout="second"
                 onChangeText={handleChange('identity')}
-                onChangeCountry={handleChange('countryCode')}
+                onChangeCountry={e=>{setFieldValue('countryCode','+'+e.callingCode[0]),setFieldValue('countryISO',e.cca2)}}
                 textInputStyle={styles.input}
                 autoFocus
               />
