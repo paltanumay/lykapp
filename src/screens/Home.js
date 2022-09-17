@@ -11,8 +11,10 @@ import React, { Component } from 'react';
 import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
+
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import EnIcon from 'react-native-vector-icons/Entypo';
+import Footer from '../components/Footer';
 
 export default class Home extends Component {
   render() {
@@ -339,6 +341,8 @@ export default class Home extends Component {
             </View>
           </ScrollView>
         </View>
+        <Footer />
+
       </>
     );
   }

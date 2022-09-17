@@ -21,6 +21,7 @@ export default function Sidebar() {
         <Drawer.Navigator screenOptions={{
             headerStyle: { backgroundColor: COLORS.blue },
             headerTitleAlign: 'center',
+            headerTintColor: '#fff',
             headerTitle: () => (
                 <Image
                     resizeMode="contain"
