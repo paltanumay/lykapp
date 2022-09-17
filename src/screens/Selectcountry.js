@@ -17,14 +17,42 @@ import CountryPicker, {
   Flag,
 } from "react-native-country-picker-modal";
 
+const interests = [
+  {
+    text: 'Dance',
+    image: require('../assets/images/dance.jpg')
+  },
+  {
+    text: 'Music',
+    image: require('../assets/images/music.webp')
+  },
+  {
+    text: 'Politics',
+    image: require('../assets/images/politics.png')
+  },
+  {
+    text: 'Theatre',
+    image: require('../assets/images/theatre.jpg')
+  },
+  {
+    text: 'Gardening',
+    image: require('../assets/images/gardening.webp')
+  },
+  {
+    text: 'Pets',
+    image: require('../assets/images/pets.jpg')
+  }
+]
+
 export default function Selectcountry({ navigation }) {
   const [checked, setChecked] = useState(0);
+  const [interest, setInterest] = useState([]);
   const [radioBtnsData, setradioBtnData] = useState(['', '']);
   const [countryCode, setcountryCode] = useState('IN');
   const [country, setCountry] = useState('India');
   const [modalVisible, setModalVisible] = useState(false);
   const renderFlagButton = () => {
-    const layout = "first", flagSize=24;
+    const layout = "first", flagSize = 24;
     if (layout === "first") {
       return (
         <Flag
@@ -93,23 +121,23 @@ export default function Selectcountry({ navigation }) {
                 onPress={() => setModalVisible(true)}
               >
                 <Text>
-                <CountryPicker
-                  onSelect={onSelect}
-                  withEmoji
-                  withFilter
-                  withFlag
-                  countryCode={countryCode}
-                  withCallingCode
-                  visible={modalVisible}
-                  theme={DEFAULT_THEME}
-                  renderFlagButton={renderFlagButton}
-                  onClose={() => setModalVisible(false)}
-                />
-                {country}
+                  <CountryPicker
+                    onSelect={onSelect}
+                    withEmoji
+                    withFilter
+                    withFlag
+                    countryCode={countryCode}
+                    withCallingCode
+                    visible={modalVisible}
+                    theme={DEFAULT_THEME}
+                    renderFlagButton={renderFlagButton}
+                    onClose={() => setModalVisible(false)}
+                  />
+                  {country}
                 </Text>
               </TouchableOpacity>
-              
-              <TouchableOpacity style={globalStyles.gradBt}>
+
+              <TouchableOpacity style={globalStyles.gradBt} onPress={() => setChecked(1)}>
                 <LinearGradient
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
@@ -142,83 +170,35 @@ export default function Selectcountry({ navigation }) {
 
               <View style={styles.chooseCategoriesWrap}>
 
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/dance.jpg')}
-                    />
-                  </View>
+                {interests.map((item, key) =>
+                  interest.indexOf(item.text) < 0 &&
+                  (<TouchableOpacity style={styles.catBoxCont} key={key} onPress={() => setInterest(oldArray => [...oldArray, item.text])}>
+                    <View style={styles.catBox}>
+                      <Image
+                        style={styles.catBoxImg}
+                        resizeMode="cover"
+                        source={item.image}
+                      />
+                    </View>
 
-                  <Text style={styles.catText}>Dance</Text>
-                </View>
-
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/music.webp')}
-                    />
-                  </View>
-
-                  <Text style={styles.catText}>Music</Text>
-                </View>
-
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/politics.png')}
-                    />
-                  </View>
-
-                  <Text style={styles.catText}>Politics</Text>
-                </View>
-
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/theatre.jpg')}
-                    />
-                  </View>
-
-                  <Text style={styles.catText}>Theatre</Text>
-                </View>
-
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/gardening.webp')}
-                    />
-                  </View>
-
-                  <Text style={styles.catText}>Gardening</Text>
-                </View>
-
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/pets.jpg')}
-                    />
-                  </View>
-
-                  <Text style={styles.catText}>Pets</Text>
-                </View>
+                    <Text style={styles.catText}>{item.text}</Text>
+                  </TouchableOpacity>)
+                )}
 
               </View>
 
-              <TouchableOpacity style={styles.pickInterest}>
+              {interest.length < 3 ? (<TouchableOpacity style={styles.pickInterest}>
                 <Text style={styles.pickInterestText}>Pick atleast 3 interests</Text>
-              </TouchableOpacity>
+              </TouchableOpacity>) :
+                (<TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Sidenav')}>
+                  <LinearGradient
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    colors={['#037ee5', '#15a2e0', '#28cad9']}
+                    style={globalStyles.linearGradient}>
+                    <Text style={globalStyles.buttonText}>Next</Text>
+                  </LinearGradient>
+                </TouchableOpacity>)}
             </ScrollView>
           )}
 
