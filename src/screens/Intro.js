@@ -10,20 +10,44 @@ import React, { Component } from 'react';
 import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import LinearGradient from 'react-native-linear-gradient';
-// import AppIntroSlider from 'react-native-app-intro-slider';
+import AppIntroSlider from 'react-native-app-intro-slider';
+
+const slides = [
+  {
+    key: 1,
+    title: 'Private comments over public posts',
+    text: 'Private comments give your social network more privacy! Privately comment on public posts',
+    image: require('../assets/images/login-b-img.png'),
+    backgroundColor: '#59b2ab',
+  },
+  {
+    key: 2,
+    title: 'Title 2',
+    text: 'Other cool stuff',
+    image: require('../assets/images/login-b-img.png'),
+    backgroundColor: '#febe29',
+  },
+  {
+    key: 3,
+    title: 'Rocket guy',
+    text: 'I\'m already out of descriptions\n\nLorem ipsum bla bla bla',
+    image: require('../assets/images/login-b-img.png'),
+    backgroundColor: '#22bcb5',
+  }
+];
 
 export default function Intro({ navigation }) {
   
+  const _renderItem = ({ item }) => {
   return (
     <View style={{ backgroundColor: '#f8fcff', flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, }}>
         <View style={styles.slideBox}>
           <Text style={styles.slideMainText}>
-            Private comments over public posts
+            {item.title}
           </Text>
           <Text style={styles.slideSecText}>
-            Private comments give your social network more privacy! Privately
-            comment on public posts
+            {item.text}
           </Text>
 
 
@@ -61,7 +85,7 @@ export default function Intro({ navigation }) {
             <Image
               resizeMode='contain'
               style={styles.loginImg}
-              source={require('../assets/images/login-b-img.png')}
+              source={item.image}
             />
           </View>
 
@@ -69,6 +93,8 @@ export default function Intro({ navigation }) {
       </ScrollView>
     </View>
   );
+  }
+  return <AppIntroSlider renderItem={_renderItem} data={slides} activeDotStyle={styles.buttonCircle} />;
 }
 
 const styles = StyleSheet.create({
@@ -102,6 +128,14 @@ const styles = StyleSheet.create({
   },
   btcont: {
     width: '70%'
-  }
+  },
+  buttonCircle: {
+    width: 15,
+    height: 10,
+    backgroundColor: COLORS.blue,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
 });
