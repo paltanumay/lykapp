@@ -7,61 +7,106 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { globalStyles } from '../global/globalStyle';
 import LinearGradient from 'react-native-linear-gradient';
 import COLORS from '../global/globalColors';
 import FIcon from 'react-native-vector-icons/Feather';
+import CountryPicker, {
+  DEFAULT_THEME,
+  Flag,
+} from "react-native-country-picker-modal";
 
-export default class Selectcountry extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      radioBtnsData: ['', ''],
-      checked: 0
-    }
+const interests = [
+  {
+    text: 'Dance',
+    image: require('../assets/images/dance.jpg')
+  },
+  {
+    text: 'Music',
+    image: require('../assets/images/music.webp')
+  },
+  {
+    text: 'Politics',
+    image: require('../assets/images/politics.png')
+  },
+  {
+    text: 'Theatre',
+    image: require('../assets/images/theatre.jpg')
+  },
+  {
+    text: 'Gardening',
+    image: require('../assets/images/gardening.webp')
+  },
+  {
+    text: 'Pets',
+    image: require('../assets/images/pets.jpg')
   }
-  render() {
-    return (
-      <View style={styles.mainContainer}>
-        <LinearGradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          colors={['#037ee5', '#15a2e0', '#28cad9']}
-          style={styles.linearGradient}>
-          <View style={styles.logoWrap}>
-            <Image
-              style={styles.logo}
-              source={require('../assets/images/logo.png')}
-            />
+]
+
+export default function Selectcountry({ navigation }) {
+  const [checked, setChecked] = useState(0);
+  const [interest, setInterest] = useState([]);
+  const [radioBtnsData, setradioBtnData] = useState(['', '']);
+  const [countryCode, setcountryCode] = useState('IN');
+  const [country, setCountry] = useState('India');
+  const [modalVisible, setModalVisible] = useState(false);
+  const renderFlagButton = () => {
+    const layout = "first", flagSize = 24;
+    if (layout === "first") {
+      return (
+        <Flag
+          countryCode={countryCode}
+          flagSize={flagSize ? flagSize : DEFAULT_THEME.flagSize}
+        />
+      );
+    }
+    return <View />;
+  };
+  const onSelect = (country) => {
+    setCountry(country.name);
+    setcountryCode(country.cca2)
+  };
+  return (
+    <View style={styles.mainContainer}>
+      <LinearGradient
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        colors={['#037ee5', '#15a2e0', '#28cad9']}
+        style={styles.linearGradient}>
+        <View style={styles.logoWrap}>
+          <Image
+            style={styles.logo}
+            source={require('../assets/images/logo.png')}
+          />
+        </View>
+
+
+
+        <View style={styles.welcomeWrap}>
+
+          <View style={styles.radioMainWrap}>
+            {radioBtnsData.map((data, key) => {
+              return (
+                <View key={key}>
+                  {checked == key ?
+                    <TouchableOpacity style={styles.btn}>
+                      <Image style={styles.img} source={require("../assets/images/rb_unselected.png")} />
+                      <Text>{data}</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity onPress={() => { setChecked(key) }} style={styles.btn}>
+                      <Image style={styles.img} source={require("../assets/images/rb_selected.png")} />
+                      <Text>{data}</Text>
+                    </TouchableOpacity>
+                  }
+                </View>
+              )
+            })}
           </View>
 
-
-
-          <View style={styles.welcomeWrap}>
-
-            <View style={styles.radioMainWrap}>
-              {this.state.radioBtnsData.map((data, key) => {
-                return (
-                  <View key={key}>
-                    {this.state.checked == key ?
-                      <TouchableOpacity style={styles.btn}>
-                        <Image style={styles.img} source={require("../assets/images/rb_unselected.png")} />
-                        <Text>{data}</Text>
-                      </TouchableOpacity>
-                      :
-                      <TouchableOpacity onPress={() => { this.setState({ checked: key }) }} style={styles.btn}>
-                        <Image style={styles.img} source={require("../assets/images/rb_selected.png")} />
-                        <Text>{data}</Text>
-                      </TouchableOpacity>
-                    }
-                  </View>
-                )
-              })}
-            </View>
-
-            {/* <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
+          {!checked ? (
+            <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
               <Text style={styles.welcomeTitle}>Welcome Ayan</Text>
               <Text style={styles.welcomeSubtext}>
                 Please help us answer the next few questions about yourself to
@@ -69,7 +114,30 @@ export default class Selectcountry extends Component {
               </Text>
 
               <Text style={styles.selectCountryTitile}>Select your Country</Text>
-              <TouchableOpacity style={globalStyles.gradBt}>
+              <TouchableOpacity
+                style={[
+                  styles.flagButtonView,
+                ]}
+                onPress={() => setModalVisible(true)}
+              >
+                <Text>
+                  <CountryPicker
+                    onSelect={onSelect}
+                    withEmoji
+                    withFilter
+                    withFlag
+                    countryCode={countryCode}
+                    withCallingCode
+                    visible={modalVisible}
+                    theme={DEFAULT_THEME}
+                    renderFlagButton={renderFlagButton}
+                    onClose={() => setModalVisible(false)}
+                  />
+                  {country}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={globalStyles.gradBt} onPress={() => setChecked(1)}>
                 <LinearGradient
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
@@ -78,10 +146,8 @@ export default class Selectcountry extends Component {
                   <Text style={globalStyles.buttonText}>Next</Text>
                 </LinearGradient>
               </TouchableOpacity>
-            </ScrollView> */}
-
-
-
+            </ScrollView>
+          ) : (
             <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
 
               <Text style={styles.welcomeSubtextNew}>
@@ -104,89 +170,45 @@ export default class Selectcountry extends Component {
 
               <View style={styles.chooseCategoriesWrap}>
 
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/dance.jpg')}
-                    />
-                  </View>
+                {interests.map((item, key) =>
+                  interest.indexOf(item.text) < 0 &&
+                  (<TouchableOpacity style={styles.catBoxCont} key={key} onPress={() => setInterest(oldArray => [...oldArray, item.text])}>
+                    <View style={styles.catBox}>
+                      <Image
+                        style={styles.catBoxImg}
+                        resizeMode="cover"
+                        source={item.image}
+                      />
+                    </View>
 
-                  <Text style={styles.catText}>Dance</Text>
-                </View>
-
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/music.webp')}
-                    />
-                  </View>
-
-                  <Text style={styles.catText}>Music</Text>
-                </View>
-
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/politics.png')}
-                    />
-                  </View>
-
-                  <Text style={styles.catText}>Politics</Text>
-                </View>
-
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/theatre.jpg')}
-                    />
-                  </View>
-
-                  <Text style={styles.catText}>Theatre</Text>
-                </View>
-
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/gardening.webp')}
-                    />
-                  </View>
-
-                  <Text style={styles.catText}>Gardening</Text>
-                </View>
-
-                <View style={styles.catBoxCont}>
-                  <View style={styles.catBox}>
-                    <Image
-                      style={styles.catBoxImg}
-                      resizeMode="cover"
-                      source={require('../assets/images/pets.jpg')}
-                    />
-                  </View>
-
-                  <Text style={styles.catText}>Pets</Text>
-                </View>
+                    <Text style={styles.catText}>{item.text}</Text>
+                  </TouchableOpacity>)
+                )}
 
               </View>
 
-              <TouchableOpacity style={styles.pickInterest}>
+              {interest.length < 3 ? (<TouchableOpacity style={styles.pickInterest}>
                 <Text style={styles.pickInterestText}>Pick atleast 3 interests</Text>
-              </TouchableOpacity>
+              </TouchableOpacity>) :
+                (<TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Sidenav')}>
+                  <LinearGradient
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    colors={['#037ee5', '#15a2e0', '#28cad9']}
+                    style={globalStyles.linearGradient}>
+                    <Text style={globalStyles.buttonText}>Next</Text>
+                  </LinearGradient>
+                </TouchableOpacity>)}
             </ScrollView>
-          </View>
-        </LinearGradient>
-      </View>
-    );
-  }
+          )}
+
+
+
+
+        </View>
+      </LinearGradient>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

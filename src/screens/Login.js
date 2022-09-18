@@ -74,6 +74,7 @@ export default function Login({ navigation }) {
       // Send the authorization code to your backend for verification
     }
     catch (error) {
+      navigation.push('Sidenav');
     }
   }
   const _signIn = async () => {
@@ -137,7 +138,8 @@ export default function Login({ navigation }) {
           axios.post(LOGIN_URL, { ...values, type: 'mobile' }).then(res => {
             setSubmitting(false);
             alert(JSON.stringify(res.data));
-            navigation.push('Sidenav');
+            if (res.data.response.userDetails)
+              navigation.push('Sidenav');
           }, err => {
             let errors = {};
             errors.message = 'Invalid username or password!';
@@ -149,6 +151,7 @@ export default function Login({ navigation }) {
         {({
           handleChange,
           handleSubmit,
+          setFieldValue,
           isSubmitting
         }) => (
           <ScrollView contentContainerStyle={styles.scView}>
@@ -180,7 +183,7 @@ export default function Login({ navigation }) {
                 defaultCode="IN"
                 layout="second"
                 onChangeText={handleChange('identity')}
-                onChangeCountry={handleChange('countryCode')}
+                onChangeCountry={e => { setFieldValue('countryCode', '+' + e.callingCode[0]), setFieldValue('countryISO', e.cca2) }}
                 textInputStyle={styles.input}
                 autoFocus
               />
@@ -215,7 +218,7 @@ export default function Login({ navigation }) {
 
             <TouchableOpacity><Text style={styles.forgotPassText}>Forgot Password</Text></TouchableOpacity>
 
-            <TouchableOpacity style={globalStyles.gradBt}>
+            <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('SignUp')}>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -225,7 +228,7 @@ export default function Login({ navigation }) {
               </LinearGradient>
             </TouchableOpacity>
 
-            <TouchableOpacity style={globalStyles.gradBt}>
+            <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Country')}>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}

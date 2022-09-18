@@ -66,92 +66,81 @@ const CustomDrawer = (props) => {
 
 export default function Sidebar() {
     return (
-        <Drawer.Navigator
+        <Drawer.Navigator screenOptions={{
+            headerStyle: { backgroundColor: COLORS.blue },
+            headerTitleAlign: 'center',
+            headerTintColor: '#fff',
+            headerTitle: () => (
+                <Image
+                    resizeMode="contain"
+                    source={require('../assets/images/logo.png')}
+                    style={[styles.logoSmall]}
+                />
+            ),
+            headerRight: () => (
+                <TouchableOpacity style={styles.user}>
+                    <FIcon name="search" size={25} color="#fff" />
+                    {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
+                </TouchableOpacity>
+            )
+        }} useLegacyImplementation initialRouteName="Home">
+            <Drawer.Screen name="Home" component={Home} />
+            <Drawer.Screen name="Notifications" component={NotificationsScreen} />
 
-
-            screenOptions={{
-                headerStyle: { backgroundColor: COLORS.blue },
-                headerTitleAlign: 'center',
-                drawerStyle: {
-                    backgroundColor: '#026ece',
-                    width: 290,
-                },
-                headerTitle: () => (
-                    <Image
-                        resizeMode="contain"
-                        source={require('../assets/images/logo.png')}
-                        style={[styles.logoSmall]}
-                    />
-                ),
-
-
-                headerRight: () => (
-                    <TouchableOpacity style={styles.user}>
-                        <FIcon name="search" size={25} color="#fff" />
-                        {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
-                    </TouchableOpacity>
-                )
-            }}
-            drawerContent={(props) => <CustomDrawer {...props} />}
-
-            useLegacyImplementation initialRouteName="Home">
-
-            {/* <Drawer.Screen name="Home" component={Home} />
-            <Drawer.Screen name="Notifications" component={NotificationsScreen} /> */}
             <Drawer.Screen name="Event Calendar" component={EventCalendarScreen}
 
-                options={{
-                    title: 'Event Calendar',
-                    activeTintColor: '#fff',
-                    drawerInactiveTintColor: '#fff',
-                    labelStyle: {
-                        color: 'red',
-                    },
-                    drawerIcon: ({ focused, size }) => (
-                        <FIcon
-                            name="calendar"
-                            size={size}
-                            color={focused ? '#fff' : '#fff'}
-                        />
-                    ),
+options={{
+    title: 'Event Calendar',
+    activeTintColor: '#fff',
+    drawerInactiveTintColor: '#fff',
+    labelStyle: {
+        color: 'red',
+    },
+    drawerIcon: ({ focused, size }) => (
+        <FIcon
+            name="calendar"
+            size={size}
+            color={focused ? '#fff' : '#fff'}
+        />
+    ),
 
-                }}
-            />
-            <Drawer.Screen name="LYK wallet" component={lykWalletScreen}
+}}
+/>
+<Drawer.Screen name="LYK wallet" component={lykWalletScreen}
 
-                options={{
-                    title: 'LYK Wallet',
-                    activeTintColor: '#fff',
-                    drawerInactiveTintColor: '#fff',
+options={{
+    title: 'LYK Wallet',
+    activeTintColor: '#fff',
+    drawerInactiveTintColor: '#fff',
 
-                    drawerIcon: ({ focused, size }) => (
-                        <IonIcon
-                            name="wallet-outline"
-                            size={size}
-                            color={focused ? '#fff' : '#fff'}
-                        />
-                    ),
+    drawerIcon: ({ focused, size }) => (
+        <IonIcon
+            name="wallet-outline"
+            size={size}
+            color={focused ? '#fff' : '#fff'}
+        />
+    ),
 
-                }}
-            />
+}}
+/>
 
-            <Drawer.Screen name="Bussiness Page" component={bussinessScreen}
+<Drawer.Screen name="Bussiness Page" component={bussinessScreen}
 
-                options={{
-                    title: 'Bussiness Page',
-                    activeTintColor: '#fff',
-                    drawerInactiveTintColor: '#fff',
+options={{
+    title: 'Bussiness Page',
+    activeTintColor: '#fff',
+    drawerInactiveTintColor: '#fff',
 
-                    drawerIcon: ({ focused, size }) => (
-                        <IonIcon
-                            name="wallet-outline"
-                            size={size}
-                            color={focused ? '#fff' : '#fff'}
-                        />
-                    ),
+    drawerIcon: ({ focused, size }) => (
+        <IonIcon
+            name="wallet-outline"
+            size={size}
+            color={focused ? '#fff' : '#fff'}
+        />
+    ),
 
-                }}
-            />
+}}
+/>
         </Drawer.Navigator>
     );
 }
