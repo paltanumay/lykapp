@@ -6,14 +6,128 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import React, {useEffect, useState, Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import LinearGradient from 'react-native-linear-gradient';
+import { Formik } from 'formik';
+import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-export default class Verification extends Component {
-  render() {
+export const OTP_URL = `https://api.lykapp.com/lykjwt/index.php?/LYKUser/verifyOtpCode`;
+
+export default function Verification({ navigation, route }) {
+  const [userInfo, setuserInfo] = useState();
+  const [loggedIn, setLoggedIn] = useState();
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '1095347807692-ut8j0g8sqltl0srjk1h5klhb6ril5ord.apps.googleusercontent.com',
+    });
+  }, [])
+  const onAppleButtonPress = async () => {
+    try {
+      // Generate secure, random values for state and nonce
+      const rawNonce = '123e4567-e89b-12d3-a456-426614174000';
+      const state = '123e4567-e89b-12d3-a456-426614174000';
+
+      // Configure the request
+      appleAuthAndroid.configure({
+        // The Service ID you registered with Apple
+        clientId: 'com.lykapp.lyk',
+
+        // Return URL added to your Apple dev console. We intercept this redirect, but it must still match
+        // the URL you provided to Apple. It can be an empty route on your backend as it's never called.
+        redirectUri: 'https://lykapp.com',
+
+        // The type of response requested - code, id_token, or both.
+        responseType: appleAuthAndroid.ResponseType.ALL,
+
+        // The amount of user information requested from Apple.
+        scope: appleAuthAndroid.Scope.ALL,
+
+        // Random nonce value that will be SHA256 hashed before sending to Apple.
+        nonce: rawNonce,
+
+        // Unique state value used to prevent CSRF attacks. A UUID will be generated if nothing is provided.
+        state,
+      });
+
+      // Open the browser window for user sign in
+      const { user } = await appleAuthAndroid.signIn();
+      setLoggedIn(true);
+      setuserInfo(user);
+      axios.post(SOCIAL_SIGNUP_URL, { email: user.email, displayName: user.name.firstName + ' ' + user.name.lastName, socialMedia: 'apple' }).then(res => {
+        alert(JSON.stringify(res.data));
+        if (res.data.response.respCode === 11) navigation.push('Sidenav');
+        else navigation.push('Country');
+      }, err => {
+        let errors = {};
+        errors.message = 'Invalid username or password!';
+        alert(err)
+      }).catch(err => {
+      })
+      // Send the authorization code to your backend for verification
+    }
+    catch (error) {
+      navigation.push('Sidenav');
+    }
+  }
+  const _signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const { user } = await GoogleSignin.signIn();
+      setLoggedIn(true);
+      setuserInfo(user);
+      alert(JSON.stringify(user))
+      axios.post(SOCIAL_SIGNUP_URL, { googlePlusUserId: user.id, displayName: user.name, email: user.email, identity: user.id, socialMedia: 'googleplus' }).then(res => {
+        alert(JSON.stringify(res.data));
+        if (res.data.response.respCode === 11) navigation.push('Sidenav');
+        else navigation.push('Country');
+      }, err => {
+        let errors = {};
+        errors.message = 'Invalid username or password!';
+        alert(err)
+      }).catch(err => {
+      })
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // user cancelled the login flow
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation (f.e. sign in) is in progress already
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+      } else {
+        // some other error happened
+      }
+    }
+  };
     return (
+      <Formik
+      initialValues={{ otp: '', userId: route.params.userId, type: 'phone' }}
+      onSubmit={(values, { setSubmitting }) => {
+        alert(JSON.stringify(values))
+        axios.post(SIGNUP_URL, { ...values },{
+          Headers: {
+            token: route.params.token+'_GTT4--'+route.params.userId
+          }
+        }).then(res => {
+          setSubmitting(false);
+          alert(JSON.stringify(res.data));
+          navigation.push('Sidenav');
+        }, err => {
+          let errors = {};
+          errors.message = 'Invalid username or password!';
+          alert(err);
+        }).catch(err => {
+        })
+      }}
+    >
+      {({
+        handleChange,
+        handleSubmit,
+        setFieldValue,
+        isSubmitting
+      }) => (
       <View style={styles.container}>
         <Text style={styles.loginText}>Sign Up</Text>
 
@@ -22,14 +136,14 @@ export default class Verification extends Component {
             placeholderTextColor="#AFAFAF"
             style={styles.input}
             multiline={true}
-            placeholder="Enter Verification Code sent to 
-            +91 97847452808"
+            placeholder={"Enter Verification Code sent to "+ route.params.number}
             textContentType="username"
             underlineColorAndroid="transparent"
+            onChangeText={handleChange('otp')}
           />
         </View>
 
-        <TouchableOpacity style={[globalStyles.gradBt,{width:'50%', marginBottom:10}]}>
+        <TouchableOpacity style={[globalStyles.gradBt,{width:'50%', marginBottom:10}]} onPress={handleSubmit}>
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
@@ -52,7 +166,7 @@ export default class Verification extends Component {
 options below instead your verification code?</Text>
 
 
-        <TouchableOpacity style={styles.gBt}>
+        <TouchableOpacity style={styles.gBt} onPress={_signIn}>
           <Image
             style={styles.gBtIcon}
             source={require('../assets/images/google.png')}
@@ -60,7 +174,7 @@ options below instead your verification code?</Text>
           <Text style={styles.gBtText}>Continue with Google</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.aBt}>
+        <TouchableOpacity style={styles.aBt} onPress={onAppleButtonPress}>
           <Image
             style={styles.gBtIcon}
             source={require('../assets/images/apple.png')}
@@ -72,7 +186,7 @@ options below instead your verification code?</Text>
 
      
 
-        <TouchableOpacity style={globalStyles.gradBt}>
+        <TouchableOpacity style={globalStyles.gradBt} onPress={()=>navigation.push('Login')}>
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
@@ -82,7 +196,7 @@ options below instead your verification code?</Text>
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity style={globalStyles.gradBt}>
+        <TouchableOpacity style={globalStyles.gradBt} onPress={()=>navigation.push('Country')}>
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
@@ -112,8 +226,9 @@ options below instead your verification code?</Text>
           source={require('../assets/images/login-b-img.png')}
         />
       </View>
+      )}
+      </Formik>
     );
-  }
 }
 
 const styles = StyleSheet.create({

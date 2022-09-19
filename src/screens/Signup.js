@@ -14,9 +14,11 @@ import PhoneInput from 'react-native-phone-number-input';
 import axios from 'axios';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import CryptoJS from "react-native-crypto-js";
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
-export const SIGNUP_URL = `${API_URL}/SignUp_2_0`;
+export const SIGNUP_URL = `https://api.lykapp.com/lykjwt/index.php?/user/newUserRegister_V2`;
+export const LOST_PASS = 'https://api.lykapp.com/lykjwt/index.php?/user/lostPassword';
 export const SOCIAL_SIGNUP_URL = `https://api.lykapp.com/lykjwt/index.php?/user/socialRegister`;
 
 export default function Signup({ navigation }) {
@@ -130,15 +132,72 @@ export default function Signup({ navigation }) {
       console.error(error);
     }
   };
+  const getEncUserId = () => {
+    let encUserId = "";
+    try {
+        if (currentUserId != null) {
+            let userId = parseInt(currentUserId);
+            let digitEnc = "";
+            while (userId > 0) {
+                let remainder = userId % 10;
+                let digit = (remainder > 0) ? remainder - 1 : 9;
+                userId = userId / 10;
+                switch (digit) {
+                    case 0:
+                        digitEnc = "#";
+                        break;
+                    case 1:
+                        digitEnc = "K";
+                        break;
+                    case 2:
+                        digitEnc = "!";
+                        break;
+                    case 3:
+                        digitEnc = "A";
+                        break;
+                    case 4:
+                        digitEnc = "Z";
+                        break;
+                    case 5:
+                        digitEnc = "%";
+                        break;
+                    case 6:
+                        digitEnc = "M";
+                        break;
+                    case 7:
+                        digitEnc = "Y";
+                        break;
+                    case 8:
+                        digitEnc = "X";
+                        break;
+                    case 9:
+                        digitEnc = "$";
+                        break;
+                }
+                encUserId = digitEnc + encUserId;
+            }
+        }
+    } catch (e) {
+        alert(e);
+    }
+    return encUserId;
+}
   return (
     <Formik
-      initialValues={{ identity: '', password: '', countryCode: '+91', countryISO: 'in' }}
+      initialValues={{ contactNo: '', countryName:"India", countryISO: 'IN', countryCode: '+91', orgISO: 'IN' }}
       onSubmit={(values, { setSubmitting }) => {
-        axios.post(SIGNUP_URL, { ...values, type: 'mobile' }).then(res => {
-          setSubmitting(false);
-          alert(JSON.stringify(res.data));
-          if (res.data.response.userDetails)
-            navigation.push('Sidenav');
+        let a = CryptoJS.AES.encrypt(JSON.stringify(values), "x09c22f5");
+        alert(a.toString())
+        axios.post(SIGNUP_URL, { url: a.toString() }).then(res => {
+          alert(JSON.stringify(res));
+          axios.post(LOST_PASS,
+          {"identity": values.countryCode+values.contactNo,"type":"sms"}).then(res=>{
+            setSubmitting(false);
+            alert(JSON.stringify(res));
+            navigation.push('Verification',{number: values.countryCode+values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId)});
+          },err=>
+            alert(JSON.stringify(err))
+          ).catch()
         }, err => {
           let errors = {};
           errors.message = 'Invalid username or password!';
@@ -179,8 +238,8 @@ export default function Signup({ navigation }) {
               textContainerStyle={{ paddingVertical: 0, paddingHorizontal: 0, margin: 0, backgroundColor: '#fff' }}
               defaultCode="IN"
               layout="second"
-              onChangeText={handleChange('identity')}
-              onChangeCountry={e => { setFieldValue('countryCode', '+' + e.callingCode[0]), setFieldValue('countryISO', e.cca2) }}
+              onChangeText={handleChange('contactNo')}
+              onChangeCountry={e => { setFieldValue('countryISO', e.cca2),setFieldValue('countryCode',e.callingCode[0]),setFieldValue('orgISO', e.cca2) }}
               textInputStyle={styles.input}
               autoFocus
             />
