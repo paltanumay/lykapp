@@ -7,45 +7,46 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import React, { useState } from 'react';
-import { globalStyles } from '../global/globalStyle';
+import React, {useState} from 'react';
+import {globalStyles} from '../global/globalStyle';
 import LinearGradient from 'react-native-linear-gradient';
 import COLORS from '../global/globalColors';
 import FIcon from 'react-native-vector-icons/Feather';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import CountryPicker, {
   DEFAULT_THEME,
   Flag,
-} from "react-native-country-picker-modal";
+} from 'react-native-country-picker-modal';
 import axios from 'axios';
 
 const interests = [
   {
     text: 'Dance',
-    image: require('../assets/images/dance.jpg')
+    image: require('../assets/images/dance.jpg'),
   },
   {
     text: 'Music',
-    image: require('../assets/images/music.webp')
+    image: require('../assets/images/music.webp'),
   },
   {
     text: 'Politics',
-    image: require('../assets/images/politics.png')
+    image: require('../assets/images/politics.png'),
   },
   {
     text: 'Theatre',
-    image: require('../assets/images/theatre.jpg')
+    image: require('../assets/images/theatre.jpg'),
   },
   {
     text: 'Gardening',
-    image: require('../assets/images/gardening.webp')
+    image: require('../assets/images/gardening.webp'),
   },
   {
     text: 'Pets',
-    image: require('../assets/images/pets.jpg')
-  }
-]
+    image: require('../assets/images/pets.jpg'),
+  },
+];
 
-export default function Selectcountry({ navigation }) {
+export default function Selectcountry({navigation}) {
   const [checked, setChecked] = useState(0);
   const [interest, setInterest] = useState([]);
   const [radioBtnsData, setradioBtnData] = useState(['', '']);
@@ -53,8 +54,9 @@ export default function Selectcountry({ navigation }) {
   const [country, setCountry] = useState('India');
   const [modalVisible, setModalVisible] = useState(false);
   const renderFlagButton = () => {
-    const layout = "first", flagSize = 24;
-    if (layout === "first") {
+    const layout = 'first',
+      flagSize = 24;
+    if (layout === 'first') {
       return (
         <View style={styles.row}>
           <Flag
@@ -67,31 +69,36 @@ export default function Selectcountry({ navigation }) {
     }
     return <View />;
   };
-  const onSelect = (country) => {
+  const onSelect = country => {
     setCountry(country.name);
-    setcountryCode(country.cca2)
+    setcountryCode(country.cca2);
   };
   const saveInterests = () => {
     alert(interest.toString());
-    axios.post('https://api.lykapp.com/lykjwt/index.php?/LYKUser/saveUserInterests', { userId: '720405', interests: ["1", "2"], isRegister: false },
-      {
-        headers: {
-          token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkX2F0IjoxNjYzNDM0MjIxLCJ2YWxpZF9mb3IiOjg2NDAwfQ.23eSh6qOKk_cjyAZrXHb3fE0DATVGfuN95WgChPDO4Y-svsrneet-720405'
-        }
-      }
-    ).then(res =>
-      alert(JSON.stringify(res))
-      , err => {
-        alert()
-      }).catch(err =>
-        alert()
+    axios
+      .post(
+        'https://api.lykapp.com/lykjwt/index.php?/LYKUser/saveUserInterests',
+        {userId: '720405', interests: ['1', '2'], isRegister: false},
+        {
+          headers: {
+            token:
+              'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkX2F0IjoxNjYzNDM0MjIxLCJ2YWxpZF9mb3IiOjg2NDAwfQ.23eSh6qOKk_cjyAZrXHb3fE0DATVGfuN95WgChPDO4Y-svsrneet-720405',
+          },
+        },
       )
+      .then(
+        res => alert(JSON.stringify(res)),
+        err => {
+          alert();
+        },
+      )
+      .catch(err => alert());
   };
   return (
     <View style={styles.mainContainer}>
       <LinearGradient
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 0}}
         colors={['#037ee5', '#15a2e0', '#28cad9']}
         style={styles.linearGradient}>
         <View style={styles.logoWrap}>
@@ -99,47 +106,62 @@ export default function Selectcountry({ navigation }) {
             style={styles.logo}
             source={require('../assets/images/logo.png')}
           />
+          <Text style={styles.swp}>Social network {"\n"} with privacy</Text>
         </View>
 
-
-
         <View style={styles.welcomeWrap}>
-
           <View style={styles.radioMainWrap}>
             {radioBtnsData.map((data, key) => {
               return (
                 <View key={key}>
-                  {checked == key ?
+                  {checked == key ? (
                     <TouchableOpacity style={styles.btn}>
-                      <Image style={styles.img} source={require("../assets/images/rb_unselected.png")} />
+                      <Image
+                        style={styles.img}
+                        source={require('../assets/images/rb_unselected.png')}
+                      />
                       <Text>{data}</Text>
                     </TouchableOpacity>
-                    :
-                    <TouchableOpacity onPress={() => { setChecked(key) }} style={styles.btn}>
-                      <Image style={styles.img} source={require("../assets/images/rb_selected.png")} />
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setChecked(key);
+                      }}
+                      style={styles.btn}>
+                      <Image
+                        style={styles.img}
+                        source={require('../assets/images/rb_selected.png')}
+                      />
                       <Text>{data}</Text>
                     </TouchableOpacity>
-                  }
+                  )}
                 </View>
-              )
+              );
             })}
           </View>
 
           {!checked ? (
-            <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
+            <ScrollView contentContainerStyle={{alignItems: 'center'}}>
               <Text style={styles.welcomeTitle}>Welcome Ayan</Text>
               <Text style={styles.welcomeSubtext}>
                 Please help us answer the next few questions about yourself to
                 make your experience enjoyable
               </Text>
 
-              <Text style={styles.selectCountryTitile}>Select your Country</Text>
+              <Text style={styles.selectCountryTitile}>
+                Select your Country
+              </Text>
               <TouchableOpacity
-                style={[
-                  styles.flagButtonView,
-                ]}
-                onPress={() => setModalVisible(true)}
-              >
+                style={[styles.flagButtonView]}
+                onPress={() => setModalVisible(true)}>
+                <View style={styles.caretDown}>
+                  <IonIcon
+                    name="ios-caret-down"
+                    size={15}
+                    color={COLORS.blue}
+                  />
+                </View>
+
                 <CountryPicker
                   onSelect={onSelect}
                   withEmoji
@@ -154,10 +176,12 @@ export default function Selectcountry({ navigation }) {
                 />
               </TouchableOpacity>
 
-              <TouchableOpacity style={globalStyles.gradBt} onPress={() => setChecked(1)}>
+              <TouchableOpacity
+                style={globalStyles.gradBt}
+                onPress={() => setChecked(1)}>
                 <LinearGradient
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 0}}
                   colors={['#037ee5', '#15a2e0', '#28cad9']}
                   style={globalStyles.linearGradient}>
                   <Text style={globalStyles.buttonText}>Next</Text>
@@ -165,8 +189,7 @@ export default function Selectcountry({ navigation }) {
               </TouchableOpacity>
             </ScrollView>
           ) : (
-            <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-
+            <ScrollView contentContainerStyle={{alignItems: 'center'}}>
               <Text style={styles.welcomeSubtextNew}>
                 Let us know what you are interested in
               </Text>
@@ -186,42 +209,54 @@ export default function Selectcountry({ navigation }) {
               </View>
 
               <View style={styles.chooseCategoriesWrap}>
+                {interests.map(
+                  (item, key) =>
+                    interest.indexOf(key.toString()) < 0 && (
+                      <TouchableOpacity
+                        style={styles.catBoxCont}
+                        key={key}
+                        onPress={() =>
+                          setInterest(oldArray => [...oldArray, key.toString()])
+                        }>
+                        <View style={styles.catBoxActive}>
+                          <FIcon name="check" size={28} color="#fff" />
+                        </View>
 
-                {interests.map((item, key) =>
-                  interest.indexOf(key.toString()) < 0 &&
-                  (<TouchableOpacity style={styles.catBoxCont} key={key} onPress={() => setInterest(oldArray => [...oldArray, key.toString()])}>
-                    <View style={styles.catBox}>
-                      <Image
-                        style={styles.catBoxImg}
-                        resizeMode="cover"
-                        source={item.image}
-                      />
-                    </View>
+                        <View style={styles.catBox}>
+                          <Image
+                            style={styles.catBoxImg}
+                            resizeMode="cover"
+                            source={item.image}
+                          />
+                        </View>
 
-                    <Text style={styles.catText}>{item.text}</Text>
-                  </TouchableOpacity>)
+                        <Text style={styles.catText}>{item.text}</Text>
+                      </TouchableOpacity>
+                    ),
                 )}
-
               </View>
 
-              {interest.length < 3 ? (<TouchableOpacity style={styles.pickInterest}>
-                <Text style={styles.pickInterestText}>Pick atleast 3 interests</Text>
-              </TouchableOpacity>) :
-                (<TouchableOpacity style={globalStyles.gradBt} onPress={saveInterests}>
+              {interest.length < 3 ? (
+                <TouchableOpacity style={styles.pickInterest}>
+                  <Text style={styles.pickInterestText}>
+                    Pick atleast 3 interests
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={globalStyles.gradBt}
+                  onPress={saveInterests}>
                   <LinearGradient
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
                     colors={['#037ee5', '#15a2e0', '#28cad9']}
                     style={globalStyles.linearGradient}>
                     <Text style={globalStyles.buttonText}>Next</Text>
                   </LinearGradient>
-                </TouchableOpacity>)}
+                </TouchableOpacity>
+              )}
             </ScrollView>
           )}
-
-
-
-
         </View>
       </LinearGradient>
     </View>
@@ -242,8 +277,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
+  },
+  swp:{
+    fontSize:16,
+    color:'#fff',
+    textAlign:'center',
+    marginTop:12
   },
   welcomeWrap: {
     backgroundColor: '#fff',
@@ -309,17 +350,18 @@ const styles = StyleSheet.create({
   catBoxCont: {
     alignItems: 'center',
     width: '30%',
-    marginTop: 20
+    marginTop: 20,
+    position: 'relative',
   },
   chooseCategoriesWrap: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   catText: {
     fontFamily: 'Lato-Regular',
     color: '#333',
-    marginTop: 8
+    marginTop: 8,
   },
   pickInterest: {
     width: '60%',
@@ -332,21 +374,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 30,
-    marginBottom: 10
-
-
+    marginBottom: 10,
   },
   pickInterestText: {
     fontFamily: 'Lato-Bold',
-    color: '#333'
+    color: '#333',
   },
   img: {
     height: 25,
-    width: 25
+    width: 25,
   },
   btn: {
     flexDirection: 'row',
-    marginHorizontal: 5
+    marginHorizontal: 5,
   },
   radioMainWrap: {
     flexDirection: 'row',
@@ -355,24 +395,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // backgroundColor:'red'
   },
-  flagButtonView:{
-    borderRadius:100,
-    borderWidth:1,
-    borderColor:COLORS.blue,
-    width:150,
-    alignItems:'center',
-    height:40,
-    justifyContent:'center',
-    marginVertical:15},
+  flagButtonView: {
+    // borderRadius:100,
+    // borderWidth:1,
+    // borderColor:COLORS.blue,
+    // width:150,
+    // alignItems:'center',
+    // height:40,
+    // justifyContent:'center',
+    // marginVertical:15
+    position: 'relative',
+  },
   row: {
-    flexDirection: "row",
+    flexDirection: 'row',
     borderWidth: 1,
     borderColor: COLORS.blue,
     borderRadius: 20,
+    width: 150,
+    height: 40,
     paddingRight: 20,
-    paddingLeft: 20
+    paddingLeft: 20,
+    marginVertical: 20,
   },
   country: {
-    marginTop: 7
-  }
+    marginTop: 7,
+  },
+  caretDown: {
+    position: 'absolute',
+    right: 10,
+    top: 30,
+  },
+  catBoxActive: {
+    position: 'absolute',
+    top: 0,
+
+    width: 100,
+    height: 100,
+    borderRadius: 15,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
 });

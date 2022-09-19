@@ -24,6 +24,7 @@ import Intro from './src/screens/Intro';
 import Login from './src/screens/Login';
 import Selectcountry from './src/screens/Selectcountry';
 import Signup from './src/screens/Signup';
+import Verification from './src/screens/Verification';
 
 const Section = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -62,10 +63,11 @@ const App = () => {
 
   return (
       <NavigationContainer>
-      <Stack.Navigator initialRouteName="Intro">
+      <Stack.Navigator initialRouteName="Verification">
         <Stack.Screen options={{headerShown: false}} name="Sidenav" component={Sidebar} />
         <Stack.Screen options={{headerShown: false}} name="Login" component={Login} />
         <Stack.Screen options={{headerShown: false}} name="Intro" component={Intro} />
+        <Stack.Screen options={{headerShown: false}} name="Verification" component={Verification} />
         <Stack.Screen options={{headerShown: false}} name="Country" component={Selectcountry} />
         <Stack.Screen options={{headerShown: false}} name="SignUp" component={Signup} />
       </Stack.Navigator>
