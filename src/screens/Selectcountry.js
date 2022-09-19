@@ -16,6 +16,7 @@ import CountryPicker, {
   DEFAULT_THEME,
   Flag,
 } from "react-native-country-picker-modal";
+import axios from 'axios';
 
 const interests = [
   {
@@ -55,10 +56,13 @@ export default function Selectcountry({ navigation }) {
     const layout = "first", flagSize = 24;
     if (layout === "first") {
       return (
-        <Flag
-          countryCode={countryCode}
-          flagSize={flagSize ? flagSize : DEFAULT_THEME.flagSize}
-        />
+        <View style={styles.row}>
+          <Flag
+            countryCode={countryCode}
+            flagSize={flagSize ? flagSize : DEFAULT_THEME.flagSize}
+          />
+          <Text style={styles.country}>{country}</Text>
+        </View>
       );
     }
     return <View />;
@@ -66,6 +70,22 @@ export default function Selectcountry({ navigation }) {
   const onSelect = (country) => {
     setCountry(country.name);
     setcountryCode(country.cca2)
+  };
+  const saveInterests = () => {
+    alert(interest.toString());
+    axios.post('https://api.lykapp.com/lykjwt/index.php?/LYKUser/saveUserInterests', { userId: '720405', interests: ["1", "2"], isRegister: false },
+      {
+        headers: {
+          token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkX2F0IjoxNjYzNDM0MjIxLCJ2YWxpZF9mb3IiOjg2NDAwfQ.23eSh6qOKk_cjyAZrXHb3fE0DATVGfuN95WgChPDO4Y-svsrneet-720405'
+        }
+      }
+    ).then(res =>
+      alert(JSON.stringify(res))
+      , err => {
+        alert()
+      }).catch(err =>
+        alert()
+      )
   };
   return (
     <View style={styles.mainContainer}>
@@ -120,21 +140,18 @@ export default function Selectcountry({ navigation }) {
                 ]}
                 onPress={() => setModalVisible(true)}
               >
-                <Text>
-                  <CountryPicker
-                    onSelect={onSelect}
-                    withEmoji
-                    withFilter
-                    withFlag
-                    countryCode={countryCode}
-                    withCallingCode
-                    visible={modalVisible}
-                    theme={DEFAULT_THEME}
-                    renderFlagButton={renderFlagButton}
-                    onClose={() => setModalVisible(false)}
-                  />
-                  {country}
-                </Text>
+                <CountryPicker
+                  onSelect={onSelect}
+                  withEmoji
+                  withFilter
+                  withFlag
+                  countryCode={countryCode}
+                  withCallingCode
+                  visible={modalVisible}
+                  theme={DEFAULT_THEME}
+                  renderFlagButton={renderFlagButton}
+                  onClose={() => setModalVisible(false)}
+                />
               </TouchableOpacity>
 
               <TouchableOpacity style={globalStyles.gradBt} onPress={() => setChecked(1)}>
@@ -171,8 +188,8 @@ export default function Selectcountry({ navigation }) {
               <View style={styles.chooseCategoriesWrap}>
 
                 {interests.map((item, key) =>
-                  interest.indexOf(item.text) < 0 &&
-                  (<TouchableOpacity style={styles.catBoxCont} key={key} onPress={() => setInterest(oldArray => [...oldArray, item.text])}>
+                  interest.indexOf(key.toString()) < 0 &&
+                  (<TouchableOpacity style={styles.catBoxCont} key={key} onPress={() => setInterest(oldArray => [...oldArray, key.toString()])}>
                     <View style={styles.catBox}>
                       <Image
                         style={styles.catBoxImg}
@@ -190,7 +207,7 @@ export default function Selectcountry({ navigation }) {
               {interest.length < 3 ? (<TouchableOpacity style={styles.pickInterest}>
                 <Text style={styles.pickInterestText}>Pick atleast 3 interests</Text>
               </TouchableOpacity>) :
-                (<TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Sidenav')}>
+                (<TouchableOpacity style={globalStyles.gradBt} onPress={saveInterests}>
                   <LinearGradient
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
@@ -346,6 +363,16 @@ const styles = StyleSheet.create({
     alignItems:'center',
     height:40,
     justifyContent:'center',
-    marginVertical:15
+    marginVertical:15},
+  row: {
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: COLORS.blue,
+    borderRadius: 20,
+    paddingRight: 20,
+    paddingLeft: 20
+  },
+  country: {
+    marginTop: 7
   }
 });
