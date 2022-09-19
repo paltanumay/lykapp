@@ -337,5 +337,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     // backgroundColor:'red'
+  },
+  flagButtonView:{
+    borderRadius:100,
+    borderWidth:1,
+    borderColor:COLORS.blue,
+    width:150,
+    alignItems:'center',
+    height:40,
+    justifyContent:'center',
+    marginVertical:15
   }
 });
