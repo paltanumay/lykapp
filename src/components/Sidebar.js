@@ -1,7 +1,18 @@
 import * as React from 'react';
 import 'react-native-gesture-handler';
-import { Button, Image, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import {
+    Button,
+    Image,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+    Text,
+} from 'react-native';
+import {
+    createDrawerNavigator,
+    DrawerContentScrollView,
+    DrawerItemList,
+} from '@react-navigation/drawer';
 import Home from '../screens/Home';
 import COLORS from '../global/globalColors';
 import FIcon from 'react-native-vector-icons/Feather';
@@ -10,7 +21,11 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 function NotificationsScreen({ navigation }) {
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Button style={{ color: '#fff' }} onPress={() => navigation.goBack()} title="Go back home" />
+            <Button
+                style={{ color: '#fff' }}
+                onPress={() => navigation.goBack()}
+                title="Go back home"
+            />
         </View>
     );
 }
@@ -48,99 +63,185 @@ function bussinessScreen({ navigation }) {
     );
 }
 
+function fbussinessScreen({ navigation }) {
+    return (
+        <>
+            <TouchableOpacity>
+                <Text>Followed Bussiness Pages</Text>
+            </TouchableOpacity>
+        </>
+    );
+}
+
+function myReferarral({ navigation }) {
+    return (
+        <>
+            <TouchableOpacity>
+                <Text>My Referral</Text>
+            </TouchableOpacity>
+        </>
+    );
+}
+
 const Drawer = createDrawerNavigator();
 
-const CustomDrawer = (props) => {
-    return <DrawerContentScrollView>
-        <TouchableOpacity style={styles.navProfile}>
-            <View style={styles.avatarImgWrap}><Image
-                resizeMode="cover"
-                source={require('../assets/images/avatar.jpg')}
-                style={[styles.avatarImg]}
-            /></View>
-            <Text style={styles.avatarText}>Ayan pramanik</Text>
-        </TouchableOpacity>
-        <DrawerItemList {...props} />
-    </DrawerContentScrollView>
-}
+const CustomDrawer = props => {
+    return (
+        <DrawerContentScrollView>
+            <TouchableOpacity style={styles.navProfile}>
+                <View style={styles.avatarImgWrap}>
+                    <Image
+                        resizeMode="cover"
+                        source={require('../assets/images/avatar.jpg')}
+                        style={[styles.avatarImg]}
+                    />
+                </View>
+                <Text style={styles.avatarText}>Ayan pramanik</Text>
+            </TouchableOpacity>
+            <DrawerItemList {...props} />
+        </DrawerContentScrollView>
+    );
+};
 
 export default function Sidebar() {
     return (
-        <Drawer.Navigator screenOptions={{
-            headerStyle: { backgroundColor: COLORS.blue },
-            headerTitleAlign: 'center',
-            headerTintColor: '#fff',
-            headerTitle: () => (
-                <Image
-                    resizeMode="contain"
-                    source={require('../assets/images/logo.png')}
-                    style={[styles.logoSmall]}
-                />
-            ),
-            headerRight: () => (
-                <TouchableOpacity style={styles.user}>
-                    <FIcon name="search" size={25} color="#fff" />
-                    {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
-                </TouchableOpacity>
-            )
-        }} useLegacyImplementation initialRouteName="Home">
-            <Drawer.Screen name="Home" component={Home} />
-            <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+        <Drawer.Navigator
+            drawerContent={props => <CustomDrawer {...props} />}
+            screenOptions={{
+                drawerStyle: {
+                    backgroundColor: COLORS.blue,
+                    width: 290,
+                },
+                headerStyle: { backgroundColor: COLORS.blue },
+                headerTitleAlign: 'center',
+                headerTintColor: '#fff',
+                headerTitle: () => (
+                    <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/logo.png')}
+                        style={[styles.logoSmall]}
+                    />
+                ),
+                headerRight: () => (
+                    <TouchableOpacity style={styles.user}>
+                        <FIcon name="search" size={25} color="#fff" />
+                        {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
+                    </TouchableOpacity>
+                ),
+            }}
+            useLegacyImplementation
+            initialRouteName="Home">
+            <Drawer.Screen
+                name="Home"
+                component={Home}
+                options={{
+                    title: 'Home',
+                    activeTintColor: '#fff',
+                    drawerInactiveTintColor: '#fff',
+                    labelStyle: {
+                        color: 'red',
+                    },
+                    drawerIcon: ({ focused, size }) => (
+                        <IonIcon
+                            name="home-outline"
+                            size={size}
+                            color={focused ? '#fff' : '#fff'}
+                        />
+                    ),
+                }}
+            />
+            {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} /> */}
 
-            <Drawer.Screen name="Event Calendar" component={EventCalendarScreen}
+            <Drawer.Screen
+                name="Event Calendar"
+                component={EventCalendarScreen}
+                options={{
+                    title: 'Event Calendar',
+                    activeTintColor: '#fff',
+                    drawerInactiveTintColor: '#fff',
+                    labelStyle: {
+                        color: 'red',
+                    },
+                    drawerIcon: ({ focused, size }) => (
+                        <FIcon
+                            name="calendar"
+                            size={size}
+                            color={focused ? '#fff' : '#fff'}
+                        />
+                    ),
+                }}
+            />
+            <Drawer.Screen
+                name="LYK wallet"
+                component={lykWalletScreen}
+                options={{
+                    title: 'LYK Wallet',
+                    activeTintColor: '#fff',
+                    drawerInactiveTintColor: '#fff',
 
-options={{
-    title: 'Event Calendar',
-    activeTintColor: '#fff',
-    drawerInactiveTintColor: '#fff',
-    labelStyle: {
-        color: 'red',
-    },
-    drawerIcon: ({ focused, size }) => (
-        <FIcon
-            name="calendar"
-            size={size}
-            color={focused ? '#fff' : '#fff'}
-        />
-    ),
+                    drawerIcon: ({ focused, size }) => (
+                        <IonIcon
+                            name="wallet-outline"
+                            size={size}
+                            color={focused ? '#fff' : '#fff'}
+                        />
+                    ),
+                }}
+            />
 
-}}
-/>
-<Drawer.Screen name="LYK wallet" component={lykWalletScreen}
+            <Drawer.Screen
+                name="Bussiness Page"
+                component={bussinessScreen}
+                options={{
+                    title: 'Bussiness Page',
+                    activeTintColor: '#fff',
+                    drawerInactiveTintColor: '#fff',
 
-options={{
-    title: 'LYK Wallet',
-    activeTintColor: '#fff',
-    drawerInactiveTintColor: '#fff',
+                    drawerIcon: ({ focused, size }) => (
+                        <FIcon
+                            name="briefcase"
+                            size={size}
+                            color={focused ? '#fff' : '#fff'}
+                        />
+                    ),
+                }}
+            />
 
-    drawerIcon: ({ focused, size }) => (
-        <IonIcon
-            name="wallet-outline"
-            size={size}
-            color={focused ? '#fff' : '#fff'}
-        />
-    ),
+            <Drawer.Screen
+                name="Followed Bussiness Page"
+                component={fbussinessScreen}
+                options={{
+                    title: 'Followed Bussiness Page',
+                    activeTintColor: '#fff',
+                    drawerInactiveTintColor: '#fff',
 
-}}
-/>
+                    drawerIcon: ({ focused, size }) => (
+                        <FIcon
+                            name="briefcase"
+                            size={size}
+                            color={focused ? '#fff' : '#fff'}
+                        />
+                    ),
+                }}
+            />
 
-<Drawer.Screen name="Bussiness Page" component={bussinessScreen}
+            <Drawer.Screen
+                name="My Referral"
+                component={myReferarral}
+                options={{
+                    title: 'My Referral',
+                    activeTintColor: '#fff',
+                    drawerInactiveTintColor: '#fff',
 
-options={{
-    title: 'Bussiness Page',
-    activeTintColor: '#fff',
-    drawerInactiveTintColor: '#fff',
-
-    drawerIcon: ({ focused, size }) => (
-        <IonIcon
-            name="wallet-outline"
-            size={size}
-            color={focused ? '#fff' : '#fff'}
-        />
-    ),
-
-}}
-/>
+                    drawerIcon: ({ focused, size }) => (
+                        <FIcon
+                            name="users"
+                            size={size}
+                            color={focused ? '#fff' : '#fff'}
+                        />
+                    ),
+                }}
+            />
         </Drawer.Navigator>
     );
 }
@@ -149,7 +250,6 @@ const styles = StyleSheet.create({
     logoSmall: {
         width: 55,
         height: 36,
-
     },
     user: {
         position: 'absolute',
@@ -160,23 +260,21 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         overflow: 'hidden',
-        borderRadius: 100
+        borderRadius: 100,
     },
     navProfile: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingVertical: 20
+        paddingVertical: 20,
     },
     avatarImg: {
-        width: '100%'
+        width: '100%',
     },
     avatarText: {
         color: '#fff',
         marginLeft: 25,
         fontFamily: 'Lato-Regular',
-        fontSize: 20
-
-    }
+        fontSize: 20,
+    },
 });
-

@@ -63,7 +63,7 @@ const App = () => {
 
   return (
       <NavigationContainer>
-      <Stack.Navigator initialRouteName="Verification">
+      <Stack.Navigator initialRouteName="Intro">
         <Stack.Screen options={{headerShown: false}} name="Sidenav" component={Sidebar} />
         <Stack.Screen options={{headerShown: false}} name="Login" component={Login} />
         <Stack.Screen options={{headerShown: false}} name="Intro" component={Intro} />
