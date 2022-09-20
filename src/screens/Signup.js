@@ -14,7 +14,7 @@ import PhoneInput from 'react-native-phone-number-input';
 import axios from 'axios';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
-import CryptoJS from "react-native-crypto-js";
+import { Buffer } from 'buffer';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
 export const SIGNUP_URL = `https://api.lykapp.com/lykjwt/index.php?/user/newUserRegister_V2`;
@@ -62,13 +62,11 @@ export default function Signup({ navigation }) {
       setLoggedIn(true);
       setuserInfo(user);
       axios.post(SOCIAL_SIGNUP_URL, { email: user.email, displayName: user.name.firstName + ' ' + user.name.lastName, socialMedia: 'apple' }).then(res => {
-        alert(JSON.stringify(res.data));
         if (res.data.response.respCode === 11) navigation.push('Sidenav');
         else navigation.push('Country');
       }, err => {
         let errors = {};
         errors.message = 'Invalid username or password!';
-        alert(err)
       }).catch(err => {
       })
       // Send the authorization code to your backend for verification
@@ -83,15 +81,12 @@ export default function Signup({ navigation }) {
       const { user } = await GoogleSignin.signIn();
       setLoggedIn(true);
       setuserInfo(user);
-      alert(JSON.stringify(user))
       axios.post(SOCIAL_SIGNUP_URL, { googlePlusUserId: user.id, displayName: user.name, email: user.email, identity: user.id, socialMedia: 'googleplus' }).then(res => {
-        alert(JSON.stringify(res.data));
         if (res.data.response.respCode === 11) navigation.push('Sidenav');
         else navigation.push('Country');
       }, err => {
         let errors = {};
         errors.message = 'Invalid username or password!';
-        alert(err)
       }).catch(err => {
       })
     } catch (error) {
@@ -132,76 +127,84 @@ export default function Signup({ navigation }) {
       console.error(error);
     }
   };
-  const getEncUserId = () => {
+  const getEncUserId = (currentUserId) => {
     let encUserId = "";
-    try {
-        if (currentUserId != null) {
-            let userId = parseInt(currentUserId);
-            let digitEnc = "";
-            while (userId > 0) {
-                let remainder = userId % 10;
-                let digit = (remainder > 0) ? remainder - 1 : 9;
-                userId = userId / 10;
-                switch (digit) {
-                    case 0:
-                        digitEnc = "#";
-                        break;
-                    case 1:
-                        digitEnc = "K";
-                        break;
-                    case 2:
-                        digitEnc = "!";
-                        break;
-                    case 3:
-                        digitEnc = "A";
-                        break;
-                    case 4:
-                        digitEnc = "Z";
-                        break;
-                    case 5:
-                        digitEnc = "%";
-                        break;
-                    case 6:
-                        digitEnc = "M";
-                        break;
-                    case 7:
-                        digitEnc = "Y";
-                        break;
-                    case 8:
-                        digitEnc = "X";
-                        break;
-                    case 9:
-                        digitEnc = "$";
-                        break;
-                }
-                encUserId = digitEnc + encUserId;
-            }
+    if (currentUserId != null) {
+      let userId = parseInt(currentUserId);
+      let digitEnc = "";
+      while (userId > 0) {
+        let remainder = userId % 10;
+        let digit = (remainder > 0) ? remainder - 1 : 9;
+        userId = parseInt(userId / 10);
+        switch (digit) {
+          case 0:
+            digitEnc = "#";
+            break;
+          case 1:
+            digitEnc = "K";
+            break;
+          case 2:
+            digitEnc = "!";
+            break;
+          case 3:
+            digitEnc = "A";
+            break;
+          case 4:
+            digitEnc = "Z";
+            break;
+          case 5:
+            digitEnc = "%";
+            break;
+          case 6:
+            digitEnc = "M";
+            break;
+          case 7:
+            digitEnc = "Y";
+            break;
+          case 8:
+            digitEnc = "X";
+            break;
+          case 9:
+            digitEnc = "$";
+            break;
         }
-    } catch (e) {
-        alert(e);
+        encUserId = digitEnc + encUserId;
+      }
     }
     return encUserId;
-}
+  }
+  const xorWithKey = (a, key) => {
+    let out = new Array(a.length);
+    for (let i = 0; i < a.length; i++) {
+      out[i] = (a[i] ^ key[i % key.length]);
+    }
+    return out;
+  }
   return (
     <Formik
-      initialValues={{ contactNo: '', countryName:"India", countryISO: 'IN', countryCode: '+91', orgISO: 'IN' }}
+      initialValues={{
+        contactNo: '', countryName: "India", countryISO: 'IN', countryCode: '+91', orgISO: 'IN',
+        "forceReg": true, "did": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22)
+        , "dt": "android", "dc": 4405, "referJson": {}, "ct": "DA0CAwwDAQ0CBkxJSFJaRF5wfHlYZVtyDENcQ1NkZwEEAkM="
+      }}
       onSubmit={(values, { setSubmitting }) => {
-        let a = CryptoJS.AES.encrypt(JSON.stringify(values), "x09c22f5");
-        alert(a.toString())
-        axios.post(SIGNUP_URL, { url: a.toString() }).then(res => {
-          alert(JSON.stringify(res));
-          axios.post(LOST_PASS,
-          {"identity": values.countryCode+values.contactNo,"type":"sms"}).then(res=>{
-            setSubmitting(false);
-            alert(JSON.stringify(res));
-            navigation.push('Verification',{number: values.countryCode+values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId)});
-          },err=>
-            alert(JSON.stringify(err))
-          ).catch()
+        const s = (x) => { return x.charCodeAt() };
+        let enc = Buffer.from(xorWithKey(JSON.stringify(values).split('').map(s), "x09c22f5".split('').map(s)), 'utf-8').toString('base64');
+        axios.post(SIGNUP_URL, { url: enc }).then(res => {
+          navigation.push('Verification', { number: values.countryCode + ' ' + values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId) });
         }, err => {
+          axios.post(LOST_PASS,
+            {
+              "identity": values.countryCode + values.contactNo, "type": "sms",
+              "did": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22), "dt": "android"
+            }).then(res => {
+              setSubmitting(false);
+              navigation.push('Verification', { number: values.countryCode + ' ' + values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId) });
+            }, err => {
+            }).catch(err => {
+            })
           let errors = {};
           errors.message = 'Invalid username or password!';
-          alert(err);
         }).catch(err => {
         })
       }}
@@ -239,7 +242,7 @@ export default function Signup({ navigation }) {
               defaultCode="IN"
               layout="second"
               onChangeText={handleChange('contactNo')}
-              onChangeCountry={e => { setFieldValue('countryISO', e.cca2),setFieldValue('countryCode',e.callingCode[0]),setFieldValue('orgISO', e.cca2) }}
+              onChangeCountry={e => { setFieldValue('countryISO', e.cca2), setFieldValue('countryCode', e.callingCode[0]), setFieldValue('orgISO', e.cca2) }}
               textInputStyle={styles.input}
               autoFocus
             />

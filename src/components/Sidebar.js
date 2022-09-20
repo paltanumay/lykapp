@@ -40,7 +40,7 @@ function EventCalendarScreen({navigation}) {
   );
 }
 
-function lykWalletScreen({navigation}) {
+function LykWalletScreen({navigation}) {
   return (
     <>
        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
@@ -50,7 +50,7 @@ function lykWalletScreen({navigation}) {
   );
 }
 
-function bussinessScreen({navigation}) {
+function BussinessScreen({navigation}) {
   return (
     <>
        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
@@ -60,7 +60,7 @@ function bussinessScreen({navigation}) {
   );
 }
 
-function fbussinessScreen({navigation}) {
+function FbussinessScreen({navigation}) {
   return (
     <>
         <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
@@ -70,7 +70,7 @@ function fbussinessScreen({navigation}) {
   );
 }
 
-function myReferarral({navigation}) {
+function MyReferarral({navigation}) {
   return (
     <>
         <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
@@ -79,7 +79,7 @@ function myReferarral({navigation}) {
     </>
   );
 }
-function promotions({navigation}) {
+function Promotions({navigation}) {
   return (
     <>
         <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
@@ -88,7 +88,7 @@ function promotions({navigation}) {
     </>
   );
 }
-function settings({navigation}) {
+function Settings({navigation}) {
   return (
     <>
         <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
@@ -97,7 +97,7 @@ function settings({navigation}) {
     </>
   );
 }
-function logout({navigation}) {
+function Logout({navigation}) {
   return (
     <>
      <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
@@ -131,10 +131,10 @@ export default function Sidebar() {
   return (
     <Drawer.Navigator
       drawerContent={props => <CustomDrawer {...props} />}
-      drawerContentOptions={{
+      /* drawerContentOptions={{
         activeBackgroundColor: '#5cbbff',
         activeTintColor: '#ffffff',
-      }}
+      }} */
       screenOptions={{
         drawerStyle: {
           backgroundColor: COLORS.blue,
@@ -202,7 +202,7 @@ export default function Sidebar() {
       />
       <Drawer.Screen
         name="LYK wallet"
-        component={lykWalletScreen}
+        component={LykWalletScreen}
         options={{
           title: 'LYK Wallet',
           drawerActiveTintColor: '#fff',
@@ -220,7 +220,7 @@ export default function Sidebar() {
 
       <Drawer.Screen
         name="Bussiness Page"
-        component={bussinessScreen}
+        component={BussinessScreen}
         options={{
           title: 'Bussiness Page',
           drawerActiveTintColor: '#fff',
@@ -238,7 +238,7 @@ export default function Sidebar() {
 
       <Drawer.Screen
         name="Followed Bussiness Page"
-        component={fbussinessScreen}
+        component={FbussinessScreen}
         options={{
           title: 'Followed Bussiness Page',
           drawerActiveTintColor: '#fff',
@@ -256,7 +256,7 @@ export default function Sidebar() {
 
       <Drawer.Screen
         name="My Referral"
-        component={myReferarral}
+        component={MyReferarral}
         options={{
           title: 'My Referral',
           drawerActiveTintColor: '#fff',
@@ -270,7 +270,7 @@ export default function Sidebar() {
 
       <Drawer.Screen
         name="Promotions"
-        component={promotions}
+        component={Promotions}
         options={{
           title: 'Promotions',
           drawerActiveTintColor: '#fff',
@@ -288,7 +288,7 @@ export default function Sidebar() {
 
       <Drawer.Screen
         name="Settings"
-        component={settings}
+        component={Settings}
         options={{
           title: 'Settings',
           drawerActiveTintColor: '#fff',
@@ -306,7 +306,7 @@ export default function Sidebar() {
 
       <Drawer.Screen
         name="Logout"
-        component={logout}
+        component={Logout}
         options={{
           title: 'Logout',
           drawerActiveTintColor: '#fff',

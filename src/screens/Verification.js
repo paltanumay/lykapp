@@ -6,15 +6,19 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {globalStyles} from '../global/globalStyle';
+import React, { useEffect, useState } from 'react';
+import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import LinearGradient from 'react-native-linear-gradient';
 import { Formik } from 'formik';
 import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import axios from 'axios';
+import { Buffer } from 'buffer';
 
 export const OTP_URL = `https://api.lykapp.com/lykjwt/index.php?/LYKUser/verifyOtpCode`;
+export const LOST_PASS = 'https://api.lykapp.com/lykjwt/index.php?/user/lostPassword';
+export const SOCIAL_SIGNUP_URL = `https://api.lykapp.com/lykjwt/index.php?/user/socialRegister`;
 
 export default function Verification({ navigation, route }) {
   const [userInfo, setuserInfo] = useState();
@@ -57,13 +61,11 @@ export default function Verification({ navigation, route }) {
       setLoggedIn(true);
       setuserInfo(user);
       axios.post(SOCIAL_SIGNUP_URL, { email: user.email, displayName: user.name.firstName + ' ' + user.name.lastName, socialMedia: 'apple' }).then(res => {
-        alert(JSON.stringify(res.data));
         if (res.data.response.respCode === 11) navigation.push('Sidenav');
         else navigation.push('Country');
       }, err => {
         let errors = {};
         errors.message = 'Invalid username or password!';
-        alert(err)
       }).catch(err => {
       })
       // Send the authorization code to your backend for verification
@@ -78,15 +80,12 @@ export default function Verification({ navigation, route }) {
       const { user } = await GoogleSignin.signIn();
       setLoggedIn(true);
       setuserInfo(user);
-      alert(JSON.stringify(user))
       axios.post(SOCIAL_SIGNUP_URL, { googlePlusUserId: user.id, displayName: user.name, email: user.email, identity: user.id, socialMedia: 'googleplus' }).then(res => {
-        alert(JSON.stringify(res.data));
         if (res.data.response.respCode === 11) navigation.push('Sidenav');
         else navigation.push('Country');
       }, err => {
         let errors = {};
         errors.message = 'Invalid username or password!';
-        alert(err)
       }).catch(err => {
       })
     } catch (error) {
@@ -101,23 +100,30 @@ export default function Verification({ navigation, route }) {
       }
     }
   };
-    return (
-      <Formik
+  const resend = () => {
+    axios.post(LOST_PASS,
+      {
+        "identity": route.params.number, "type": "sms",
+        "did": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22), "dt": "android"
+      }).then(res => {
+      }, err => {
+      }).catch(err => {
+      })
+  };
+  return (
+    <Formik
       initialValues={{ otp: '', userId: route.params.userId, type: 'phone' }}
       onSubmit={(values, { setSubmitting }) => {
-        alert(JSON.stringify(values))
-        axios.post(SIGNUP_URL, { ...values },{
+        axios.post(OTP_URL, { ...values }, {
           Headers: {
-            token: route.params.token+'_GTT4--'+route.params.userId
+            token: route.params.token + '_GTT4--' + route.params.userId
           }
         }).then(res => {
           setSubmitting(false);
-          alert(JSON.stringify(res.data));
-          navigation.push('Sidenav');
+          navigation.push('Country');
         }, err => {
           let errors = {};
           errors.message = 'Invalid username or password!';
-          alert(err);
         }).catch(err => {
         })
       }}
@@ -128,107 +134,104 @@ export default function Verification({ navigation, route }) {
         setFieldValue,
         isSubmitting
       }) => (
-      <View style={styles.container}>
-        <Text style={styles.loginText}>Sign Up</Text>
+        <View style={styles.container}>
+          <Text style={styles.loginText}>Sign Up</Text>
 
-        <View style={styles.phoneInputWrap}>
-          <TextInput
-            placeholderTextColor="#AFAFAF"
-            style={styles.input}
-            multiline={true}
-            placeholder={"Enter Verification Code sent to "+ route.params.number}
-            textContentType="username"
-            underlineColorAndroid="transparent"
-            onChangeText={handleChange('otp')}
-          />
-        </View>
+          <View style={styles.phoneInputWrap}>
+            <TextInput
+              placeholderTextColor="#AFAFAF"
+              style={styles.input}
+              multiline={true}
+              placeholder={"Enter Verification Code sent to " + route.params.number}
+              textContentType="username"
+              underlineColorAndroid="transparent"
+              onChangeText={handleChange('otp')}
+            />
+          </View>
 
-        <TouchableOpacity style={[globalStyles.gradBt,{width:'50%', marginBottom:10}]} onPress={handleSubmit}>
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#037ee5', '#15a2e0', '#28cad9']}
-            style={[globalStyles.linearGradient, {height:38, paddingTop:0, paddingBottom:0}]}>
-            <Text style={globalStyles.buttonText}>Next</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+          <TouchableOpacity style={[globalStyles.gradBt, { width: '50%', marginBottom: 10 }]} onPress={handleSubmit}>
+            <LinearGradient
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              colors={['#037ee5', '#15a2e0', '#28cad9']}
+              style={[globalStyles.linearGradient, { height: 38, paddingTop: 0, paddingBottom: 0 }]}>
+              <Text style={globalStyles.buttonText}>Next</Text>
+            </LinearGradient>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.resendCode}>
+          <TouchableOpacity style={styles.resendCode} onPress={resend}>
             <Text style={styles.resendCodetext}>Resend the code</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.resendCode}>
-            <Text style={styles.resendCodetext}>Call with Verification Code</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.probWithVcode}>Problem with {"\n"} your verification code?</Text>
-
-        <Text style={styles.youCanText}>You can use one of the sign up{"\n"}
-options below instead your verification code?</Text>
-
-
-        <TouchableOpacity style={styles.gBt} onPress={_signIn}>
-          <Image
-            style={styles.gBtIcon}
-            source={require('../assets/images/google.png')}
-          />
-          <Text style={styles.gBtText}>Continue with Google</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.aBt} onPress={onAppleButtonPress}>
-          <Image
-            style={styles.gBtIcon}
-            source={require('../assets/images/apple.png')}
-          />
-          <Text style={styles.aBtText}>Continue with Apple</Text>
-        </TouchableOpacity>
-
-
-
-     
-
-        <TouchableOpacity style={globalStyles.gradBt} onPress={()=>navigation.push('Login')}>
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#037ee5', '#15a2e0', '#28cad9']}
-            style={globalStyles.linearGradient}>
-            <Text style={globalStyles.buttonText}>Log In</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={globalStyles.gradBt} onPress={()=>navigation.push('Country')}>
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#037ee5', '#15a2e0', '#28cad9']}
-            style={globalStyles.linearGradient}>
-            <Text style={globalStyles.buttonText}>Skip Sign Up</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        <View style={styles.Iagree}>
-          <Text style={styles.IagreeText}>
-            By signing in you confirm that you are 13 years of age or above and
-            agree to our
-          </Text>
-
-          <TouchableOpacity style={styles.termsW}>
-            <Text style={styles.terms}>Terms of use </Text>
           </TouchableOpacity>
-          <Text style={styles.IagreeText}> and </Text>
-          <TouchableOpacity>
-            <Text style={styles.terms}>Privacy Policy.</Text>
+
+          <Text style={styles.probWithVcode}>Problem with {"\n"} your verification code?</Text>
+
+          <Text style={styles.youCanText}>You can use one of the sign up{"\n"}
+            options below instead your verification code?</Text>
+
+
+          <TouchableOpacity style={styles.gBt} onPress={_signIn}>
+            <Image
+              style={styles.gBtIcon}
+              source={require('../assets/images/google.png')}
+            />
+            <Text style={styles.gBtText}>Continue with Google</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.aBt} onPress={onAppleButtonPress}>
+            <Image
+              style={styles.gBtIcon}
+              source={require('../assets/images/apple.png')}
+            />
+            <Text style={styles.aBtText}>Continue with Apple</Text>
+          </TouchableOpacity>
+
+
+
+
+
+          <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Login')}>
+            <LinearGradient
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              colors={['#037ee5', '#15a2e0', '#28cad9']}
+              style={globalStyles.linearGradient}>
+              <Text style={globalStyles.buttonText}>Log In</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Country')}>
+            <LinearGradient
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              colors={['#037ee5', '#15a2e0', '#28cad9']}
+              style={globalStyles.linearGradient}>
+              <Text style={globalStyles.buttonText}>Skip Sign Up</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <View style={styles.Iagree}>
+            <Text style={styles.IagreeText}>
+              By signing in you confirm that you are 13 years of age or above and
+              agree to our
+            </Text>
+
+            <TouchableOpacity style={styles.termsW}>
+              <Text style={styles.terms}>Terms of use </Text>
+            </TouchableOpacity>
+            <Text style={styles.IagreeText}> and </Text>
+            <TouchableOpacity>
+              <Text style={styles.terms}>Privacy Policy.</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Image
+            style={styles.lbimg}
+            source={require('../assets/images/login-b-img.png')}
+          />
         </View>
-
-        <Image
-          style={styles.lbimg}
-          source={require('../assets/images/login-b-img.png')}
-        />
-      </View>
       )}
-      </Formik>
-    );
+    </Formik>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -320,25 +323,25 @@ const styles = StyleSheet.create({
     width: '60%',
     alignItems: 'center',
   },
-  resendCodetext:{
-    color:COLORS.blue,
+  resendCodetext: {
+    color: COLORS.blue,
     fontFamily: 'Lato-Bold',
-    
-  },
-  probWithVcode:{
-    marginTop:25,
-    color:COLORS.blue,
-    fontFamily: 'Lato-Bold',
-    fontSize:22,
-    textAlign:'center'
-  },
-  youCanText:{
-    marginBottom:25,
-    color:COLORS.blue,
-    fontFamily: 'Lato-Regular',
-    fontSize:15,
-    textAlign:'center'
 
-    
+  },
+  probWithVcode: {
+    marginTop: 25,
+    color: COLORS.blue,
+    fontFamily: 'Lato-Bold',
+    fontSize: 22,
+    textAlign: 'center'
+  },
+  youCanText: {
+    marginBottom: 25,
+    color: COLORS.blue,
+    fontFamily: 'Lato-Regular',
+    fontSize: 15,
+    textAlign: 'center'
+
+
   }
 });

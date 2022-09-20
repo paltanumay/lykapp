@@ -47,6 +47,7 @@ const interests = [
 ];
 
 export default function Selectcountry({navigation}) {
+  const [search, setSearch] = useState();
   const [checked, setChecked] = useState(0);
   const [interest, setInterest] = useState([]);
   const [radioBtnsData, setradioBtnData] = useState(['', '']);
@@ -74,7 +75,7 @@ export default function Selectcountry({navigation}) {
     setcountryCode(country.cca2);
   };
   const saveInterests = () => {
-    alert(interest.toString());
+    navigation.push('Sidenav');
     axios
       .post(
         'https://api.lykapp.com/lykjwt/index.php?/LYKUser/saveUserInterests',
@@ -87,12 +88,11 @@ export default function Selectcountry({navigation}) {
         },
       )
       .then(
-        res => alert(JSON.stringify(res)),
+        res => {},
         err => {
-          alert();
         },
       )
-      .catch(err => alert());
+      .catch(err =>{});
   };
   return (
     <View style={styles.mainContainer}>
@@ -142,11 +142,11 @@ export default function Selectcountry({navigation}) {
 
           {!checked ? (
             <ScrollView contentContainerStyle={{alignItems: 'center'}}>
-              <Text style={styles.welcomeTitle}>Welcome Ayan</Text>
+              {/* <Text style={styles.welcomeTitle}>Welcome Ayan</Text>
               <Text style={styles.welcomeSubtext}>
                 Please help us answer the next few questions about yourself to
                 make your experience enjoyable
-              </Text>
+              </Text> */}
 
               <Text style={styles.selectCountryTitile}>
                 Select your Country
@@ -157,7 +157,7 @@ export default function Selectcountry({navigation}) {
                 <View style={styles.caretDown}>
                   <IonIcon
                     name="ios-caret-down"
-                    size={15}
+                    size={7}
                     color={COLORS.blue}
                   />
                 </View>
@@ -202,6 +202,7 @@ export default function Selectcountry({navigation}) {
                   textContentType="username"
                   underlineColorAndroid="transparent"
                   autoCapitalize="none"
+                  onChangeText={(e)=>setSearch(e)}
                 />
                 <TouchableOpacity style={styles.search}>
                   <FIcon name="search" size={22} color="#ccc" />
@@ -209,14 +210,34 @@ export default function Selectcountry({navigation}) {
               </View>
 
               <View style={styles.chooseCategoriesWrap}>
-                {interests.map(
+                {interests
+                .filter(o=>!search || o.text.toLowerCase().includes(search))
+                .map(
                   (item, key) =>
-                    interest.indexOf(key.toString()) < 0 && (
+                    interest.indexOf(key.toString()) < 0 ? (
                       <TouchableOpacity
                         style={styles.catBoxCont}
                         key={key}
                         onPress={() =>
                           setInterest(oldArray => [...oldArray, key.toString()])
+                        }>
+
+                        <View style={styles.catBox}>
+                          <Image
+                            style={styles.catBoxImg}
+                            resizeMode="cover"
+                            source={item.image}
+                          />
+                        </View>
+
+                        <Text style={styles.catText}>{item.text}</Text>
+                      </TouchableOpacity>
+                    ):(
+                      <TouchableOpacity
+                        style={styles.catBoxCont}
+                        key={key}
+                        onPress={() =>
+                          setInterest(interest.filter(o=>o!=key.toString()))
                         }>
                         <View style={styles.catBoxActive}>
                           <FIcon name="check" size={28} color="#fff" />
@@ -411,9 +432,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.blue,
     borderRadius: 20,
-    width: 150,
-    height: 40,
-    paddingRight: 20,
+    paddingRight: 30,
     paddingLeft: 20,
     marginVertical: 20,
   },
@@ -423,7 +442,7 @@ const styles = StyleSheet.create({
   caretDown: {
     position: 'absolute',
     right: 10,
-    top: 30,
+    top: 35,
   },
   catBoxActive: {
     position: 'absolute',
