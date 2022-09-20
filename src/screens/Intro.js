@@ -16,24 +16,40 @@ const slides = [
   {
     key: 1,
     title: 'Private comments over public posts',
-    text: 'Private comments give your social network more privacy! Privately comment on public posts',
-    image: require('../assets/images/login-b-img.png'),
+    text: 'Private comments  give your social network more privacy! Privately comment on public posts',
+    image: require('../assets/images/intro-1.png'),
     backgroundColor: '#59b2ab',
   },
   {
     key: 2,
-    title: 'Title 2',
-    text: 'Other cool stuff',
-    image: require('../assets/images/login-b-img.png'),
+    title: 'Private comments over group chat conversation',
+    text: 'Private comments give your social network more privacy! Privately comment on',
+    image: require('../assets/images/intro-2.png'),
     backgroundColor: '#febe29',
   },
   {
     key: 3,
-    title: 'Rocket guy',
-    text: 'I\'m already out of descriptions\n\nLorem ipsum bla bla bla',
-    image: require('../assets/images/login-b-img.png'),
+    title: 'An app with invisible connections',
+    text: 'Create invisible connections that no one else can see! Any activity between you and invisible connections is only seen by you',
+    image: require('../assets/images/intro-3.png'),
+    backgroundColor: '#22bcb5',
+  },
+  {
+    key: 4,
+    title: 'Sharing disappearing messages with private chat',
+    text: 'Use disappearing messages to control the privacy on your social network!',
+    image: require('../assets/images/intro-4.png'),
+    backgroundColor: '#22bcb5',
+  },
+
+  {
+    key: 5,
+    title: 'Get rewarded for your activities on LYK',
+    text: 'Increase your engagement and earn rewards',
+    image: require('../assets/images/intro-4.png'),
     backgroundColor: '#22bcb5',
   }
+
 ];
 
 export default function Intro({ navigation }) {
@@ -137,5 +153,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  loginImg: {
+    height: 200
+  }
 });

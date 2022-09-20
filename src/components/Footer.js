@@ -20,14 +20,14 @@ export default class Footer extends Component {
     render() {
         return (
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.footIconBox}>
+                <TouchableOpacity style={[styles.footIconBox,{marginRight:15}]}>
                     {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
                     <IonIcon name="ios-home" size={25} color={COLORS.blue} />
 
                     <Text style={[styles.footIconText, styles.active]}>Footer</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.footIconBox}>
+                <TouchableOpacity style={[styles.footIconBox,{marginRight:15}]}>
                     {/* <IonIcon name="ios-people" size={20} color={COLORS.blue} /> */}
                     <IonIcon name="ios-people-outline" size={30} color={COLORS.blue} />
 
@@ -56,14 +56,14 @@ export default class Footer extends Component {
                     {/* <IonIcon name="ios-notifications" size={20} color={COLORS.blue} /> */}
                     <IonIcon name="ios-notifications-outline" size={26} color={COLORS.blue} />
 
-                    <Text style={styles.footIconText}>Footer</Text>
+                    <Text style={styles.footIconText}>Notification</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.footIconBox}>
                     {/* <IonIcon name="chatbubbles-sharp" size={20} color={COLORS.blue} /> */}
                     <IonIcon name="chatbubbles-outline" size={26} color={COLORS.blue} />
 
-                    <Text style={styles.footIconText}>Footer</Text>
+                    <Text style={styles.footIconText}>Chat & Post</Text>
                 </TouchableOpacity>
 
 
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     },
     footIconText: {
         fontFamily: 'Lato-Regular',
-        fontSize: 14,
+        fontSize: 13,
         color:'#adadad'
 
     },
