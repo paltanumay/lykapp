@@ -305,8 +305,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: 'center',
     color: '#333',
-    fontFamily: 'Lato-Bold',
-    fontSize: 25,
+    fontFamily: 'SFpro-Bold',
+    fontSize: 29,
     color: COLORS.blue,
     marginBottom: 25,
   },
@@ -315,9 +315,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf2fe',
     borderWidth: 1,
     borderColor: '#488bb4',
-    width: '55%',
+    width: 260,
     borderRadius: 100,
-    height: 45,
+    height: 47,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -328,32 +328,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#434343',
     borderWidth: 1,
     borderColor: '#434343',
-    width: '55%',
+    width: 260,
     borderRadius: 100,
-    height: 45,
+    height: 47,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
   },
   gBtIcon: {
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
   },
   gBtText: {
     color: '#080d14',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     marginLeft: 10,
+    fontSize:16
   },
   aBtText: {
     color: '#fff',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     marginLeft: 10,
   },
   orText: {
     textTransform: 'uppercase',
     textAlign: 'center',
     color: '#080d14',
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'SFpro-Bold',
     marginVertical: 25,
   },
   Iagree: {
@@ -367,14 +368,17 @@ const styles = StyleSheet.create({
   IagreeText: {
     textAlign: 'center',
     color: '#333',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
+    fontSize:10
   },
   termsW: {
     position: 'relative',
     marginTop: 10
   },
   terms: {
-    color: COLORS.blue
+    color: COLORS.blue,
+    fontFamily: 'SFpro-Regular',
+    fontSize:10
   },
 
   phoneInputWrap: {
@@ -383,5 +387,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: '60%',
     alignItems: 'center'
+  },
+  lbimg:{
+    width:150,
+    height:200,
+    resizeMode:'contain'
   }
 })

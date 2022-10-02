@@ -12,13 +12,13 @@ export const globalStyles = StyleSheet.create({
     height:45
   },
   buttonText: {
-    fontSize: 15,
+    fontSize: 14,
     fontFamily: 'Gill Sans',
     textAlign: 'center',
     margin: 10,
     color: '#fff',
     backgroundColor: 'transparent',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
 
   },
   gradBt:{
