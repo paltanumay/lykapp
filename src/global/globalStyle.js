@@ -43,6 +43,12 @@ export const globalStyles = StyleSheet.create({
    backgroundColor:'#e7ebf6'
 
   },
+  innerPagesContainerWhite:{
+   backgroundColor:'#fff',
+   flex:10,
+
+
+  }
 
 });
 {
