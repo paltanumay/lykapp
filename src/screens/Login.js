@@ -17,6 +17,7 @@ import PhoneInput from 'react-native-phone-number-input';
 import axios from 'axios';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
 export const LOGIN_URL = `${API_URL}/SignIn_2_0`;
@@ -145,6 +146,8 @@ export default function Login({ navigation }) {
         onSubmit={(values, { setSubmitting }) => {
           axios.post(LOGIN_URL, { ...values, type: 'mobile' }).then(res => {
             setSubmitting(false);
+            AsyncStorage.setItem('userId', JSON.stringify(res.data.response.userDetails));
+            AsyncStorage.setItem('token', res.data.response.token);
             if (res.data.response.userDetails)
               navigation.push('Sidenav');
             else alert('Sorry, this number is not registered with us. Try login with the correct number or Signup.');
