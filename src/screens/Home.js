@@ -23,7 +23,7 @@ export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
 const HOME_FEED_SHORT = "gttmln";
 const offset = 0, limit = 25, feedPosition = -1, oddOffset = 0, evenOffset = 0, isStatic = 0, isEven = 0, birthdayStartPosition = 0, size = 0;
 const pId = null, activityFriendOffsetCount = "0", nextPostId = "0", promoId = "0", nextNewsId = "0", postStatus = "0";
-export default function Home() {
+export default function Home({ navigation }) {
   const getEncUserId = (currentUserId) => {
     let encUserId = "";
     if (currentUserId != null) {
@@ -424,7 +424,7 @@ export default function Home() {
           </View>
         </ScrollView>
       </View>
-      <Footer />
+      <Footer navigation={navigation} />
 
     </>
   );

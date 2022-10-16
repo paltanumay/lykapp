@@ -59,7 +59,7 @@ export default class Footer extends Component {
                     <Text style={styles.footIconText}>Notification</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.footIconBox}>
+                <TouchableOpacity style={styles.footIconBox} onPress={()=> this.props.navigation.navigate("Chatnpost")}>
                     {/* <IonIcon name="chatbubbles-sharp" size={20} color={COLORS.blue} /> */}
                     <IonIcon name="chatbubbles-outline" size={26} color={COLORS.blue} />
 
