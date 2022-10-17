@@ -6,10 +6,15 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
+  Modal,
+  Pressable,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
+import Resetpassword from './Resetpassword';
+
 import FIcon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import { Formik } from 'formik';
@@ -247,7 +252,10 @@ export default function Login({ navigation }) {
               </LinearGradient>
             </TouchableOpacity>
 
-            <TouchableOpacity><Text style={styles.forgotPassText}>Forgot Password</Text></TouchableOpacity>
+            <TouchableOpacity><Text style={styles.forgotPassText} onPress={() => this.setModalVisible(true)}>Forgot Password</Text></TouchableOpacity>
+
+            <Resetpassword/>
+
 
             <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('SignUp')}>
               <LinearGradient
