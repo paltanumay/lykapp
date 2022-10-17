@@ -12,6 +12,7 @@ import React, {Component} from 'react';
 import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
+import Gmodal from '../components/Gmodal';
 import LinearGradient from 'react-native-linear-gradient';
 
 import OctIcon from 'react-native-vector-icons/Octicons';
@@ -23,6 +24,9 @@ import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 export default class Chatdetails extends Component {
   render() {
     return (
+      <>
+<Gmodal/>
+
       <View style={globalStyles.innerPagesContainerWhite}>
         <View style={styles.chatBody}>
           <View style={styles.chatDateTop}>
@@ -135,6 +139,7 @@ export default class Chatdetails extends Component {
           </TouchableOpacity>
         </View>
       </View>
+      </>
     );
   }
 }
