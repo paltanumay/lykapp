@@ -92,7 +92,7 @@ export default function Resetpassword() {
 
               {/* step -2 */}
 
-              <View style={[styles.reset2, {display: 'none'}]}>
+              <View style={[styles.reset2]}>
                 <TouchableOpacity
                   style={styles.modalClose}
                   onPress={() => this.setModalVisible(!modalVisible)}>
@@ -133,7 +133,7 @@ export default function Resetpassword() {
 
               {/* step -3 */}
 
-              <View style={styles.reset3}>
+              <View style={[styles.reset3, {display: 'none'}]}>
                 <TouchableOpacity
                   style={styles.modalClose}
                   onPress={() => setModalVisible(!modalVisible)}>
@@ -189,11 +189,11 @@ export default function Resetpassword() {
             </View>
           </View>
         </Modal>
-        {/* <Pressable
+        <Pressable
           style={[styles.button, styles.buttonOpen]}
           onPress={() => setModalVisible(!modalVisible)}>
           <Text style={styles.textStyle}>Show Modal</Text>
-        </Pressable> */}
+        </Pressable>
       </View>
     </>
   );
