@@ -2,23 +2,14 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
-  TextInput,
   TouchableOpacity,
-  ScrollView,
-  FlatList,
 } from 'react-native';
-import React, {Component} from 'react';
-import {globalStyles} from '../global/globalStyle';
+import React, { useState } from 'react';
 import COLORS from '../global/globalColors';
-import Header from '../components/Header';
-import LinearGradient from 'react-native-linear-gradient';
-
-import AntIcon from 'react-native-vector-icons/AntDesign';
-import FIcon from 'react-native-vector-icons/Feather';
 import Footer from '../components/Footer';
-import Createpost from '../screens/Createpost';
-import Createchat from '../screens/Createchat';
+import ChatList from './Chatlist';
+import CallList from './CallList';
+import Postlist from './Postlist';
 
 const DATA = [
   {
@@ -47,47 +38,56 @@ const DATA = [
   },
 ];
 
-export default class Chatnpost extends Component {
-  render() {
-    return (
-      <>
-        <View style={styles.chatPostContainer}>
-          <View style={styles.tabWrap}>
-            <TouchableOpacity style={[styles.tab, styles.tabActive]}>
-              <Text style={[styles.tabText, styles.tabActiveText]}>
-                My Chats
-              </Text>
-            </TouchableOpacity>
+export default function Chatnpost() {
+  const [activeTab, setActiveTab] = useState('a');
+  return (
+    <>
+      <View style={styles.chatPostContainer}>
+        <View style={styles.tabWrap}>
+          <TouchableOpacity style={[styles.tab, activeTab === 'a' ? styles.tabActive : '']} onPress={() => setActiveTab('a')}>
+            <Text style={activeTab === 'a' ? [styles.tabText, styles.tabActiveText] : []}>
+              My Chats
+            </Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity style={styles.tab}>
-              <Text>My Posts</Text>
-            </TouchableOpacity>
+          <TouchableOpacity style={[styles.tab, activeTab === 'b' ? styles.tabActive : '']} onPress={() => setActiveTab('b')}>
+            <Text style={activeTab === 'b' ? [styles.tabText, styles.tabActiveText] : []}>
+              My Posts
+            </Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity style={styles.tab}>
-              <Text>My Calls</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.tabContentWrap}>
-            {/* <View style={styles.myChatsWrap}>
-              <Createchat />
-            </View> */}
-
-            <View style={styles.myPostsWrap}>
-              <Createpost />
-            </View>
-          </View>
+          <TouchableOpacity style={[styles.tab, activeTab === 'c' ? styles.tabActive : '']} onPress={() => setActiveTab('c')}>
+            <Text style={activeTab === 'c' ? [styles.tabText, styles.tabActiveText] : []}>
+              My Calls
+            </Text>
+          </TouchableOpacity>
         </View>
-        <Footer />
-      </>
-    );
-  }
+
+        <View style={styles.tabContentWrap}>
+          {activeTab === 'a' ?
+            (<View style={styles.myChatsWrap}>
+              <ChatList />
+            </View>) :
+            activeTab === 'b' ?
+              (<View style={styles.myPostsWrap}>
+                <Postlist />
+              </View>) :
+              activeTab === 'c' ?
+                (<View style={styles.myPostsWrap}>
+                  <CallList />
+                </View>) : (<></>)
+          }
+        </View>
+      </View>
+      <Footer />
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
-  chatPostContainer:{
-    backgroundColor:'#e7ebf6',
-    flex:10
+  chatPostContainer: {
+    backgroundColor: '#e7ebf6',
+    flex: 10
   },
   tabWrap: {
     backgroundColor: '#f6f7fb',

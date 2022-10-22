@@ -24,7 +24,6 @@ import axios from 'axios';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import AsyncStorage from '@react-native-community/async-storage';
-import Agemodal from './Agemodal';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
 export const LOGIN_URL = `${API_URL}/SignIn_2_0`;
@@ -255,9 +254,6 @@ export default function Login({ navigation }) {
             </TouchableOpacity>
 
             <TouchableOpacity><Text style={styles.forgotPassText} onPress={() => this.setModalVisible(true)}>Forgot Password</Text></TouchableOpacity>
-
-            <Acalreadyexitmodal/>
-
 
             <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('SignUp')}>
               <LinearGradient
