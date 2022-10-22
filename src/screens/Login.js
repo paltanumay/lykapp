@@ -14,6 +14,7 @@ import React, { useEffect, useState } from 'react';
 import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Resetpassword from './Resetpassword';
+import Acalreadyexitmodal from './Acalreadyexitmodal';
 
 import FIcon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
@@ -255,7 +256,7 @@ export default function Login({ navigation }) {
 
             <TouchableOpacity><Text style={styles.forgotPassText} onPress={() => this.setModalVisible(true)}>Forgot Password</Text></TouchableOpacity>
 
-            <Agemodal/>
+            <Acalreadyexitmodal/>
 
 
             <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('SignUp')}>

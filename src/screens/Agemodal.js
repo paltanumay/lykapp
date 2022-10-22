@@ -55,11 +55,11 @@ export default function Agemodal() {
             </View>
           </View>
         </Modal>
-        <Pressable
+        {/* <Pressable
           style={[styles.button, styles.buttonOpen]}
           onPress={() => setModalVisible(!modalVisible)}>
           <Text style={styles.textStyle}>Show Modal</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     </>
   );
