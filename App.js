@@ -75,7 +75,7 @@ const App = () => {
         <Stack.Screen options={{headerShown: false}} name="Country" component={Selectcountry} />
         <Stack.Screen options={{headerShown: false}} name="SignUp" component={Signup} />
         <Stack.Screen options={{headerShown: true}} name="Creategroup" component={Creategroup} />
-        <Stack.Screen options={{headerShown: true}} name="Chatnpost" component={Chatnpost} />
+        <Stack.Screen options={{headerShown: false}} name="Chatnpost" component={Chatnpost} />
         <Stack.Screen options={{headerShown: true}} name="Createpost" component={Createpost} />
         <Stack.Screen options={{headerShown: true}} name="Chatdetails" component={Chatdetails} />
       </Stack.Navigator>

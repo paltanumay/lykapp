@@ -20,6 +20,7 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import Chatnpost from '../screens/Chatnpost';
 
 function NotificationsScreen({ navigation }) {
   return (
@@ -191,7 +192,15 @@ export default function Sidebar() {
           ),
         }}
       />
-      {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} /> */}
+      <Drawer.Screen
+       name="Chatnpost" 
+       component={Chatnpost}
+       options={{
+        drawerItemStyle:{
+          display: 'none'
+        }
+       }} 
+      />
 
       <Drawer.Screen
         name="Event Calendar"
