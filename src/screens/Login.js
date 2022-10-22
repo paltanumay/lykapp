@@ -15,6 +15,7 @@ import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Resetpassword from './Resetpassword';
 import Acalreadyexitmodal from './Acalreadyexitmodal';
+import Findconnectionsmodal from './Findconnectionsmodal';
 
 import FIcon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
@@ -24,6 +25,7 @@ import axios from 'axios';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import AsyncStorage from '@react-native-community/async-storage';
+import { FadeIn } from 'react-native-reanimated';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
 export const LOGIN_URL = `${API_URL}/SignIn_2_0`;
@@ -172,6 +174,7 @@ export default function Login({ navigation }) {
         }) => (
           <ScrollView contentContainerStyle={styles.scView}>
             <Text style={styles.loginText}>Log In</Text>
+            <Findconnectionsmodal/>
             <TouchableOpacity style={styles.gBt} onPress={_signIn}>
               <Image
                 style={styles.gBtIcon}
