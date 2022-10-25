@@ -11,8 +11,8 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
-import React, {Component} from 'react';
-import {globalStyles} from '../global/globalStyle';
+import React, { Component } from 'react';
+import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
 import LinearGradient from 'react-native-linear-gradient';
@@ -20,7 +20,7 @@ import CheckBox from '@react-native-community/checkbox';
 import OctIcon from 'react-native-vector-icons/Octicons';
 import Footer from '../components/Footer';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import {useState} from 'react';
+import { useState } from 'react';
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Agemodal() {
@@ -41,8 +41,8 @@ export default function Agemodal() {
 
           <View style={styles.centeredViewInner}>
             <View style={styles.modalView}>
-            <TouchableOpacity  style={styles.modalClose} onPress={() => this.setModalVisible(!modalVisible)}>
-              <IonIcon name="md-close" size={23} color="#333" />
+              <TouchableOpacity style={styles.modalClose} onPress={() => this.setModalVisible(!modalVisible)}>
+                <IonIcon name="md-close" size={23} color="#333" />
 
               </TouchableOpacity>
 
@@ -55,11 +55,6 @@ export default function Agemodal() {
             </View>
           </View>
         </Modal>
-        {/* <Pressable
-          style={[styles.button, styles.buttonOpen]}
-          onPress={() => setModalVisible(!modalVisible)}>
-          <Text style={styles.textStyle}>Show Modal</Text>
-        </Pressable> */}
       </View>
     </>
   );
@@ -83,7 +78,7 @@ const styles = StyleSheet.create({
   modalView: {
     paddingTop: 30,
     width: '100%',
-    paddingHorizontal:55,
+    paddingHorizontal: 55,
     paddingBottom: 20,
     backgroundColor: 'white',
     borderRadius: 32,
@@ -150,10 +145,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginBottom: 15,
   },
-  modalClose:{
+  modalClose: {
     position: 'absolute',
-    right:20,
-    top:12,
+    right: 20,
+    top: 12,
     zIndex: 999,
   },
   resetPassTitle: {
@@ -219,16 +214,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 20,
   },
-  ageConfirmTitle:{
+  ageConfirmTitle: {
     fontSize: 15,
     color: '#000',
     fontFamily: 'SFpro-Regular',
-    textAlign:'center'
+    textAlign: 'center'
   },
-  privacyLinkText:{
+  privacyLinkText: {
     fontFamily: 'SFpro-Medium',
-color:COLORS.blue,
-fontSize: 15,
+    color: COLORS.blue,
+    fontSize: 15,
   }
 
 });

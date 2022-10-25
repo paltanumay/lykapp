@@ -12,7 +12,7 @@ import React, {Component} from 'react';
 import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
-import Gmodal from '../components/Gmodal';
+import Gmodal from '../shared/Gmodal';
 import LinearGradient from 'react-native-linear-gradient';
 
 import OctIcon from 'react-native-vector-icons/Octicons';

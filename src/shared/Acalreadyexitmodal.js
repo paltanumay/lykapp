@@ -2,84 +2,71 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  FlatList,
   Alert,
   Modal,
-  Pressable,
 } from 'react-native';
-import React, {Component} from 'react';
-import {globalStyles} from '../global/globalStyle';
+import React from 'react';
+import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
-import Header from '../components/Header';
 import LinearGradient from 'react-native-linear-gradient';
-import CheckBox from '@react-native-community/checkbox';
-import OctIcon from 'react-native-vector-icons/Octicons';
 import FIcon from 'react-native-vector-icons/Feather';
-import Footer from '../components/Footer';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import {useState} from 'react';
-import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useState } from 'react';
 
 export default function Acalreadyexitmodal() {
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const [isSelected, setSelection] = useState(true);
-  const [checked, setChecked] = useState(0);
-  var gender = ['', ''];
- 
+  const [modalVisible, setModalVisible] = useState(true);
 
   return (
     <>
-      <View style={styles.centeredView}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            setModalVisible(!modalVisible);
-          }}>
-          <View style={styles.centeredViewInner}>
-            <View style={styles.modalView}>
-              {/* step -1 */}
+      {modalVisible &&
+        (<View style={styles.centeredView}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+              setModalVisible(!modalVisible);
+            }}>
+            <View style={styles.centeredViewInner}>
+              <View style={styles.modalView}>
+                {/* step -1 */}
 
-              <View style={[styles.reset1]}>
-                <TouchableOpacity
-                  style={styles.modalClose}
-                  onPress={() => this.setModalVisible(!modalVisible)}>
-                  <IonIcon name="close" size={27} color="#333" />
-                </TouchableOpacity>
+                <View style={[styles.reset1]}>
+                  <TouchableOpacity
+                    style={styles.modalClose}
+                    onPress={() => this.setModalVisible(!modalVisible)}>
+                    <IonIcon name="close" size={27} color="#333" />
+                  </TouchableOpacity>
 
-                <Text style={styles.resetPassTitle}>Account already</Text>
-                <Text style={styles.resetPassTitle}>exists</Text>
+                  <Text style={styles.resetPassTitle}>Account already</Text>
+                  <Text style={styles.resetPassTitle}>exists</Text>
 
-                <Text style={styles.lookLikeText}>
-                  Looks like you already have an account. Please log in instead.
-                </Text>
+                  <Text style={styles.lookLikeText}>
+                    Looks like you already have an account. Please log in instead.
+                  </Text>
 
-                <Text style={styles.lookLikePhText}>
-                +91 9869222738
-                </Text>
+                  <Text style={styles.lookLikePhText}>
+                    +91 9869222738
+                  </Text>
 
-                <View style={styles.phoneInputWrap}>
-              <TextInput
-                placeholderTextColor="#000"
-                style={styles.input}
-                placeholder="Password"
-                textContentType="username"
-                underlineColorAndroid="transparent"
-               
-              />
-              <TouchableOpacity style={styles.passNShow}>
-                <FIcon name="eye-off" size={20} color={COLORS.blue} />
-              </TouchableOpacity>
-            </View>
+                  <View style={styles.phoneInputWrap}>
+                    <TextInput
+                      placeholderTextColor="#000"
+                      style={styles.input}
+                      placeholder="Password"
+                      textContentType="username"
+                      underlineColorAndroid="transparent"
 
-            {/* <TouchableOpacity>
+                    />
+                    <TouchableOpacity style={styles.passNShow}>
+                      <FIcon name="eye-off" size={20} color={COLORS.blue} />
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* <TouchableOpacity>
               <View style={styles.radioMainWrap}>
                 {this.state.radioBtnsData.map((data, key) => {
                   return (
@@ -102,53 +89,43 @@ export default function Acalreadyexitmodal() {
 
               <Text style={styles.rememberPassText}>Remember Password</Text>
               </TouchableOpacity> */}
-              <Text style={styles.rememberPassText}>Remember Password</Text>
+                  <Text style={styles.rememberPassText}>Remember Password</Text>
 
 
 
 
-                <TouchableOpacity style={globalStyles.gradBt}>
-                  <LinearGradient
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                    colors={['#037ee5', '#15a2e0', '#28cad9']}
-                    style={globalStyles.linearGradient}>
-                    <Text style={globalStyles.buttonText}>Next</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
+                  <TouchableOpacity style={globalStyles.gradBt}>
+                    <LinearGradient
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      colors={['#037ee5', '#15a2e0', '#28cad9']}
+                      style={globalStyles.linearGradient}>
+                      <Text style={globalStyles.buttonText}>Next</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
 
-                <TouchableOpacity><Text style={styles.forgotPassText}>Forgot Password</Text></TouchableOpacity>
+                  <TouchableOpacity><Text style={styles.forgotPassText}>Forgot Password</Text></TouchableOpacity>
 
-                <View style={styles.Iagree}>
-              <Text style={styles.IagreeText}>
-                By signing in you confirm that you are 13 years of age or above and
-                agree to our
-              </Text>
+                  <View style={styles.Iagree}>
+                    <Text style={styles.IagreeText}>
+                      By signing in you confirm that you are 13 years of age or above and
+                      agree to our
+                    </Text>
 
-              <TouchableOpacity style={styles.termsW}>
-                <Text style={styles.terms}>Terms of use </Text>
-              </TouchableOpacity>
-              <Text style={styles.IagreeText}> and </Text>
-              <TouchableOpacity>
-                <Text style={styles.terms}>Privacy Policy.</Text>
-              </TouchableOpacity>
-            </View>
+                    <TouchableOpacity style={styles.termsW}>
+                      <Text style={styles.terms}>Terms of use </Text>
+                    </TouchableOpacity>
+                    <Text style={styles.IagreeText}> and </Text>
+                    <TouchableOpacity>
+                      <Text style={styles.terms}>Privacy Policy.</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
               </View>
-
-              {/* <Pressable
-                      style={[styles.button, styles.buttonClose]}
-                      onPress={() => this.setModalVisible(!modalVisible)}>
-                      <Text style={styles.textStyle}>Sign Up</Text>
-                    </Pressable> */}
             </View>
-          </View>
-        </Modal>
-        <Pressable
-          style={[styles.button, styles.buttonOpen]}
-          onPress={() => setModalVisible(!modalVisible)}>
-          <Text style={styles.textStyle}>Show Modal</Text>
-        </Pressable>
-      </View>
+          </Modal>
+        </View>)}
     </>
   );
 }
@@ -299,16 +276,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 20,
   },
-  lookLikeText:{
+  lookLikeText: {
     fontSize: 14,
     color: '#000',
     fontFamily: 'SFpro-Regular',
-    textAlign:'center',
-    paddingHorizontal:50,
-    paddingVertical:15
+    textAlign: 'center',
+    paddingHorizontal: 50,
+    paddingVertical: 15
   },
-  lookLikePhText:{
-    color:COLORS.blue,
+  lookLikePhText: {
+    color: COLORS.blue,
     fontFamily: 'SFpro-Bold',
 
   },
@@ -333,12 +310,12 @@ const styles = StyleSheet.create({
     color: '#333',
     fontFamily: 'SFpro-Bold',
     marginVertical: 15,
-    fontSize:11
+    fontSize: 11
   },
   rememberPassText: {
     color: '#333',
-    marginBottom:4,
-    fontSize:11,
+    marginBottom: 4,
+    fontSize: 11,
     fontFamily: 'Lato-Regular',
 
   },
@@ -354,7 +331,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333',
     fontFamily: 'SFpro-Regular',
-    fontSize:10
+    fontSize: 10
   },
   termsW: {
     position: 'relative',
@@ -363,6 +340,6 @@ const styles = StyleSheet.create({
   terms: {
     color: COLORS.blue,
     fontFamily: 'SFpro-Regular',
-    fontSize:10
+    fontSize: 10
   },
 });

@@ -103,6 +103,7 @@ function Settings({ navigation }) {
 }
 function Logout({ navigation }) {
   useEffect(() => {
+    AsyncStorage.clear();
     navigation.push('Intro');
   }, [])
   return (

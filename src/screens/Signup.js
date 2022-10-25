@@ -5,7 +5,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import LinearGradient from 'react-native-linear-gradient';
@@ -15,15 +15,21 @@ import axios from 'axios';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { Buffer } from 'buffer';
+import Acalreadyexitmodal from '../shared/Acalreadyexitmodal';
+import Findconnectionsmodal from '../shared/Findconnectionsmodal';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
 export const SIGNUP_URL = `https://api.lykapp.com/lykjwt/index.php?/user/newUserRegister_V2`;
+export const SOCIAL_LOGIN_URL = `https://api.lykapp.com/lykjwt/index.php?/user/socialLogin`;
 export const LOST_PASS = 'https://api.lykapp.com/lykjwt/index.php?/user/lostPassword';
 export const SOCIAL_SIGNUP_URL = `https://api.lykapp.com/lykjwt/index.php?/user/socialRegister`;
 
 export default function Signup({ navigation }) {
   const [userInfo, setuserInfo] = useState();
   const [loggedIn, setLoggedIn] = useState();
+  const [alreadyExist, setAlreadyExist] = useState();
+  const phone = useRef();
   useEffect(() => {
     GoogleSignin.configure({
       webClientId: '1095347807692-ut8j0g8sqltl0srjk1h5klhb6ril5ord.apps.googleusercontent.com',
@@ -62,7 +68,13 @@ export default function Signup({ navigation }) {
       setLoggedIn(true);
       setuserInfo(user);
       axios.post(SOCIAL_SIGNUP_URL, { email: user.email, displayName: user.name.firstName + ' ' + user.name.lastName, socialMedia: 'apple' }).then(res => {
-        if (res.data.response.respCode === 11) navigation.push('Sidenav');
+        if (res.data.response.respCode === 11) {
+          axios.post(SOCIAL_LOGIN_URL, { email: user.email, socialMedia: 'apple' }).then(res => {
+            AsyncStorage.setItem('userId', JSON.stringify(res.data.response.userDetails));
+            AsyncStorage.setItem('token', res.data.response.token);
+            navigation.push('Sidenav');
+          })
+        }
         else navigation.push('Country');
       }, err => {
         let errors = {};
@@ -82,7 +94,13 @@ export default function Signup({ navigation }) {
       setLoggedIn(true);
       setuserInfo(user);
       axios.post(SOCIAL_SIGNUP_URL, { googlePlusUserId: user.id, displayName: user.name, email: user.email, identity: user.id, socialMedia: 'googleplus' }).then(res => {
-        if (res.data.response.respCode === 11) navigation.push('Sidenav');
+        if (res.data.response.respCode === 11) {
+          axios.post(SOCIAL_LOGIN_URL, { email: user.email, identity: user.id, socialMedia: 'googleplus' }).then(res => {
+            AsyncStorage.setItem('userId', JSON.stringify(res.data.response.userDetails));
+            AsyncStorage.setItem('token', res.data.response.token);
+            navigation.push('Sidenav');
+          })
+        }
         else navigation.push('Country');
       }, err => {
         let errors = {};
@@ -181,115 +199,121 @@ export default function Signup({ navigation }) {
     return out;
   }
   return (
-    <Formik
-      initialValues={{
-        contactNo: '', countryName: "India", countryISO: 'IN', countryCode: '+91', orgISO: 'IN',
-        "forceReg": true, "did": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22)
-        , "dt": "android", "dc": 4405, "referJson": {}, "ct": "DA0CAwwDAQ0CBkxJSFJaRF5wfHlYZVtyDENcQ1NkZwEEAkM="
-      }}
-      onSubmit={(values, { setSubmitting }) => {
-        const s = (x) => { return x.charCodeAt() };
-        let enc = Buffer.from(xorWithKey(JSON.stringify(values).split('').map(s), "x09c22f5".split('').map(s)), 'utf-8').toString('base64');
-        axios.post(SIGNUP_URL, { url: enc }).then(res => {
-          navigation.push('Verification', { number: values.countryCode + ' ' + values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId) });
-        }, err => {
-          axios.post(LOST_PASS,
-            {
-              "identity": values.countryCode + values.contactNo, "type": "sms",
-              "did": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22), "dt": "android"
-            }).then(res => {
-              setSubmitting(false);
-              navigation.push('Verification', { number: values.countryCode + ' ' + values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId) });
-            }, err => {
-            }).catch(err => {
-            })
-          let errors = {};
-          errors.message = 'Invalid username or password!';
-        }).catch(err => {
-        })
-      }}
-    >
-      {({
-        handleChange,
-        handleSubmit,
-        setFieldValue,
-        isSubmitting
-      }) => (
-        <View style={styles.container}>
-          <Text style={styles.loginText}>Sign Up</Text>
-          <TouchableOpacity style={styles.gBt} onPress={_signIn}>
+    <>
+      <Formik
+        initialValues={{
+          contactNo: '', countryName: "India", countryISO: 'IN', countryCode: '+91', orgISO: 'IN',
+          "forceReg": true, "did": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22)
+          , "dt": "android", "dc": 4405, "referJson": {}, "ct": "DA0CAwwDAQ0CBkxJSFJaRF5wfHlYZVtyDENcQ1NkZwEEAkM="
+        }}
+        onSubmit={(values, { setSubmitting }) => {
+          const s = (x) => { return x.charCodeAt() };
+          let enc = Buffer.from(xorWithKey(JSON.stringify(values).split('').map(s), "x09c22f5".split('').map(s)), 'utf-8').toString('base64');
+          axios.post(SIGNUP_URL, { url: enc }).then(res => {
+            if (res.data.response.respCode === 3 || res.data.response.respCode === 2) setAlreadyExist(true);
+            else navigation.push('Verification', { number: values.countryCode + ' ' + values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId) });
+          }, err => {
+            axios.post(LOST_PASS,
+              {
+                "identity": values.countryCode + values.contactNo, "type": "sms",
+                "did": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22), "dt": "android"
+              }).then(res => {
+                setSubmitting(false);
+                navigation.push('Verification', { number: values.countryCode + ' ' + values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId) });
+              }, err => {
+              }).catch(err => {
+              })
+            let errors = {};
+            errors.message = 'Invalid username or password!';
+          }).catch(err => {
+          })
+        }}
+      >
+        {({
+          handleChange,
+          handleSubmit,
+          setFieldValue,
+          isSubmitting
+        }) => (
+          <View style={styles.container}>
+            <Text style={styles.loginText}>Sign Up</Text>
+            <TouchableOpacity style={styles.gBt} onPress={_signIn}>
+              <Image
+                style={styles.gBtIcon}
+                source={require('../assets/images/google.png')}
+              />
+              <Text style={styles.gBtText}>Continue with Google</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.aBt} onPress={onAppleButtonPress}>
+              <Image
+                style={styles.gBtIcon}
+                source={require('../assets/images/apple.png')}
+              />
+              <Text style={styles.aBtText}>Continue with Apple</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.orText}>OR</Text>
+
+            <View style={styles.phoneInputWrap}>
+              <PhoneInput
+                containerStyle={{ width: '100%', height: 50, padding: 0, }}
+                textContainerStyle={{ paddingVertical: 0, paddingHorizontal: 0, margin: 0, backgroundColor: '#fff' }}
+                defaultCode="IN"
+                layout="second"
+                onChangeText={handleChange('contactNo')}
+                onChangeCountry={e => { setFieldValue('countryISO', e.cca2), setFieldValue('countryCode', e.callingCode[0]), setFieldValue('orgISO', e.cca2) }}
+                textInputStyle={styles.input}
+                ref={phone}
+                autoFocus
+              />
+            </View>
+
+            <TouchableOpacity style={globalStyles.lineBt} onPress={handleSubmit} disabled={isSubmitting || !phone.current}>
+              <Text style={globalStyles.lineBtText}>Next</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Login')}>
+              <LinearGradient
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                colors={['#037ee5', '#15a2e0', '#28cad9']}
+                style={globalStyles.linearGradient}>
+                <Text style={globalStyles.buttonText}>Log In</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Country')}>
+              <LinearGradient
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                colors={['#037ee5', '#15a2e0', '#28cad9']}
+                style={globalStyles.linearGradient}>
+                <Text style={globalStyles.buttonText}>Skip Sign Up</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <View style={styles.Iagree}>
+
+              <Text style={styles.IagreeText}>
+                By signing in you confirm that you are 13 years of age or above and
+                agree to our</Text>
+
+              <TouchableOpacity style={styles.termsW}><Text style={styles.terms}>Terms of use </Text></TouchableOpacity><Text style={styles.IagreeText}> and </Text><TouchableOpacity><Text style={styles.terms}>Privacy Policy.</Text></TouchableOpacity>
+
+            </View>
+
             <Image
-              style={styles.gBtIcon}
-              source={require('../assets/images/google.png')}
+              style={styles.lbimg}
+              source={require('../assets/images/login-b-img.png')}
             />
-            <Text style={styles.gBtText}>Continue with Google</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.aBt} onPress={onAppleButtonPress}>
-            <Image
-              style={styles.gBtIcon}
-              source={require('../assets/images/apple.png')}
-            />
-            <Text style={styles.aBtText}>Continue with Apple</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.orText}>OR</Text>
-
-          <View style={styles.phoneInputWrap}>
-            <PhoneInput
-              containerStyle={{ width: '100%', height: 50, padding: 0, }}
-              textContainerStyle={{ paddingVertical: 0, paddingHorizontal: 0, margin: 0, backgroundColor: '#fff' }}
-              defaultCode="IN"
-              layout="second"
-              onChangeText={handleChange('contactNo')}
-              onChangeCountry={e => { setFieldValue('countryISO', e.cca2), setFieldValue('countryCode', e.callingCode[0]), setFieldValue('orgISO', e.cca2) }}
-              textInputStyle={styles.input}
-              autoFocus
-            />
-          </View>
-
-          <TouchableOpacity style={globalStyles.lineBt} onPress={handleSubmit} disabled={isSubmitting}>
-            <Text style={globalStyles.lineBtText}>Next</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Login')}>
-            <LinearGradient
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              colors={['#037ee5', '#15a2e0', '#28cad9']}
-              style={globalStyles.linearGradient}>
-              <Text style={globalStyles.buttonText}>Log In</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Country')}>
-            <LinearGradient
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              colors={['#037ee5', '#15a2e0', '#28cad9']}
-              style={globalStyles.linearGradient}>
-              <Text style={globalStyles.buttonText}>Skip Sign Up</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <View style={styles.Iagree}>
-
-            <Text style={styles.IagreeText}>
-              By signing in you confirm that you are 13 years of age or above and
-              agree to our</Text>
-
-            <TouchableOpacity style={styles.termsW}><Text style={styles.terms}>Terms of use </Text></TouchableOpacity><Text style={styles.IagreeText}> and </Text><TouchableOpacity><Text style={styles.terms}>Privacy Policy.</Text></TouchableOpacity>
 
           </View>
-
-          <Image
-            style={styles.lbimg}
-            source={require('../assets/images/login-b-img.png')}
-          />
-
-        </View>
-      )}
-    </Formik>
+        )}
+      </Formik>
+      <Findconnectionsmodal />
+      {alreadyExist && <Acalreadyexitmodal />}
+    </>
   )
 }
 
@@ -343,7 +367,7 @@ const styles = StyleSheet.create({
     color: '#080d14',
     fontFamily: 'SFpro-Regular',
     marginLeft: 10,
-    fontSize:16
+    fontSize: 16
   },
   aBtText: {
     color: '#fff',
@@ -369,7 +393,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333',
     fontFamily: 'SFpro-Regular',
-    fontSize:10
+    fontSize: 10
   },
   termsW: {
     position: 'relative',
@@ -378,7 +402,7 @@ const styles = StyleSheet.create({
   terms: {
     color: COLORS.blue,
     fontFamily: 'SFpro-Regular',
-    fontSize:10
+    fontSize: 10
   },
 
   phoneInputWrap: {
@@ -388,9 +412,9 @@ const styles = StyleSheet.create({
     width: '60%',
     alignItems: 'center'
   },
-  lbimg:{
-    width:150,
-    height:200,
-    resizeMode:'contain'
+  lbimg: {
+    width: 150,
+    height: 200,
+    resizeMode: 'contain'
   }
 })

@@ -25,7 +25,7 @@ import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useState} from 'react';
 
 export default function Findconnectionsmodal() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
   return (
     <View style={styles.centeredView}>
       <Modal
@@ -55,23 +55,13 @@ export default function Findconnectionsmodal() {
                     <Text style={styles.learnmoreBtText}>Learn more</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.learnmoreBtWrap}>
+                <TouchableOpacity style={styles.learnmoreBtWrap} onPress={() => setModalVisible(!modalVisible)}>
                     <Text style={styles.learnmoreBtText}>Ok</Text>
                 </TouchableOpacity>
             </View>
-            {/* <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable> */}
           </View>
         </View>
       </Modal>
-      <Pressable
-        style={[styles.button, styles.buttonOpen]}
-        onPress={() => setModalVisible(true)}>
-        <Text style={styles.textStyle}>Show Modal</Text>
-      </Pressable>
     </View>
   );
 }
