@@ -20,6 +20,7 @@ import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
 import Sidebar from './src/components/Sidebar';
+import Addevent from './src/screens/Addevent';
 import Chatdetails from './src/screens/Chatdetails';
 import Chatnpost from './src/screens/Chatnpost';
 import Creategroup from './src/screens/Creategroup';
@@ -67,7 +68,7 @@ const App = () => {
 
   return (
       <NavigationContainer>
-      <Stack.Navigator initialRouteName="Intro">
+      <Stack.Navigator initialRouteName="Addevent">
         <Stack.Screen options={{headerShown: false}} name="Sidenav" component={Sidebar} />
         <Stack.Screen options={{headerShown: false}} name="Login" component={Login} />
         <Stack.Screen options={{headerShown: false}} name="Intro" component={Intro} />
@@ -78,6 +79,7 @@ const App = () => {
         <Stack.Screen options={{headerShown: false}} name="Chatnpost" component={Chatnpost} />
         <Stack.Screen options={{headerShown: true}} name="Createpost" component={Createpost} />
         <Stack.Screen options={{headerShown: true}} name="Chatdetails" component={Chatdetails} />
+        <Stack.Screen options={{headerShown: true}} name="Addevent" component={Addevent} />
       </Stack.Navigator>
     </NavigationContainer>
   );

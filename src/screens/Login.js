@@ -400,8 +400,9 @@ const styles = StyleSheet.create({
   },
   rememberPassText: {
     color: '#333',
-    marginBottom: 15,
+    //marginBottom: 15,
     fontFamily: 'Lato-Regular',
+    marginLeft:8
 
   },
   forgotPassText: {
@@ -420,11 +421,13 @@ const styles = StyleSheet.create({
     resizeMode: 'contain'
   },
   img: {
-    height: 25,
-    width: 25,
+    height: 22,
+    width: 22,
   },
   btn: {
     flexDirection: 'row',
     marginHorizontal: 5,
+    alignItems:'center',
+    marginBottom:10
   },
 });
