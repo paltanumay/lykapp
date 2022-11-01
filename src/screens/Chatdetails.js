@@ -8,8 +8,8 @@ import {
   ScrollView,
   FlatList,
 } from 'react-native';
-import React, {Component} from 'react';
-import {globalStyles} from '../global/globalStyle';
+import React, { Component, useEffect, useState, useRef } from 'react';
+import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
 import Gmodal from '../shared/Gmodal';
@@ -20,95 +20,133 @@ import Footer from '../components/Footer';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-community/async-storage';
+import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import axios from 'axios';
+import { socket } from './Chatlist';
 
-export default class Chatdetails extends Component {
-  render() {
-    return (
-      <>
-<Gmodal/>
+const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
+export const CHAT_LOG = `${API_URL}/gtsngchtmsgs`;
+const CHAT_LOG_SHORT = "5S2rYn";
+export const TEMP_ID_PREFIX = "9xxxxxxxxxxxxxxxxxxxxxxx";
+const offset = 0, limit = 25;
 
-      <View style={globalStyles.innerPagesContainerWhite}>
+export default function Chatdetails({ route }) {
+  global.lastDate = 0;
+  const scrollRef = useRef();
+  const [user, setUser] = useState();
+  const [logs, setLogs] = useState([]);
+  const [sentMsg, setSentMsg] = useState();
+  const [refresh, setRefresh] = useState();
+  const sendMsg = () => {
+    console.log(route.params.chatId + user.userId + route.params.toUserId + sentMsg)
+    let params = {
+      "type": "single_chat_msg_sent",
+      "chatId": route.params.chatId,
+      "tempId": TEMP_ID_PREFIX + new Date().getTime(),
+      "myName": user.firstName,
+      "chatType": "solo",
+      "userId": user.userId,
+      "toUserId": route.params.toUserId,
+      "msgText": sentMsg,
+      "msgTalk": "",
+      "imageUrl": "",
+      "videoUrl": "",
+      "placeName": "",
+      "msgTime": new Date().getTime(),
+      "lat": "",
+      "lng": "",
+      "isReply": false,
+      "isDisappearing": false,
+      "enc": true,
+    }
+    socket.emit('singleChatMessage', params);
+    setRefresh(true);
+  }
+  useEffect(() => {
+    async function getLogs() {
+      let userDetails = await AsyncStorage.getItem('userId');
+      userDetails = JSON.parse(userDetails);
+      setUser(userDetails);
+      let token = await AsyncStorage.getItem("token") + "-" + CHAT_LOG_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
+      axios.post(CHAT_LOG, {
+        "userId": getEncUserId(userDetails.userId),
+        "chatId": route.params.chatId,
+        "limit": limit,
+        "offset": offset,
+      }, {
+        headers: {
+          token: token
+        }
+      }).then(res => {
+        setLogs(res.data.response.messages)
+      }, err => {
+        alert(err + userDetails.userId + token)
+      }
+      )
+    }
+    getLogs()
+  }, [refresh])
+  return (
+    <>
+      <Gmodal />
+
+      <ScrollView ref={scrollRef} style={globalStyles.innerPagesContainerWhite} onContentSizeChange={() => scrollRef.current.scrollToEnd()}>
         <View style={styles.chatBody}>
-          <View style={styles.chatDateTop}>
-            <Text style={styles.chatDateTopText}>July 15, 2022</Text>
-          </View>
-          <View style={styles.chatDetails}>
-            <View style={styles.chatL}>
-              <View style={styles.chatLImg}>
-                <Image
-                  resizeMode="cover"
-                  source={require('../assets/images/avatar.jpg')}
-                  style={[styles.chatLImgM]}
-                />
-              </View>
+          {logs && logs.reverse().map((ele, i) => (
+            <View key={i}>
+              {(() => {
+                if (new Date(lastDate).getDate() == new Date(ele.msgTime).getDate()) return null;
+                else {
+                  lastDate = ele.msgTime;
+                  return (<View style={styles.chatDateTop}>
+                    <Text style={styles.chatDateTopText}>{new Date(ele.msgTime).toDateString()}</Text>
+                  </View>)
+                }
+              })()}
 
-              <View style={styles.chatInfo}>
-                <Text style={styles.chatInfoTitle}>
-                  Proin eget tortor risus. Cras ultricies ligula
-                </Text>
+              <View style={styles.chatDetails}>
 
-                <Text style={styles.chatInfoTime}>11:07 am</Text>
-              </View>
-            </View>
+                {ele.userId === user.userId ?
+                  <View style={styles.chatR}>
+                    <View style={[styles.chatInfoR]}>
+                      <Text style={styles.chatInfoTxitle}>{ele.msgText}</Text>
 
-            <View style={styles.chatR}>
-              <View style={[styles.chatInfoR]}>
-                <Text style={styles.chatInfoTitle}>Proin eget tortor</Text>
+                      <Text style={styles.chatInfoTime}>{new Date(ele.msgTime).toLocaleTimeString()}</Text>
+                    </View>
+                    <View style={styles.chatLImgMain}>
+                      <View style={styles.chatLImg}>
+                        <Image
+                          resizeMode="cover"
+                          source={require('../assets/images/music.webp')}
+                          style={[styles.chatLImgM]}
+                        />
+                      </View>
 
-                <Text style={styles.chatInfoTime}>11:07 am</Text>
-              </View>
-              <View style={styles.chatLImgMain}>
-                <View style={styles.chatLImg}>
-                  <Image
-                    resizeMode="cover"
-                    source={require('../assets/images/music.webp')}
-                    style={[styles.chatLImgM]}
-                  />
-                </View>
+                      <IonIcon name={ele.seen || ele.delivered ? "checkmark-done" : "checkmark-outline"} size={22} color={ele.seen ? COLORS.blue : null} />
+                    </View>
+                  </View>
 
-                <IonIcon name="checkmark-done" size={22} color={COLORS.blue} />
-              </View>
-            </View>
+                  : <View style={styles.chatL}>
+                    <View style={styles.chatLImg}>
+                      <Image
+                        resizeMode="cover"
+                        source={require('../assets/images/avatar.jpg')}
+                        style={[styles.chatLImgM]}
+                      />
+                    </View>
 
-            <View style={styles.chatL}>
-              <View style={styles.chatLImg}>
-                <Image
-                  resizeMode="cover"
-                  source={require('../assets/images/avatar.jpg')}
-                  style={[styles.chatLImgM]}
-                />
-              </View>
+                    <View style={styles.chatInfo}>
+                      <Text style={styles.chatInfoTitle}>
+                        {ele.msgText}
+                      </Text>
 
-              <View style={styles.chatInfo}>
-                <Text style={styles.chatInfoTitle}>Posuere !!</Text>
-
-                <Text style={styles.chatInfoTime}>11:07 am</Text>
-              </View>
-            </View>
-
-            <View style={styles.chatR}>
-              <View style={[styles.chatInfoR]}>
-                <Text style={styles.chatInfoTitle}>
-                  Nulla quis lorem ut libero malesuada feugiat. Quisque velit
-                  nisi, pretium ut lacinia in, elementum id enim.
-                </Text>
-
-                <Text style={styles.chatInfoTime}>11:07 am</Text>
-              </View>
-
-              <View style={styles.chatLImgMain}>
-              <View style={styles.chatLImg}>
-                <Image
-                  resizeMode="cover"
-                  source={require('../assets/images/music.webp')}
-                  style={[styles.chatLImgM]}
-                />
-              </View>
-              <IonIcon name="checkmark-done" size={22} color={COLORS.blue} />
+                      <Text style={styles.chatInfoTime}>{new Date(ele.msgTime).toLocaleTimeString()}</Text>
+                    </View>
+                  </View>}
 
               </View>
-            </View>
-          </View>
+            </View>))}
         </View>
 
         <View style={styles.chatTypeBox}>
@@ -128,20 +166,20 @@ export default class Chatdetails extends Component {
               underlineColorAndroid="transparent"
               multiline={true}
               numberOfLines={10}
+              onChangeText={(e) => setSentMsg(e)}
             />
 
             <TouchableOpacity style={styles.chatTypeTool}>
               <MatIcon name="incognito" size={27} color="#8e8f91" />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.chatSendBt}>
+          <TouchableOpacity style={styles.chatSendBt} onPress={sendMsg}>
             <IonIcon name="send" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
-      </View>
-      </>
-    );
-  }
+      </ScrollView>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
