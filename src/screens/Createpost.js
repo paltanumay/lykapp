@@ -14,28 +14,70 @@ import FIcon from 'react-native-vector-icons/Feather';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
+import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const UPLOAD_IMG = `${API_URL}/Chatpost/uploadImage`;
+export const NEW_POST = `${API_URL}/Postchat/createNewPost`;
+export const CREATE_NEW_POST_SHORT = "cetNwot";
 
-export default function Createpost() {
-  const [photos, setPhotos] = useState();
+export default function Createpost({ navigation }) {
+  const [post, setPost] = useState();
   const [progress, setProgress] = useState(0);
   const uploadProgress = (ProgressEvent) => {
     console.log(ProgressEvent.total);
   };
+  const createNewPost = async () => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token = await AsyncStorage.getItem("token") + "-" + CREATE_NEW_POST_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
+    axios.post(NEW_POST,{
+      "userId": getEncUserId(userDetails.userId),
+      "title": post.title,
+      "myName": userDetails.firstName,
+      "selectionType": 1,
+      "url": "", 
+      "imageUrl": post.imageUrl,
+      "videoUrl": post.videoUrl,
+      "placeName": "",
+      "postLat": "",
+      "postLng": "",
+      "currentLat": "",
+      "currentLng": "",
+      "categoryName": "",
+      "categoryIcon": "",
+      "address": "",
+      //"userList": userList,
+      //"continent": continent,
+      "country": userDetails.countryName,
+      "city": userDetails.mmCity,
+      "state": userDetails.mmState,
+      "deviceType": "android",
+    },{
+      headers:{
+        token: token
+      }
+    }).then(res=>{
+      console.log(JSON.stringify(res.data))
+      //navigation.push('Sidenav')
+    })
+  };
   const uploadFile = (file) => {
     let formdata = new FormData();
-    formdata.append('file', file);
-    formdata.append('name', 'userImage');
-    formdata.append('filename', file.fileName);
+    formdata.append('image', {
+      name: "image",
+      type: file.type,
+      uri: file.uri
+    });
     axios.post(UPLOAD_IMG, formdata, {
       headers: {
-        "Content-Type": "multipart/form-data; boundary=---------------------------boundary"
+        "Content-Type": "multipart/form-data"
       },
       onUploadProgress: uploadProgress
     }).then(res => {
-      console.log(res)
+      alert(JSON.stringify(res.data.response.imageUrl ))
+      setPost(post=>{return {...post, imageUrl: res.data.response.imageUrl}})
     }, err => {
       console.log(err)
     })
@@ -82,7 +124,7 @@ export default function Createpost() {
       } else {
         let source = res;
         console.log('response', JSON.stringify(res));
-        uploadFile(res);
+        uploadFile(res.assets[0]);
       }
     });
   };
@@ -105,6 +147,7 @@ export default function Createpost() {
       } else {
         const source = { uri: res.uri };
         console.log('response', JSON.stringify(res));
+        uploadFile(res.assets[0]);
       }
     });
   };
@@ -132,6 +175,7 @@ export default function Createpost() {
             underlineColorAndroid="transparent"
             multiline={true}
             numberOfLines={10}
+            onChangeText={(e)=>setPost(post=>{return {...post, title: e}})}
           />
         </View>
       </View>
@@ -175,6 +219,9 @@ export default function Createpost() {
           </TouchableOpacity>
           <TouchableOpacity style={styles.morePostToolsItem}>
             <Text style={styles.goLiveText}>Go Live</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.chatSendBt} onPress={createNewPost}>
+            <IonIcon name="send" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
       </View>
@@ -254,5 +301,13 @@ const styles = StyleSheet.create({
     fontFamily: 'SFpro-Bold',
     textTransform: 'uppercase'
 
-  }
+  },
+  chatSendBt: {
+    width: 40,
+    height: 40,
+    borderRadius: 100,
+    backgroundColor: COLORS.blue,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
