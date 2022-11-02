@@ -17,12 +17,16 @@ import Home from '../screens/Home';
 import COLORS from '../global/globalColors';
 import FIcon from 'react-native-vector-icons/Feather';
 import IonIcon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-community/async-storage';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import Chatnpost from '../screens/Chatnpost';
 
-function NotificationsScreen({navigation}) {
+function NotificationsScreen({ navigation }) {
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Button
-        style={{color: '#fff'}}
+        style={{ color: '#fff' }}
         onPress={() => navigation.goBack()}
         title="Go back home"
       />
@@ -30,77 +34,81 @@ function NotificationsScreen({navigation}) {
   );
 }
 
-function EventCalendarScreen({navigation}) {
+function EventCalendarScreen({ navigation }) {
   return (
     <>
-      <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
 
-function LykWalletScreen({navigation}) {
+function LykWalletScreen({ navigation }) {
   return (
     <>
-       <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
 
-function BussinessScreen({navigation}) {
+function BussinessScreen({ navigation }) {
   return (
     <>
-       <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
 
-function FbussinessScreen({navigation}) {
+function FbussinessScreen({ navigation }) {
   return (
     <>
-        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
 
-function MyReferarral({navigation}) {
+function MyReferarral({ navigation }) {
   return (
     <>
-        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
-function Promotions({navigation}) {
+function Promotions({ navigation }) {
   return (
     <>
-        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
-function Settings({navigation}) {
+function Settings({ navigation }) {
   return (
     <>
-        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
-function Logout({navigation}) {
+function Logout({ navigation }) {
+  useEffect(() => {
+    AsyncStorage.clear();
+    navigation.push('Intro');
+  }, [])
   return (
     <>
-     <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
         <Text>Work in progress..</Text>
       </View>
     </>
@@ -110,6 +118,12 @@ function Logout({navigation}) {
 const Drawer = createDrawerNavigator();
 
 const CustomDrawer = props => {
+  const [user, setUser] = useState();
+  useEffect(() => {
+    const getUserDetails = async () => setUser(JSON.parse(await AsyncStorage.getItem('userId')));
+    getUserDetails();
+  }, [])
+
   return (
     <DrawerContentScrollView>
       <TouchableOpacity style={styles.navProfile}>
@@ -120,7 +134,7 @@ const CustomDrawer = props => {
             style={[styles.avatarImg]}
           />
         </View>
-        <Text style={styles.avatarText}>Ayan pramanik</Text>
+        <Text style={styles.avatarText}>{user && user.firstName}</Text>
       </TouchableOpacity>
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
@@ -140,7 +154,7 @@ export default function Sidebar() {
           backgroundColor: COLORS.blue,
           width: 290,
         },
-        headerStyle: {backgroundColor: COLORS.blue},
+        headerStyle: { backgroundColor: COLORS.blue },
         headerTitleAlign: 'center',
         headerTintColor: '#fff',
         headerTitle: () => (
@@ -170,7 +184,7 @@ export default function Sidebar() {
           labelStyle: {
             color: 'red',
           },
-          drawerIcon: ({focused, size}) => (
+          drawerIcon: ({ focused, size }) => (
             <IonIcon
               name="home-outline"
               size={size}
@@ -179,7 +193,15 @@ export default function Sidebar() {
           ),
         }}
       />
-      {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} /> */}
+      <Drawer.Screen
+       name="Chatnpost" 
+       component={Chatnpost}
+       options={{
+        drawerItemStyle:{
+          display: 'none'
+        }
+       }} 
+      />
 
       <Drawer.Screen
         name="Event Calendar"
@@ -191,7 +213,7 @@ export default function Sidebar() {
           labelStyle: {
             color: 'red',
           },
-          drawerIcon: ({focused, size}) => (
+          drawerIcon: ({ focused, size }) => (
             <FIcon
               name="calendar"
               size={size}
@@ -208,7 +230,7 @@ export default function Sidebar() {
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
 
-          drawerIcon: ({focused, size}) => (
+          drawerIcon: ({ focused, size }) => (
             <IonIcon
               name="wallet-outline"
               size={size}
@@ -226,7 +248,7 @@ export default function Sidebar() {
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
 
-          drawerIcon: ({focused, size}) => (
+          drawerIcon: ({ focused, size }) => (
             <FIcon
               name="briefcase"
               size={size}
@@ -244,7 +266,7 @@ export default function Sidebar() {
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
 
-          drawerIcon: ({focused, size}) => (
+          drawerIcon: ({ focused, size }) => (
             <FIcon
               name="briefcase"
               size={size}
@@ -262,7 +284,7 @@ export default function Sidebar() {
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
 
-          drawerIcon: ({focused, size}) => (
+          drawerIcon: ({ focused, size }) => (
             <FIcon name="users" size={size} color={focused ? '#fff' : '#fff'} />
           ),
         }}
@@ -276,7 +298,7 @@ export default function Sidebar() {
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
 
-          drawerIcon: ({focused, size}) => (
+          drawerIcon: ({ focused, size }) => (
             <FIcon
               name="volume-2"
               size={size}
@@ -294,7 +316,7 @@ export default function Sidebar() {
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
 
-          drawerIcon: ({focused, size}) => (
+          drawerIcon: ({ focused, size }) => (
             <IonIcon
               name="ios-settings-outline"
               size={size}
@@ -312,7 +334,7 @@ export default function Sidebar() {
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
 
-          drawerIcon: ({focused, size}) => (
+          drawerIcon: ({ focused, size }) => (
             <FIcon
               name="log-out"
               size={size}

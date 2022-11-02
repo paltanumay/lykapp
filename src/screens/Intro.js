@@ -16,14 +16,14 @@ const slides = [
   {
     key: 1,
     title: 'Private comments over public posts',
-    text: 'Private comments  give your social network more privacy! Privately comment on public posts',
-    image: require('../assets/images/intro-1.png'),
+    text: 'Private comments give your social network more privacy! Privately comment on public posts',
+    image: require('../assets/images/intro-1.webp'),
     backgroundColor: '#59b2ab',
   },
   {
     key: 2,
     title: 'Private comments over group chat conversation',
-    text: 'Private comments give your social network more privacy! Privately comment on',
+    text: 'Private comments give your social network more privacy! Privately comment on group chat',
     image: require('../assets/images/intro-2.png'),
     backgroundColor: '#febe29',
   },
@@ -72,7 +72,7 @@ export default function Intro({ navigation }) {
                 <LinearGradient
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  colors={['#037ee5', '#15a2e0', '#28cad9']}
+                  colors={['#0a89e2', '#17A8DD', '#27cbd8']}
                   style={globalStyles.linearGradient}>
                   <Text style={globalStyles.buttonText}> Sign Up</Text>
                 </LinearGradient>
@@ -81,7 +81,7 @@ export default function Intro({ navigation }) {
                 <LinearGradient
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  colors={['#037ee5', '#15a2e0', '#28cad9']}
+                  colors={['#0a89e2', '#17A8DD', '#27cbd8']}
                   style={globalStyles.linearGradient}>
                   <Text style={globalStyles.buttonText}>Login</Text>
                 </LinearGradient>
@@ -91,9 +91,9 @@ export default function Intro({ navigation }) {
                 <LinearGradient
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  colors={['#037ee5', '#15a2e0', '#28cad9']}
+                  colors={['#0a89e2', '#17A8DD', '#27cbd8']}
                   style={globalStyles.linearGradient}>
-                  <Text style={globalStyles.buttonText}>Skip sign up</Text>
+                  <Text style={globalStyles.buttonText}>Skip Sign Up</Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>
@@ -117,20 +117,22 @@ const styles = StyleSheet.create({
   slideBox: {
     textAlign: 'center',
     alignItems: 'center',
-    paddingTop: 35
+    paddingTop: 35,
+    paddingHorizontal:25
   },
   slideMainText: {
-    fontSize: 40,
+    fontSize: 29,
     textAlign: 'center',
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'SFpro-Bold',
     color: COLORS.blue,
   },
   slideSecText: {
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 14,
     textAlign: 'center',
-    fontFamily: 'Lato-regular',
+    fontFamily: 'SFpro-Regular',
     color: COLORS.blue,
+    marginTop:15
   },
   btWraps: {
     alignItems: 'center',

@@ -10,6 +10,8 @@ import {
 import React, { useEffect, useState } from 'react';
 import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
+import Findconnectionsmodal from '../shared/Findconnectionsmodal';
+
 import FIcon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import { Formik } from 'formik';
@@ -17,6 +19,7 @@ import PhoneInput from 'react-native-phone-number-input';
 import axios from 'axios';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
 export const LOGIN_URL = `${API_URL}/SignIn_2_0`;
@@ -24,7 +27,7 @@ export const SOCIAL_LOGIN_URL = `https://api.lykapp.com/lykjwt/index.php?/user/s
 
 export default function Login({ navigation }) {
 
-
+  const [checked, setChecked] = useState(false);
   const [userInfo, setuserInfo] = useState();
   const [loggedIn, setLoggedIn] = useState();
   useEffect(() => {
@@ -65,6 +68,8 @@ export default function Login({ navigation }) {
       setLoggedIn(true);
       setuserInfo(user);
       axios.post(SOCIAL_LOGIN_URL, { email: user.email, socialMedia: 'apple' }).then(res => {
+        AsyncStorage.setItem('userId', JSON.stringify(res.data.response.userDetails));
+        AsyncStorage.setItem('token', res.data.response.token);
         navigation.push('Sidenav');
       }, err => {
         let errors = {};
@@ -84,6 +89,8 @@ export default function Login({ navigation }) {
       setLoggedIn(true);
       setuserInfo(user);
       axios.post(SOCIAL_LOGIN_URL, { email: user.email, identity: user.id, socialMedia: 'googleplus' }).then(res => {
+        AsyncStorage.setItem('userId', JSON.stringify(res.data.response.userDetails));
+        AsyncStorage.setItem('token', res.data.response.token);
         navigation.push('Sidenav');
       }, err => {
         let errors = {};
@@ -145,6 +152,8 @@ export default function Login({ navigation }) {
         onSubmit={(values, { setSubmitting }) => {
           axios.post(LOGIN_URL, { ...values, type: 'mobile' }).then(res => {
             setSubmitting(false);
+            AsyncStorage.setItem('userId', JSON.stringify(res.data.response.userDetails));
+            AsyncStorage.setItem('token', res.data.response.token);
             if (res.data.response.userDetails)
               navigation.push('Sidenav');
             else alert('Sorry, this number is not registered with us. Try login with the correct number or Signup.');
@@ -163,6 +172,7 @@ export default function Login({ navigation }) {
         }) => (
           <ScrollView contentContainerStyle={styles.scView}>
             <Text style={styles.loginText}>Log In</Text>
+            <Findconnectionsmodal />
             <TouchableOpacity style={styles.gBt} onPress={_signIn}>
               <Image
                 style={styles.gBtIcon}
@@ -212,27 +222,18 @@ export default function Login({ navigation }) {
             </View>
 
             <TouchableOpacity>
-              {/* <View style={styles.radioMainWrap}>
-                {this.state.radioBtnsData.map((data, key) => {
-                  return (
-                    <View key={key}>
-                      {this.state.checked == key ?
-                        <TouchableOpacity style={styles.btn}>
-                          <Image style={styles.img} source={require("../assets/images/rb_unselected.png")} />
-                          <Text>{data}</Text>
-                        </TouchableOpacity>
-                        :
-                        <TouchableOpacity onPress={() => { this.setState({ checked: key }) }} style={styles.btn}>
-                          <Image style={styles.img} source={require("../assets/images/rb_selected.png")} />
-                          <Text>{data}</Text>
-                        </TouchableOpacity>
-                      }
-                    </View>
-                  )
-                })}
-              </View> */}
-
-              <Text style={styles.rememberPassText}>Remember Password</Text></TouchableOpacity>
+              <View style={styles.radioMainWrap}>
+                <View>
+                  <TouchableOpacity style={styles.btn} onPress={() => setChecked(!checked)}>
+                    <Image
+                      style={styles.img}
+                      source={checked ? require("../assets/images/rb_unselected.png") : require("../assets/images/rb_selected.png")}
+                    />
+                    <Text style={styles.rememberPassText}>Remember Password</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableOpacity>
 
             <TouchableOpacity style={globalStyles.gradBt} onPress={handleSubmit} disabled={isSubmitting}>
               <LinearGradient
@@ -244,7 +245,7 @@ export default function Login({ navigation }) {
               </LinearGradient>
             </TouchableOpacity>
 
-            <TouchableOpacity><Text style={styles.forgotPassText}>Forgot Password</Text></TouchableOpacity>
+            <TouchableOpacity><Text style={styles.forgotPassText} onPress={() => this.setModalVisible(true)}>Forgot Password</Text></TouchableOpacity>
 
             <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('SignUp')}>
               <LinearGradient
@@ -310,8 +311,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: 'center',
     color: '#333',
-    fontFamily: 'Lato-Bold',
-    fontSize: 25,
+    fontFamily: 'SFpro-Bold',
+    fontSize: 29,
     color: COLORS.blue,
     marginBottom: 25,
   },
@@ -320,9 +321,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf2fe',
     borderWidth: 1,
     borderColor: '#488bb4',
-    width: '55%',
+    width: 260,
     borderRadius: 100,
-    height: 45,
+    height: 47,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -333,32 +334,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#434343',
     borderWidth: 1,
     borderColor: '#434343',
-    width: '55%',
+    width: 260,
     borderRadius: 100,
-    height: 45,
+    height: 47,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
   },
   gBtIcon: {
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
   },
   gBtText: {
     color: '#080d14',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     marginLeft: 10,
+    fontSize: 16
   },
   aBtText: {
     color: '#fff',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     marginLeft: 10,
   },
   orText: {
     textTransform: 'uppercase',
     textAlign: 'center',
     color: '#080d14',
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'SFpro-Bold',
     marginVertical: 25,
   },
   Iagree: {
@@ -372,7 +374,8 @@ const styles = StyleSheet.create({
   IagreeText: {
     textAlign: 'center',
     color: '#333',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
+    fontSize: 10
   },
   termsW: {
     position: 'relative',
@@ -380,6 +383,8 @@ const styles = StyleSheet.create({
   },
   terms: {
     color: COLORS.blue,
+    fontFamily: 'SFpro-Regular',
+    fontSize: 10
   },
 
   phoneInputWrap: {
@@ -395,8 +400,9 @@ const styles = StyleSheet.create({
   },
   rememberPassText: {
     color: '#333',
-    marginBottom: 15,
+    //marginBottom: 15,
     fontFamily: 'Lato-Regular',
+    marginLeft:8
 
   },
   forgotPassText: {
@@ -408,5 +414,20 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 14,
     fontFamily: 'Lato-Regular',
-  }
+  },
+  lbimg: {
+    width: 150,
+    height: 200,
+    resizeMode: 'contain'
+  },
+  img: {
+    height: 22,
+    width: 22,
+  },
+  btn: {
+    flexDirection: 'row',
+    marginHorizontal: 5,
+    alignItems:'center',
+    marginBottom:10
+  },
 });

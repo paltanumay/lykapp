@@ -7,52 +7,94 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import React, { Component } from 'react';
+import React from 'react';
 import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
-import Header from '../components/Header';
 
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import EnIcon from 'react-native-vector-icons/Entypo';
 import Footer from '../components/Footer';
+import { useEffect } from 'react';
+import axios from 'axios';
+import AsyncStorage from '@react-native-community/async-storage';
+import { useState } from 'react';
+import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 
-export default class Home extends Component {
-  render() {
-    return (
-      <>
-        <View style={globalStyles.innerPagesContainer}>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}>
-            <View style={styles.blueBar}></View>
-            <View style={styles.postInvitedNetwork}>
-              <TouchableOpacity>
-                <Image
-                  resizeMode="contain"
-                  source={require('../assets/images/create-post.png')}
-                  style={[styles.postImg]}
-                />
-              </TouchableOpacity>
+const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
+export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
+const HOME_FEED_SHORT = "gttmln";
+const offset = 0, limit = 25, feedPosition = -1, oddOffset = 0, evenOffset = 0, isStatic = 0, isEven = 0, birthdayStartPosition = 0, size = 0;
+const pId = null, activityFriendOffsetCount = "0", nextPostId = "0", promoId = "0", nextNewsId = "0", postStatus = "0";
+export default function Home({ navigation }) {
+  const [feeds, setFeeds] = useState([]);
+  useEffect(() => {
+    async function getHomeFeed() {
+      let userDetails = await AsyncStorage.getItem('userId');
+      userDetails = JSON.parse(userDetails);
+      let token = await AsyncStorage.getItem("token") + "-" + HOME_FEED_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
+      axios.post(HOME_FEED, {
+        "userId": getEncUserId(userDetails.userId),
+        "limit": limit,
+        "country": userDetails.countryName,
+        "offset": offset,
+        "nextPostId": nextPostId,
+        "pId": pId,
+        "promoId": promoId,
+        "deviceType": "android",
+        "apiVersion": 2,
+        "nextNewsId": nextNewsId,
+        "postStatus": postStatus,
+        "activityFriendOffsetCount": activityFriendOffsetCount,
+      }, {
+        headers: {
+          token: token
+        }
+      }).then(res => {
+        //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
+        setFeeds(res.data.response.feeds)
+      }, err => {
+        alert(err + userDetails.userId + token)
+      }
+      )
+    }
+    getHomeFeed()
+  }, [])
+  return (
+    <>
+      <View style={globalStyles.innerPagesContainer}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}>
+          <View style={styles.blueBar}></View>
+          <View style={styles.postInvitedNetwork}>
+            <TouchableOpacity>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/create-post.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
 
-              <TouchableOpacity>
-                <Image
-                  resizeMode="contain"
-                  source={require('../assets/images/invited.png')}
-                  style={[styles.postImg]}
-                />
-              </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/invited.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
 
-              <TouchableOpacity>
-                <Image
-                  resizeMode="contain"
-                  source={require('../assets/images/grow-network.png')}
-                  style={[styles.postImg]}
-                />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/grow-network.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
+          </View>
 
-            <View style={styles.newsCardsWrap}>
-              <View style={styles.newsCard}>
+          <View style={styles.newsCardsWrap}>
+            {feeds.map(({ type, details }) => type === 'news' ? (
+              <View style={styles.newsCard} key={details.newsId}>
                 <View style={styles.cardTitle}>
                   <View style={styles.cardProImg}>
                     <Image
@@ -63,7 +105,7 @@ export default class Home extends Component {
                   </View>
                   <View style={styles.newstext}>
                     <Text style={styles.newsTitletext}>News & Stories</Text>
-                    <Text style={styles.newsSubTitletext}>5 mins ago</Text>
+                    <Text style={styles.newsSubTitletext}>{new Date(details.feedTime.split(' ')[0]).toDateString() +' at '+ details.feedTime.split(' ')[1]}</Text>
                   </View>
                   <TouchableOpacity style={styles.options}>
                     <EnIcon
@@ -75,33 +117,30 @@ export default class Home extends Component {
                 </View>
 
                 <Text style={styles.mainDesc}>
-                  Does controversy sell movie tickets? The cast of 'Don't Worry
-                  Darling' might find out
+                  {details.newsTitle}
                 </Text>
 
                 <View style={styles.newsCoverImg}>
                   <Image
                     resizeMode="stretch"
-                    source={require('../assets/images/news.webp')}
+                    source={{
+                      uri: details.newsImageUrl
+                    }}
                     style={[styles.postImg]}
                   />
                 </View>
                 <Text style={styles.secDesc}>
-                  Gemma Chan (from left), Harry Styles, Sydney Chandler,
-                  director Olivia Wilde, Chris Pine, Florence Pugh and Nick
-                  Kroll pose for photographers upon arrival at the premiere of
-                  the film 'Don't Worry Darling' during the 79th edition of the
-                  Venice Film Festival.
+                  {details.newsDescription}
                 </Text>
 
                 <View style={styles.likeCommentShare}>
                   <View style={styles.likeCommentShareBox}>
                     <View style={styles.likeCommentShareIconWrap}>
                       <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="like2" size={22} color="#9c9d9f" />
+                        <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
                       </TouchableOpacity>
 
-                      <Text style={styles.iconText}>0 Like</Text>
+                      <Text style={styles.iconText}>{details.likeCount} Like</Text>
                     </View>
                   </View>
 
@@ -111,7 +150,7 @@ export default class Home extends Component {
                         <AntIcon name="message1" size={22} color="#c1cb99" />
                       </TouchableOpacity>
 
-                      <Text style={styles.iconText}>0 Like</Text>
+                      <Text style={styles.iconText}>{details.commentCount} Comment</Text>
                     </View>
                   </View>
 
@@ -121,7 +160,7 @@ export default class Home extends Component {
                         <AntIcon name="sharealt" size={22} color="#f8767a" />
                       </TouchableOpacity>
 
-                      <Text style={styles.iconText}>0 Like</Text>
+                      <Text style={styles.iconText}>{details.shareCount} Share</Text>
                     </View>
                   </View>
                 </View>
@@ -147,205 +186,111 @@ export default class Home extends Component {
                   </View>
                 </View>
               </View>
-
-              <View style={styles.newsCard}>
-                <View style={styles.cardTitle}>
-                  <View style={styles.cardProImg}>
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/logo.png')}
-                      style={[styles.logoImg]}
-                    />
-                  </View>
-                  <View style={styles.newstext}>
-                    <Text style={styles.newsTitletext}>News & Stories</Text>
-                    <Text style={styles.newsSubTitletext}>5 mins ago</Text>
-                  </View>
-                  <TouchableOpacity style={styles.options}>
-                    <EnIcon
-                      name="dots-three-horizontal"
-                      size={25}
-                      color="#333"
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                <Text style={styles.mainDesc}>
-                  Does controversy sell movie tickets? The cast of 'Don't Worry
-                  Darling' might find out
-                </Text>
-
-                <View style={styles.newsCoverImg}>
-                  <Image
-                    resizeMode="stretch"
-                    source={require('../assets/images/news.webp')}
-                    style={[styles.postImg]}
-                  />
-                </View>
-                <Text style={styles.secDesc}>
-                  Gemma Chan (from left), Harry Styles, Sydney Chandler,
-                  director Olivia Wilde, Chris Pine, Florence Pugh and Nick
-                  Kroll pose for photographers upon arrival at the premiere of
-                  the film 'Don't Worry Darling' during the 79th edition of the
-                  Venice Film Festival.
-                </Text>
-
-                <View style={styles.likeCommentShare}>
-                  <View style={styles.likeCommentShareBox}>
-                    <View style={styles.likeCommentShareIconWrap}>
-                      <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="like2" size={22} color="#9c9d9f" />
-                      </TouchableOpacity>
-
-                      <Text style={styles.iconText}>0 Like</Text>
+            ) :
+              type === 'post' && (
+                <View style={styles.newsCard} key={details.postId}>
+                  <View style={styles.cardTitle}>
+                    <View style={styles.cardProImg}>
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/avatar.jpg')}
+                        style={[styles.logoImg]}
+                      />
                     </View>
-                  </View>
-
-                  <View style={styles.likeCommentShareBox}>
-                    <View style={styles.likeCommentShareIconWrap}>
-                      <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="message1" size={22} color="#c1cb99" />
-                      </TouchableOpacity>
-
-                      <Text style={styles.iconText}>0 Like</Text>
+                    <View style={styles.newstext}>
+                      <Text style={styles.newsTitletext}>{details.createdBy.firstName}</Text>
+                      <Text style={styles.newsSubTitletext}>{new Date(details.createdOn.split(' ')[0]).toDateString() +' at '+ details.createdOn.split(' ')[1]}</Text>
                     </View>
+                    <TouchableOpacity style={styles.options}>
+                      <EnIcon
+                        name="dots-three-horizontal"
+                        size={25}
+                        color="#333"
+                      />
+                    </TouchableOpacity>
                   </View>
 
-                  <View style={styles.likeCommentShareBox}>
-                    <View style={styles.likeCommentShareIconWrap}>
-                      <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="sharealt" size={22} color="#f8767a" />
-                      </TouchableOpacity>
+                  {/* <Text style={styles.mainDesc}>
+                  {details.title}
+                </Text> */}
 
-                      <Text style={styles.iconText}>0 Like</Text>
-                    </View>
-                  </View>
-                </View>
-
-                <View style={styles.addCommentWrap}>
-                  <View style={styles.addCommentImgWrap}>
+                  <View style={styles.newsCoverImg}>
                     <Image
                       resizeMode="stretch"
-                      source={require('../assets/images/avatar.jpg')}
-                      style={[styles.addCommentImg]}
+                      source={{
+                        uri: 'https://cdn.lykapp.com/newsImages/images/' + details.imageUrl
+                      }}
+                      style={[styles.postImg]}
                     />
                   </View>
-                  <View style={styles.addCommentField}>
-                    <TextInput
-                      placeholderTextColor="#AFAFAF"
-                      style={styles.input}
-                      placeholder="Add comment"
-                      textContentType="username"
-                      underlineColorAndroid="transparent"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                    />
-                  </View>
-                </View>
-              </View>
-              <View style={styles.newsCard}>
-                <View style={styles.cardTitle}>
-                  <View style={styles.cardProImg}>
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/logo.png')}
-                      style={[styles.logoImg]}
-                    />
-                  </View>
-                  <View style={styles.newstext}>
-                    <Text style={styles.newsTitletext}>News & Stories</Text>
-                    <Text style={styles.newsSubTitletext}>5 mins ago</Text>
-                  </View>
-                  <TouchableOpacity style={styles.options}>
-                    <EnIcon
-                      name="dots-three-horizontal"
-                      size={25}
-                      color="#333"
-                    />
-                  </TouchableOpacity>
-                </View>
+                  <Text style={styles.secDesc}>
+                    {details.title}
+                  </Text>
 
-                <Text style={styles.mainDesc}>
-                  Does controversy sell movie tickets? The cast of 'Don't Worry
-                  Darling' might find out
-                </Text>
+                  <View style={styles.likeCommentShare}>
+                    <View style={styles.likeCommentShareBox}>
+                      <View style={styles.likeCommentShareIconWrap}>
+                        <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
+                        </TouchableOpacity>
 
-                <View style={styles.newsCoverImg}>
-                  <Image
-                    resizeMode="stretch"
-                    source={require('../assets/images/news.webp')}
-                    style={[styles.postImg]}
-                  />
-                </View>
-                <Text style={styles.secDesc}>
-                  Gemma Chan (from left), Harry Styles, Sydney Chandler,
-                  director Olivia Wilde, Chris Pine, Florence Pugh and Nick
-                  Kroll pose for photographers upon arrival at the premiere of
-                  the film 'Don't Worry Darling' during the 79th edition of the
-                  Venice Film Festival.
-                </Text>
+                        <Text style={styles.iconText}>{details.likeCount} Like</Text>
+                      </View>
+                    </View>
 
-                <View style={styles.likeCommentShare}>
-                  <View style={styles.likeCommentShareBox}>
-                    <View style={styles.likeCommentShareIconWrap}>
-                      <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="like2" size={22} color="#9c9d9f" />
-                      </TouchableOpacity>
+                    <View style={styles.likeCommentShareBox}>
+                      <View style={styles.likeCommentShareIconWrap}>
+                        <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name="message1" size={22} color="#c1cb99" />
+                        </TouchableOpacity>
 
-                      <Text style={styles.iconText}>0 Like</Text>
+                        <Text style={styles.iconText}>{details.commentCount} Comment</Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.likeCommentShareBox}>
+                      <View style={styles.likeCommentShareIconWrap}>
+                        <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name="sharealt" size={22} color="#f8767a" />
+                        </TouchableOpacity>
+
+                        <Text style={styles.iconText}>{details.shareCount} Share</Text>
+                      </View>
                     </View>
                   </View>
 
-                  <View style={styles.likeCommentShareBox}>
-                    <View style={styles.likeCommentShareIconWrap}>
-                      <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="message1" size={22} color="#c1cb99" />
-                      </TouchableOpacity>
-
-                      <Text style={styles.iconText}>0 Like</Text>
+                  <View style={styles.addCommentWrap}>
+                    <View style={styles.addCommentImgWrap}>
+                      <Image
+                        resizeMode="stretch"
+                        source={require('../assets/images/avatar.jpg')}
+                        style={[styles.addCommentImg]}
+                      />
                     </View>
-                  </View>
-
-                  <View style={styles.likeCommentShareBox}>
-                    <View style={styles.likeCommentShareIconWrap}>
-                      <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="sharealt" size={22} color="#f8767a" />
-                      </TouchableOpacity>
-
-                      <Text style={styles.iconText}>0 Like</Text>
+                    <View style={styles.addCommentField}>
+                      <TextInput
+                        placeholderTextColor="#AFAFAF"
+                        style={styles.input}
+                        placeholder="Add comment"
+                        textContentType="username"
+                        underlineColorAndroid="transparent"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                      />
                     </View>
                   </View>
                 </View>
+              )
+            )}
 
-                <View style={styles.addCommentWrap}>
-                  <View style={styles.addCommentImgWrap}>
-                    <Image
-                      resizeMode="stretch"
-                      source={require('../assets/images/avatar.jpg')}
-                      style={[styles.addCommentImg]}
-                    />
-                  </View>
-                  <View style={styles.addCommentField}>
-                    <TextInput
-                      placeholderTextColor="#AFAFAF"
-                      style={styles.input}
-                      placeholder="Add comment"
-                      textContentType="username"
-                      underlineColorAndroid="transparent"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                    />
-                  </View>
-                </View>
-              </View>
-            </View>
-          </ScrollView>
-        </View>
-        <Footer />
 
-      </>
-    );
-  }
+          </View>
+        </ScrollView>
+      </View>
+      <Footer navigation={navigation} />
+
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
