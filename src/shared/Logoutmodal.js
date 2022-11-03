@@ -27,7 +27,7 @@ export default function Logoutmodal() {
                 />
             </View>
             <Text style={styles.name}>Curabitur non</Text>
-            <Text style={styles.msg}>Are you sure you want to sign out</Text>
+            <Text style={styles.msg}>Are you sure you want to sign out?</Text>
 
             <TouchableOpacity style={globalStyles.gradBt}  onPress={() => setModalVisible(!modalVisible)}>
               <LinearGradient
