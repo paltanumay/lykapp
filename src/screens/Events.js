@@ -26,7 +26,7 @@ const OTHER_USER_EVENT_SHORT = "ohrvns";
 export default function Events() {
   global.lastDate = 0;
   const navigation = useNavigation();
-  const [tab, setTab] = useState();
+  const [tab, setTab] = useState('my');
   const [myEvents, setMyEvents] = useState();
   async function getMyEvent() {
     let userDetails = await AsyncStorage.getItem('userId');

@@ -14,12 +14,14 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import FIcon from 'react-native-vector-icons/Feather';
 import IonIcon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 
-export default class Footer extends Component {
-  render() {
+export default function Footer() {
+  const [display, setDisplay] = useState(false);
+  const navigation = useNavigation();
     return (
       <>
-        <View style={[styles.menuItemsWrap,{display:'none'}]}>
+        <View style={[styles.menuItemsWrap,{display:display?'flex':'none'}]}>
           <View style={styles.menuItemsInnerWrap}>
             <TouchableOpacity style={styles.menuItems}>
               {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
@@ -42,7 +44,7 @@ export default class Footer extends Component {
               <Text style={[styles.createInnerText]}>Group</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuItems3}>
+            <TouchableOpacity style={styles.menuItems3} onPress={()=>navigation.push('Createpost')}>
               {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
               <View style={styles.iconCont}>
                 <IonIcon name="md-card-outline" size={25} color={COLORS.blue} />
@@ -52,7 +54,7 @@ export default class Footer extends Component {
           </View>
         </View>
         <View style={styles.footer}>
-          <TouchableOpacity style={[styles.footIconBox, {marginRight: 15}]}>
+          <TouchableOpacity style={[styles.footIconBox, {marginRight: 15}]} onPress={()=>navigation.push('Sidenav')} >
             {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
             <IonIcon name="ios-home" size={25} color={COLORS.blue} />
 
@@ -66,7 +68,7 @@ export default class Footer extends Component {
             <Text style={styles.footIconText}>Network</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.footIconBoxCreate}>
+          <TouchableOpacity style={styles.footIconBoxCreate} onPress={()=>setDisplay(!display)} >
             {/* <IonIcon name="ios-people" size={20} color={COLORS.blue} /> */}
 
             <LinearGradient
@@ -93,7 +95,7 @@ export default class Footer extends Component {
 
           <TouchableOpacity
             style={styles.footIconBox}
-            onPress={() => this.props.navigation.navigate('Chatnpost')}>
+            onPress={() => navigation.push('Chatnpost')}>
             {/* <IonIcon name="chatbubbles-sharp" size={20} color={COLORS.blue} /> */}
             <IonIcon name="chatbubbles-outline" size={26} color={COLORS.blue} />
 
@@ -102,7 +104,6 @@ export default class Footer extends Component {
         </View>
       </>
     );
-  }
 }
 
 const styles = StyleSheet.create({
