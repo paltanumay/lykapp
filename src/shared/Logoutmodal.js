@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Alert, Modal, StyleSheet, Text, Pressable, View, Image, TouchableOpacity} from "react-native";
 import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
@@ -9,6 +9,15 @@ import { useNavigation } from "@react-navigation/native";
 export default function Logoutmodal() {
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(true);
+    const [user, setUser] = useState();
+    useEffect(()=>{
+      async function getUser(){
+        let userDetails = await AsyncStorage.getItem('userId');
+        userDetails = JSON.parse(userDetails);
+        setUser(userDetails);
+      }
+      getUser()
+    });
   return (
     <View>
       <View style={styles.centeredView}>
@@ -29,7 +38,7 @@ export default function Logoutmodal() {
                   source={require('../assets/images/avatar.jpg')}
                 />
             </View>
-            <Text style={styles.name}>Curabitur non</Text>
+            <Text style={styles.name}>{user && user.firstName}</Text>
             <Text style={styles.msg}>Are you sure you want to sign out?</Text>
 
             <TouchableOpacity 

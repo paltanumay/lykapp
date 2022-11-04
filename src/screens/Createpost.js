@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   PermissionsAndroid,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import COLORS from '../global/globalColors';
 
 import FIcon from 'react-native-vector-icons/Feather';
@@ -25,14 +25,22 @@ export const CREATE_NEW_POST_SHORT = "cetNwot";
 
 export default function Createpost() {
   const navigation = useNavigation();
+  const [user, setUser] = useState();
   const [post, setPost] = useState();
   const [progress, setProgress] = useState(0);
+  useEffect(()=>{
+    async function getUser(){
+      let userDetails = await AsyncStorage.getItem('userId');
+      userDetails = JSON.parse(userDetails);
+      setUser(userDetails);
+    }
+    getUser()
+  });
   const uploadProgress = (ProgressEvent) => {
     console.log(ProgressEvent.total);
   };
   const createNewPost = async () => {
-    let userDetails = await AsyncStorage.getItem('userId');
-    userDetails = JSON.parse(userDetails);
+    let userDetails = user;
     let token = await AsyncStorage.getItem("token") + "-" + CREATE_NEW_POST_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
     axios.post(NEW_POST,{
       "userId": getEncUserId(userDetails.userId),
@@ -165,7 +173,7 @@ export default function Createpost() {
             />
           </View>
 
-          <Text style={styles.listInfoTitle}>Shubham sarkar</Text>
+          <Text style={styles.listInfoTitle}>{user && user.firstName}</Text>
         </View>
 
         <View style={styles.postBody}>

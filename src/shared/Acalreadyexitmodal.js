@@ -37,7 +37,7 @@ export default function Acalreadyexitmodal() {
                 <View style={[styles.reset1]}>
                   <TouchableOpacity
                     style={styles.modalClose}
-                    onPress={() => this.setModalVisible(!modalVisible)}>
+                    onPress={() => setModalVisible(!modalVisible)}>
                     <IonIcon name="close" size={27} color="#333" />
                   </TouchableOpacity>
 

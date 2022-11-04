@@ -38,7 +38,7 @@ export default function Findconnectionsmodal() {
         }}>
         <View style={styles.centeredViewInner}>
           <View style={styles.modalView}>
-          <TouchableOpacity  style={styles.modalClose} onPress={() => this.setModalVisible(!modalVisible)}>
+          <TouchableOpacity  style={styles.modalClose} onPress={() => setModalVisible(!modalVisible)}>
               <IonIcon name="md-close" size={23} color="#333" />
 
               </TouchableOpacity>
