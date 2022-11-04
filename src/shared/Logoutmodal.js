@@ -3,9 +3,12 @@ import { Alert, Modal, StyleSheet, Text, Pressable, View, Image, TouchableOpacit
 import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from "@react-native-community/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Logoutmodal() {
-    const [modalVisible, setModalVisible] = useState(false);
+    const navigation = useNavigation();
+    const [modalVisible, setModalVisible] = useState(true);
   return (
     <View>
       <View style={styles.centeredView}>
@@ -29,7 +32,13 @@ export default function Logoutmodal() {
             <Text style={styles.name}>Curabitur non</Text>
             <Text style={styles.msg}>Are you sure you want to sign out?</Text>
 
-            <TouchableOpacity style={globalStyles.gradBt}  onPress={() => setModalVisible(!modalVisible)}>
+            <TouchableOpacity 
+              style={globalStyles.gradBt}  
+              onPress={() =>{ 
+                setModalVisible(!modalVisible);
+                AsyncStorage.clear();
+                navigation.push('Intro');
+              }}>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -44,12 +53,6 @@ export default function Logoutmodal() {
           </View>
         </View>
       </Modal>
-      <Pressable
-        style={[styles.button, styles.buttonOpen]}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.textStyle}>Show Modal</Text>
-      </Pressable>
     </View>
     </View>
   )

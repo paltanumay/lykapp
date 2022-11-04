@@ -21,6 +21,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import Chatnpost from '../screens/Chatnpost';
+import Events from '../screens/Events';
+import Logoutmodal from '../shared/Logoutmodal';
 
 function NotificationsScreen({ navigation }) {
   return (
@@ -37,9 +39,7 @@ function NotificationsScreen({ navigation }) {
 function EventCalendarScreen({ navigation }) {
   return (
     <>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-        <Text>Work in progress..</Text>
-      </View>
+      <Events />
     </>
   );
 }
@@ -102,15 +102,9 @@ function Settings({ navigation }) {
   );
 }
 function Logout({ navigation }) {
-  useEffect(() => {
-    AsyncStorage.clear();
-    navigation.push('Intro');
-  }, [])
   return (
     <>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-        <Text>Work in progress..</Text>
-      </View>
+      <Logoutmodal />
     </>
   );
 }

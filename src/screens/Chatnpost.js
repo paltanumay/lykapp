@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 import ChatList from './Chatlist';
 import CallList from './CallList';
 import Postlist from './Postlist';
+import Createpost from './Createpost';
 
 const DATA = [
   {
@@ -70,7 +71,7 @@ export default function Chatnpost() {
             </View>) :
             activeTab === 'b' ?
               (<View style={styles.myPostsWrap}>
-                <Postlist />
+                <Createpost />
               </View>) :
               activeTab === 'c' ?
                 (<View style={styles.myPostsWrap}>

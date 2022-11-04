@@ -16,13 +16,15 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const UPLOAD_IMG = `${API_URL}/Chatpost/uploadImage`;
 export const NEW_POST = `${API_URL}/Postchat/createNewPost`;
 export const CREATE_NEW_POST_SHORT = "cetNwot";
 
-export default function Createpost({ navigation }) {
+export default function Createpost() {
+  const navigation = useNavigation();
   const [post, setPost] = useState();
   const [progress, setProgress] = useState(0);
   const uploadProgress = (ProgressEvent) => {
@@ -76,7 +78,7 @@ export default function Createpost({ navigation }) {
       },
       onUploadProgress: uploadProgress
     }).then(res => {
-      alert(JSON.stringify(res.data.response.imageUrl ))
+      //alert(JSON.stringify(res.data.response.imageUrl ))
       setPost(post=>{return {...post, imageUrl: res.data.response.imageUrl}})
     }, err => {
       console.log(err)
@@ -211,7 +213,7 @@ export default function Createpost({ navigation }) {
           <TouchableOpacity style={styles.morePostToolsItem}>
             <FIcon name="map-pin" size={25} color="#abacb1" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.morePostToolsItem}>
+          <TouchableOpacity style={styles.morePostToolsItem} onPress={()=>navigation.push('Addevent')}>
             <FIcon name="calendar" size={25} color="#abacb1" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.morePostToolsItem}>

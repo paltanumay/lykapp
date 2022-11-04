@@ -24,14 +24,12 @@ import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {Button} from 'react-native';
 import DatePicker from 'react-native-date-picker';
-import Logoutmodal from '../shared/Logoutmodal';
 
 export default function Addevent() {
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   return (
     <View style={globalStyles.innerPagesContainerWhite}>
-    <Logoutmodal/>
       <View style={styles.addPhotoWrap}>
         <TouchableOpacity style={styles.addPhotoBt}>
           <FIcon name="plus" size={22} color={COLORS.blue} />

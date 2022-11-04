@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1095347807692-f4tcvcp0jjrhhv9nk7i7f6j75octtfji.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lykapp",
+            "certificate_hash": "084aa1798048b601bd946fadad2f988ba8e757de"
+          }
+        },
+        {
           "client_id": "1095347807692-mognfmphd1es65q11adl48oss6ijgghu.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
