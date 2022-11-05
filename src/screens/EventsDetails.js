@@ -9,7 +9,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
 } from 'react-native';
-import React, {Component, useState} from 'react';
+import React, {Component, useState, useEffect} from 'react';
 import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
@@ -24,28 +24,63 @@ import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {Button} from 'react-native';
 import DatePicker from 'react-native-date-picker';
+import { useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
+import axios from 'axios';
+import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+
+const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
+export const MY_EVENT = `${API_URL}/LYKEvent/getMyEvent`;
+export const OTHER_EVENT_DETAILS = `${API_URL}/LYKEvent/getEventDetails`;
+const MY_EVENT_SHORT = "gtyvn";
+const OTHER_EVENT_DETAILS_SHORT = "gtvnDties";
 
 export default function EventsDetails() {
+    const route = useRoute();
     const [checked, setChecked] = useState(0);
     var event = ['Public Event', 'Private Event'];
-  return (
+    const [eventDtls, setEventDtls] = useState();
+    async function getEventDtls() {
+      let userDetails = await AsyncStorage.getItem('userId');
+      userDetails = JSON.parse(userDetails);
+      let token = await AsyncStorage.getItem("token") + "-" + OTHER_EVENT_DETAILS_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
+      axios.post(OTHER_EVENT_DETAILS, {
+          "userId": getEncUserId(userDetails.userId),
+          "eventId": route.params.id
+      }, {
+          headers: {
+              token: token
+          }
+      }).then(res => {
+          setEventDtls(res.data.response.eventDetails)
+          alert(JSON.stringify(res.data))
+      }, err => {
+      }
+      ).catch(err=>{})
+    }
+    useEffect(() => {
+      getEventDtls()
+  }, [])
+  return eventDtls ? (
     <View style={globalStyles.innerPagesContainerWhite}>
       <View style={styles.addPhotoWrap}>
         <Image
           style={styles.eventImg}
-          source={require('../assets/images/politics.png')}
+          source={{
+            uri: 'https://cdn.lykapp.com/newsImages/images/' + eventDtls.imageUrl
+          }}
         />
       </View>
 
       <View style={styles.eventWrap}>
         <View style={styles.eventDate}>
-          <Text style={styles.eventDateText}>Oct</Text>
-          <Text style={styles.eventDateText}>16</Text>
+          <Text style={styles.eventDateText}>{new Date(eventDtls.eventStartDate).toLocaleString('en-us',{month:'short'})}</Text>
+          <Text style={styles.eventDateText}>{new Date(eventDtls.eventStartDate).getDate()}</Text>
         </View>
         <View style={styles.eventName}>
-          <Text style={styles.eventNameText}>Curabitur aliquet quam</Text>
+          <Text style={styles.eventNameText}>{eventDtls.eventSubject}</Text>
           <Text style={styles.eventDescription}>
-            Vivamus magna justo, lacinia eget consectetur sed
+            {eventDtls.eventContent}
           </Text>
         </View>
       </View>
@@ -55,9 +90,10 @@ export default function EventsDetails() {
           <IonIcon name="time-outline" size={22} color="#8e9397" />
         </View>
         <View style={styles.eventTimingR}>
-          <Text style={styles.eventDateMain}>Oct 22 - Oct 27, 2022</Text>
+          <Text style={styles.eventDateMain}>{new Date(eventDtls.eventStartDate).getMonth()} {new Date(eventDtls.eventStartDate).getDate()} - 
+            {new Date(eventDtls.eventStartDate).getMonth()} {new Date(eventDtls.eventStartDate).getDate()}, 2022</Text>
           <Text style={styles.eventDateSub}>
-            Oct 26 at 05:00 PM to Oct 27, 2022 at 06:00 PM
+            {new Date(eventDtls.eventStartDate).toDateString()}to {new Date(eventDtls.eventEndDate).toDateString()}
           </Text>
         </View>
       </View>
@@ -67,7 +103,7 @@ export default function EventsDetails() {
           <IonIcon name="location-outline" size={22} color="#8e9397" />
         </View>
         <View style={styles.eventTimingR}>
-          <Text style={styles.eventDateMain}>Vivamus suscipit tortor eget</Text>
+          <Text style={styles.eventDateMain}>{eventDtls.eventLocation}</Text>
           <Text style={styles.eventDateSub}>
           Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere 
           </Text>
@@ -123,7 +159,7 @@ export default function EventsDetails() {
             </View>
 
     </View>
-  );
+  ):(<></>);
 }
 
 const styles = StyleSheet.create({
@@ -179,7 +215,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   eventDateSub: {
-    color: ' #7f868e',
+    color: '#7f868e',
     fontFamily: 'SFpro-Medium',
     fontSize: 14,
   },

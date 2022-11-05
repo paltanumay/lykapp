@@ -8,6 +8,7 @@ import {
   ScrollView,
   FlatList,
   KeyboardAvoidingView,
+  PermissionsAndroid,
 } from 'react-native';
 import React, {Component, useState} from 'react';
 import {globalStyles} from '../global/globalStyle';
@@ -21,22 +22,152 @@ import Footer from '../components/Footer';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Buffer } from 'buffer';
 
 import {Button} from 'react-native';
 import DatePicker from 'react-native-date-picker';
+import AsyncStorage from '@react-native-community/async-storage';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { Formik } from 'formik';
 
 export default function Addevent() {
-  const [date, setDate] = useState(new Date());
-  const [open, setOpen] = useState(false);
+  const navigation = useNavigation();
+  const [imgUrl, setImgUrl] = useState();
+  const uploadProgress = (ProgressEvent) => {
+    console.log(ProgressEvent.total);
+  };
+  const handlePress = async () => {
+    console.log('enter')
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          'title': 'Access Storage',
+          'message': 'Access Storage for the pictures'
+        }
+      )
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("You can use read from the storage")
+      } else {
+        console.log("Storage permission denied")
+      }
+    } catch (err) {
+      console.warn(err)
+    }
+    var options = {
+      title: 'Select Image',
+      customButtons: [
+        {
+          name: 'customOptionKey',
+          title: 'Choose file from Custom Option'
+        },
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    launchImageLibrary(options, res => {
+      console.log('Response = ', res);
+      if (res.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (res.error) {
+        console.log('ImagePicker Error: ', res.error);
+      } else if (res.customButton) {
+        console.log('User tapped custom button: ', res.customButton);
+        alert(res.customButton);
+      } else {
+        let source = res;
+        console.log('response', JSON.stringify(res));
+        uploadFile(res.assets[0]);
+      }
+    });
+  };
+  const uploadFile = (file) => {
+    let formdata = new FormData();
+    formdata.append('image', {
+      name: "image",
+      type: file.type,
+      uri: file.uri
+    });
+    axios.post(UPLOAD_IMG, formdata, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      },
+      onUploadProgress: uploadProgress
+    }).then(res => {
+      //alert(JSON.stringify(res.data.response.imageUrl ))
+      setImgUrl(res.data.response.imageUrl)
+    }, err => {
+      console.log(err)
+    })
+  };
   return (
+    <Formik
+        initialValues={{ 
+          "eventSubject": "",
+                "eventStartDate": "",
+                "startTime": "",
+                "eventEndDate": "",
+                "endTime": "",
+
+                "eventLocation": "",
+                "eventContent": "", 
+        }}
+        onSubmit={async (values, { setSubmitting }) => {
+          let userDetails = await AsyncStorage.getItem('userId');
+          userDetails = JSON.parse(userDetails);
+          let token = await AsyncStorage.getItem("token") + "-" + HOME_FEED_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
+          axios.post(LOGIN_URL, { ...values, ...{
+            "userId": userDetails.userId,
+                "myName": userDetails.firstName,
+                "ticketsURL": "",
+                "deviceType": "android",
+                "imageUrl": imgUrl,
+                "deviceId": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22),
+
+                // public--1, my family--2, invite all-3
+                "selectedType": "1",
+                "userList": [],
+          }},{
+            headers: {
+              token: token
+            }
+          }).then(res => {
+            setSubmitting(false);
+            navigation.push('EventDetails',{id: res.data.response.lastId})
+          }, err => {
+            let errors = {};
+            errors.message = 'Invalid username or password!';
+          }).catch(err => {
+          })
+        }}
+      >
+        {({
+          handleChange,
+          handleSubmit,
+          setFieldValue,
+          isSubmitting
+        }) => (
+       
     <View style={globalStyles.innerPagesContainerWhite}>
-      <View style={styles.addPhotoWrap}>
+      {imgUrl ? (<View style={styles.addPhotoWrap}>
+        <Image
+          style={styles.eventImg}
+          source={{
+            uri: 'https://cdn.lykapp.com/newsImages/images/' + imgUrl
+          }}
+        />
+      </View>):
+      (<View style={styles.addPhotoWrap} onPress={handlePress}>
         <TouchableOpacity style={styles.addPhotoBt}>
           <FIcon name="plus" size={22} color={COLORS.blue} />
 
           <Text style={styles.addPhotoBtText}>Add photo</Text>
         </TouchableOpacity>
-      </View>
+      </View>)}
 
       <View style={styles.addEventFormWRap}>
         <View style={styles.formBox}>
@@ -46,6 +177,7 @@ export default function Addevent() {
             placeholder="Event Name*"
             textContentType="username"
             underlineColorAndroid="transparent"
+            onChangeText={handleChange('eventSubject')}
           />
         </View>
         <View style={styles.startDate}>
@@ -56,6 +188,7 @@ export default function Addevent() {
               placeholder="Start date*"
               textContentType="username"
               underlineColorAndroid="transparent"
+              onChangeText={handleChange('eventStartDate')}
             />
           </View>
 
@@ -66,6 +199,7 @@ export default function Addevent() {
               placeholder="End date*"
               textContentType="username"
               underlineColorAndroid="transparent"
+              onChangeText={handleChange('eventEndDate')}
             />
           </View>
         </View>
@@ -78,6 +212,7 @@ export default function Addevent() {
               placeholder="Start time*"
               textContentType="username"
               underlineColorAndroid="transparent"
+              onChangeText={handleChange('startTime')}
             />
           </View>
 
@@ -88,6 +223,7 @@ export default function Addevent() {
               placeholder="End time*"
               textContentType="username"
               underlineColorAndroid="transparent"
+              onChangeText={handleChange('endTime')}
             />
           </View>
         </View>
@@ -99,6 +235,7 @@ export default function Addevent() {
             placeholder="Location*"
             textContentType="username"
             underlineColorAndroid="transparent"
+            onChangeText={handleChange('eventLocation')}
           />
         </View>
 
@@ -111,10 +248,11 @@ export default function Addevent() {
             underlineColorAndroid="transparent"
             multiline={true}
             numberOfLines={7}
+            onChangeText={handleChange('eventContent')}
           />
         </View>
 
-        <TouchableOpacity style={[globalStyles.gradBt, {width: '100%'}]}>
+        <TouchableOpacity style={[globalStyles.gradBt, {width: '100%'}]} disabled={isSubmitting} onPress={handleSubmit}>
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
@@ -125,6 +263,8 @@ export default function Addevent() {
         </TouchableOpacity>
       </View>
     </View>
+        )}
+        </Formik>
   );
 }
 
