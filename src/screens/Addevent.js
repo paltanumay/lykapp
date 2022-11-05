@@ -10,8 +10,8 @@ import {
   KeyboardAvoidingView,
   PermissionsAndroid,
 } from 'react-native';
-import React, {Component, useState} from 'react';
-import {globalStyles} from '../global/globalStyle';
+import React, { Component, useState } from 'react';
+import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
 import Gmodal from '../shared/Gmodal';
@@ -24,13 +24,19 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Buffer } from 'buffer';
 
-import {Button} from 'react-native';
+import { Button } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Formik } from 'formik';
+import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+
+const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
+export const UPLOAD_IMG = `${API_URL}/Chatpost/uploadImage`;
+export const CREATE_EVENT = `${API_URL}/LYKEvent/createEvent`;
+export const CREATE_EVENT_SHORT = "cetevnt";
 
 export default function Addevent() {
   const navigation = useNavigation();
@@ -106,165 +112,170 @@ export default function Addevent() {
   };
   return (
     <Formik
-        initialValues={{ 
-          "eventSubject": "",
-                "eventStartDate": "",
-                "startTime": "",
-                "eventEndDate": "",
-                "endTime": "",
+      initialValues={{
+        "eventSubject": "",
+        "eventStartDate": "",
+        "startTime": "",
+        "eventEndDate": "",
+        "endTime": "",
 
-                "eventLocation": "",
-                "eventContent": "", 
-        }}
-        onSubmit={async (values, { setSubmitting }) => {
-          let userDetails = await AsyncStorage.getItem('userId');
-          userDetails = JSON.parse(userDetails);
-          let token = await AsyncStorage.getItem("token") + "-" + HOME_FEED_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
-          axios.post(LOGIN_URL, { ...values, ...{
-            "userId": userDetails.userId,
-                "myName": userDetails.firstName,
-                "ticketsURL": "",
-                "deviceType": "android",
-                "imageUrl": imgUrl,
-                "deviceId": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22),
+        "eventLocation": "",
+        "eventContent": "",
+      }}
+      onSubmit={async (values, { setSubmitting }) => {
+        let userDetails = await AsyncStorage.getItem('userId');
+        userDetails = JSON.parse(userDetails);
+        let token = await AsyncStorage.getItem("token") + "-" + CREATE_EVENT_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
+        axios.post(CREATE_EVENT, {
+          ...values, ...{
+            "userId": getEncUserId(userDetails.userId),
+            "myName": userDetails.firstName,
+            "ticketsURL": "",
+            "deviceType": "android",
+            "imageUrl": imgUrl,
+            "deviceId": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22),
 
-                // public--1, my family--2, invite all-3
-                "selectedType": "1",
-                "userList": [],
-          }},{
-            headers: {
-              token: token
-            }
-          }).then(res => {
-            setSubmitting(false);
-            navigation.push('EventDetails',{id: res.data.response.lastId})
-          }, err => {
-            let errors = {};
-            errors.message = 'Invalid username or password!';
-          }).catch(err => {
-          })
-        }}
-      >
-        {({
-          handleChange,
-          handleSubmit,
-          setFieldValue,
-          isSubmitting
-        }) => (
-       
-    <View style={globalStyles.innerPagesContainerWhite}>
-      {imgUrl ? (<View style={styles.addPhotoWrap}>
-        <Image
-          style={styles.eventImg}
-          source={{
-            uri: 'https://cdn.lykapp.com/newsImages/images/' + imgUrl
-          }}
-        />
-      </View>):
-      (<View style={styles.addPhotoWrap} onPress={handlePress}>
-        <TouchableOpacity style={styles.addPhotoBt}>
-          <FIcon name="plus" size={22} color={COLORS.blue} />
+            // public--1, my family--2, invite all-3
+            "selectedType": "1",
+            "userList": [],
+          }
+        }, {
+          headers: {
+            token: token
+          }
+        }).then(res => {
+          setSubmitting(false);
+          alert(JSON.stringify(res.data))
+          navigation.push('EventsDetails', { id: res.data.response.eventId })
+        }, err => {
+          let errors = {};
+          errors.message = 'Invalid username or password!';
+          console.log(err)
+          alert(JSON.stringify(err))
+        }).catch(err => {
+        })
+      }}
+    >
+      {({
+        handleChange,
+        handleSubmit,
+        setFieldValue,
+        isSubmitting
+      }) => (
 
-          <Text style={styles.addPhotoBtText}>Add photo</Text>
-        </TouchableOpacity>
-      </View>)}
-
-      <View style={styles.addEventFormWRap}>
-        <View style={styles.formBox}>
-          <TextInput
-            placeholderTextColor="#AFAFAF"
-            style={styles.input}
-            placeholder="Event Name*"
-            textContentType="username"
-            underlineColorAndroid="transparent"
-            onChangeText={handleChange('eventSubject')}
-          />
-        </View>
-        <View style={styles.startDate}>
-          <View style={[styles.formBox, styles.formBoxinner]}>
-            <TextInput
-              placeholderTextColor="#AFAFAF"
-              style={styles.input}
-              placeholder="Start date*"
-              textContentType="username"
-              underlineColorAndroid="transparent"
-              onChangeText={handleChange('eventStartDate')}
+        <View style={globalStyles.innerPagesContainerWhite}>
+          {imgUrl ? (<View style={styles.addPhotoWrap}>
+            <Image
+              style={styles.eventImg}
+              source={{
+                uri: 'https://cdn.lykapp.com/newsImages/images/' + imgUrl
+              }}
             />
-          </View>
+          </View>) :
+            (<View style={styles.addPhotoWrap}>
+              <TouchableOpacity style={styles.addPhotoBt} onPress={handlePress}>
+                <FIcon name="plus" size={22} color={COLORS.blue} />
 
-          <View style={[styles.formBox, styles.formBoxinner]}>
-            <TextInput
-              placeholderTextColor="#AFAFAF"
-              style={styles.input}
-              placeholder="End date*"
-              textContentType="username"
-              underlineColorAndroid="transparent"
-              onChangeText={handleChange('eventEndDate')}
-            />
+                <Text style={styles.addPhotoBtText}>Add photo</Text>
+              </TouchableOpacity>
+            </View>)}
+
+          <View style={styles.addEventFormWRap}>
+            <View style={styles.formBox}>
+              <TextInput
+                placeholderTextColor="#AFAFAF"
+                style={styles.input}
+                placeholder="Event Name*"
+                textContentType="username"
+                underlineColorAndroid="transparent"
+                onChangeText={handleChange('eventSubject')}
+              />
+            </View>
+            <View style={styles.startDate}>
+              <View style={[styles.formBox, styles.formBoxinner]}>
+                <TextInput
+                  placeholderTextColor="#AFAFAF"
+                  style={styles.input}
+                  placeholder="Start date*"
+                  textContentType="username"
+                  underlineColorAndroid="transparent"
+                  onChangeText={handleChange('eventStartDate')}
+                />
+              </View>
+
+              <View style={[styles.formBox, styles.formBoxinner]}>
+                <TextInput
+                  placeholderTextColor="#AFAFAF"
+                  style={styles.input}
+                  placeholder="End date*"
+                  textContentType="username"
+                  underlineColorAndroid="transparent"
+                  onChangeText={handleChange('eventEndDate')}
+                />
+              </View>
+            </View>
+
+            <View style={styles.startDate}>
+              <View style={[styles.formBox, styles.formBoxinner]}>
+                <TextInput
+                  placeholderTextColor="#AFAFAF"
+                  style={styles.input}
+                  placeholder="Start time*"
+                  textContentType="username"
+                  underlineColorAndroid="transparent"
+                  onChangeText={handleChange('startTime')}
+                />
+              </View>
+
+              <View style={[styles.formBox, styles.formBoxinner]}>
+                <TextInput
+                  placeholderTextColor="#AFAFAF"
+                  style={styles.input}
+                  placeholder="End time*"
+                  textContentType="username"
+                  underlineColorAndroid="transparent"
+                  onChangeText={handleChange('endTime')}
+                />
+              </View>
+            </View>
+
+            <View style={styles.formBox}>
+              <TextInput
+                placeholderTextColor="#AFAFAF"
+                style={styles.input}
+                placeholder="Location*"
+                textContentType="username"
+                underlineColorAndroid="transparent"
+                onChangeText={handleChange('eventLocation')}
+              />
+            </View>
+
+            <View style={styles.formBox}>
+              <TextInput
+                placeholderTextColor="#AFAFAF"
+                style={[styles.input, { textAlignVertical: 'top' }]}
+                placeholder="Type your message"
+                textContentType="username"
+                underlineColorAndroid="transparent"
+                multiline={true}
+                numberOfLines={7}
+                onChangeText={handleChange('eventContent')}
+              />
+            </View>
+
+            <TouchableOpacity style={[globalStyles.gradBt, { width: '100%' }]} disabled={isSubmitting} onPress={handleSubmit}>
+              <LinearGradient
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                colors={['#037ee5', '#15a2e0', '#28cad9']}
+                style={globalStyles.linearGradient}>
+                <Text style={globalStyles.buttonText}>Continue</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
         </View>
-
-        <View style={styles.startDate}>
-          <View style={[styles.formBox, styles.formBoxinner]}>
-            <TextInput
-              placeholderTextColor="#AFAFAF"
-              style={styles.input}
-              placeholder="Start time*"
-              textContentType="username"
-              underlineColorAndroid="transparent"
-              onChangeText={handleChange('startTime')}
-            />
-          </View>
-
-          <View style={[styles.formBox, styles.formBoxinner]}>
-            <TextInput
-              placeholderTextColor="#AFAFAF"
-              style={styles.input}
-              placeholder="End time*"
-              textContentType="username"
-              underlineColorAndroid="transparent"
-              onChangeText={handleChange('endTime')}
-            />
-          </View>
-        </View>
-
-        <View style={styles.formBox}>
-          <TextInput
-            placeholderTextColor="#AFAFAF"
-            style={styles.input}
-            placeholder="Location*"
-            textContentType="username"
-            underlineColorAndroid="transparent"
-            onChangeText={handleChange('eventLocation')}
-          />
-        </View>
-
-        <View style={styles.formBox}>
-          <TextInput
-            placeholderTextColor="#AFAFAF"
-            style={[styles.input, {textAlignVertical: 'top'}]}
-            placeholder="Type your message"
-            textContentType="username"
-            underlineColorAndroid="transparent"
-            multiline={true}
-            numberOfLines={7}
-            onChangeText={handleChange('eventContent')}
-          />
-        </View>
-
-        <TouchableOpacity style={[globalStyles.gradBt, {width: '100%'}]} disabled={isSubmitting} onPress={handleSubmit}>
-          <LinearGradient
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#037ee5', '#15a2e0', '#28cad9']}
-            style={globalStyles.linearGradient}>
-            <Text style={globalStyles.buttonText}>Continue</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-    </View>
-        )}
-        </Formik>
+      )}
+    </Formik>
   );
 }
 
@@ -274,6 +285,10 @@ const styles = StyleSheet.create({
     height: 150,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  eventImg: {
+    width: '100%',
+    height: '100%',
   },
   addPhotoBt: {
     alignItems: 'center',
