@@ -145,13 +145,11 @@ export default function Addevent() {
           }
         }).then(res => {
           setSubmitting(false);
-          alert(JSON.stringify(res.data))
-          navigation.push('EventsDetails', { id: res.data.response.eventId })
+          navigation.push('EventsDetails', { id: res.data.response.eventId, route: 'addevent' })
         }, err => {
           let errors = {};
           errors.message = 'Invalid username or password!';
           console.log(err)
-          alert(JSON.stringify(err))
         }).catch(err => {
         })
       }}

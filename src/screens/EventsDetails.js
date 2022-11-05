@@ -9,8 +9,8 @@ import {
   FlatList,
   KeyboardAvoidingView,
 } from 'react-native';
-import React, {Component, useState, useEffect} from 'react';
-import {globalStyles} from '../global/globalStyle';
+import React, { Component, useState, useEffect } from 'react';
+import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
 import Gmodal from '../shared/Gmodal';
@@ -22,9 +22,9 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {Button} from 'react-native';
+import { Button } from 'react-native';
 import DatePicker from 'react-native-date-picker';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
@@ -34,32 +34,35 @@ export const MY_EVENT = `${API_URL}/LYKEvent/getMyEvent`;
 export const OTHER_EVENT_DETAILS = `${API_URL}/LYKEvent/getEventDetails`;
 const MY_EVENT_SHORT = "gtyvn";
 const OTHER_EVENT_DETAILS_SHORT = "gtvnDties";
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
 
 export default function EventsDetails() {
-    const route = useRoute();
-    const [checked, setChecked] = useState(0);
-    var event = ['Public Event', 'Private Event'];
-    const [eventDtls, setEventDtls] = useState();
-    async function getEventDtls() {
-      let userDetails = await AsyncStorage.getItem('userId');
-      userDetails = JSON.parse(userDetails);
-      let token = await AsyncStorage.getItem("token") + "-" + OTHER_EVENT_DETAILS_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
-      axios.post(OTHER_EVENT_DETAILS, {
-          "userId": getEncUserId(userDetails.userId),
-          "eventId": route.params.id
-      }, {
-          headers: {
-              token: token
-          }
-      }).then(res => {
-          setEventDtls(res.data.response.eventDetails)
-          alert(JSON.stringify(res.data))
-      }, err => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const [checked, setChecked] = useState(0);
+  var event = ['Public Event', 'Private Event'];
+  const [eventDtls, setEventDtls] = useState();
+  async function getEventDtls() {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token = await AsyncStorage.getItem("token") + "-" + OTHER_EVENT_DETAILS_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
+    axios.post(OTHER_EVENT_DETAILS, {
+      "userId": getEncUserId(userDetails.userId),
+      "eventId": route.params.id
+    }, {
+      headers: {
+        token: token
       }
-      ).catch(err=>{})
+    }).then(res => {
+      setEventDtls(res.data.response.eventDetails)
+    }, err => {
     }
-    useEffect(() => {
-      getEventDtls()
+    ).catch(err => { })
+  }
+  useEffect(() => {
+    getEventDtls()
   }, [])
   return eventDtls ? (
     <View style={globalStyles.innerPagesContainerWhite}>
@@ -74,13 +77,13 @@ export default function EventsDetails() {
 
       <View style={styles.eventWrap}>
         <View style={styles.eventDate}>
-          <Text style={styles.eventDateText}>{new Date(eventDtls.eventStartDate).toLocaleString('en-us',{month:'short'})}</Text>
+          <Text style={styles.eventDateText}>{monthNames[new Date(eventDtls.eventStartDate).getMonth()]}</Text>
           <Text style={styles.eventDateText}>{new Date(eventDtls.eventStartDate).getDate()}</Text>
         </View>
         <View style={styles.eventName}>
           <Text style={styles.eventNameText}>{eventDtls.eventSubject}</Text>
           <Text style={styles.eventDescription}>
-            {eventDtls.eventContent}
+            Hosted by {eventDtls.createdBy.firstName}
           </Text>
         </View>
       </View>
@@ -90,10 +93,10 @@ export default function EventsDetails() {
           <IonIcon name="time-outline" size={22} color="#8e9397" />
         </View>
         <View style={styles.eventTimingR}>
-          <Text style={styles.eventDateMain}>{new Date(eventDtls.eventStartDate).getMonth()} {new Date(eventDtls.eventStartDate).getDate()} - 
-            {new Date(eventDtls.eventStartDate).getMonth()} {new Date(eventDtls.eventStartDate).getDate()}, 2022</Text>
+          <Text style={styles.eventDateMain}>{monthNames[new Date(eventDtls.eventStartDate).getMonth()]} {new Date(eventDtls.eventStartDate).getDate()} -
+            {monthNames[new Date(eventDtls.eventStartDate).getMonth()]} {new Date(eventDtls.eventStartDate).getDate()}, 2022</Text>
           <Text style={styles.eventDateSub}>
-            {new Date(eventDtls.eventStartDate).toDateString()}to {new Date(eventDtls.eventEndDate).toDateString()}
+            {new Date(eventDtls.eventStartDate).toDateString()} to {new Date(eventDtls.eventEndDate).toDateString()}
           </Text>
         </View>
       </View>
@@ -105,61 +108,71 @@ export default function EventsDetails() {
         <View style={styles.eventTimingR}>
           <Text style={styles.eventDateMain}>{eventDtls.eventLocation}</Text>
           <Text style={styles.eventDateSub}>
-          Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere 
+            Hosted by {eventDtls.createdBy.firstName}
           </Text>
         </View>
       </View>
 
-<View style={styles.radioMainWrap}>
-
-
-      <View>
-      <View style={styles.btn}>
-        {event.map((event, key) => {
-          return (
-            <View key={event}>
-              {checked == key ? (
-                <TouchableOpacity style={styles.btn}>
-                  <Image
-                    style={styles.img}
-                    source={require('../assets/images/rb_unselected.png')}
-                  />
-                  <Text style={styles.pEvent}>{event}</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={() => {
-                    setChecked(key);
-                  }}
-                  style={styles.btn}>
-                  <Image
-                    style={styles.img}
-                    source={require('../assets/images/rb_selected.png')}
-                  />
-                  <Text style={styles.pEvent}>{event}</Text>
-                </TouchableOpacity>
-              )}
+      {route.params.route==='addevent'?
+      (<>
+        <View style={styles.radioMainWrap}>
+          <View>
+            <View style={styles.btn}>
+              {event.map((event, key) => {
+                return (
+                  <View key={event}>
+                    {checked == key ? (
+                      <TouchableOpacity style={styles.btn}>
+                        <Image
+                          style={styles.img}
+                          source={require('../assets/images/rb_unselected.png')}
+                        />
+                        <Text style={styles.pEvent}>{event}</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        /* onPress={() => {
+                          setChecked(key);
+                        }} */
+                        style={styles.btn}>
+                        <Image
+                          style={styles.img}
+                          source={require('../assets/images/rb_selected.png')}
+                        />
+                        <Text style={styles.pEvent}>{event}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              })}
             </View>
-          );
-        })}
+            {/* <Text>{gender[checked]}</Text> */}
+          </View>
+        </View>
+        <View style={styles.createEventWrap}>
+          <TouchableOpacity style={[globalStyles.gradBt, { width: '90%' }]} onPress={()=>navigation.push('Events')}>
+            <LinearGradient
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              colors={['#037ee5', '#15a2e0', '#28cad9']}
+              style={globalStyles.linearGradient}>
+              <Text style={globalStyles.buttonText}>Create Event</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      </>):(
+        <View style={styles.eventTimingDetails}>
+        <View style={styles.eventTimingR}>
+          <Text style={styles.eventDateMain}>Event Description</Text>
+          <Text style={styles.eventDateSub}>
+            {eventDtls.eventContent}
+          </Text>
+        </View>
       </View>
-      {/* <Text>{gender[checked]}</Text> */}
-    </View>
-</View>
-      <View style={styles.createEventWrap}>
-      <TouchableOpacity style={[globalStyles.gradBt, {width:'90%'}]}>
-              <LinearGradient
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                colors={['#037ee5', '#15a2e0', '#28cad9']}
-                style={globalStyles.linearGradient}>
-                <Text style={globalStyles.buttonText}>Create Event</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-            </View>
+      )}
 
     </View>
-  ):(<></>);
+  ) : (<></>);
 }
 
 const styles = StyleSheet.create({
@@ -222,9 +235,9 @@ const styles = StyleSheet.create({
   eventTimingR: {
     width: '75%',
   },
-  createEventWrap:{
-    alignItems:'center',
-    marginTop:50
+  createEventWrap: {
+    alignItems: 'center',
+    marginTop: 50
   },
   radioMainWrap: {
     flexDirection: 'row',
@@ -248,10 +261,10 @@ const styles = StyleSheet.create({
     height: 25,
     width: 25,
     marginRight: 8,
-   
+
   },
-  pEvent:{
-    fontSize:15,
+  pEvent: {
+    fontSize: 15,
     fontFamily: 'SFpro-Bold',
 
   }
