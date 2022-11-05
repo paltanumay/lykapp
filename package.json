@@ -13,6 +13,7 @@
     "@invertase/react-native-apple-authentication": "^2.2.2",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/checkbox": "^0.5.12",
+    "@react-native-community/datetimepicker": "^6.5.4",
     "@react-native-google-signin/google-signin": "^8.0.0",
     "@react-navigation/drawer": "^6.4.4",
     "@react-navigation/native": "^6.0.12",

@@ -32,6 +32,7 @@ import { useNavigation } from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Formik } from 'formik';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const UPLOAD_IMG = `${API_URL}/Chatpost/uploadImage`;
@@ -39,8 +40,37 @@ export const CREATE_EVENT = `${API_URL}/LYKEvent/createEvent`;
 export const CREATE_EVENT_SHORT = "cetevnt";
 
 export default function Addevent() {
+  const [mydate, setMyDate] = useState(new Date());
   const navigation = useNavigation();
   const [imgUrl, setImgUrl] = useState();
+  const [show, setShow] = useState(false);
+  const [mode, setMode] = useState('date');
+  const [eventStartDate, seteventStartDate] = useState('');
+  const [eventEndDate, seteventEndDate] = useState('');
+  const [startTime, setstartTime] = useState('');
+  const [endTime, setendTime] = useState('');
+  const [display, setDiplay] = useState('');
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+  const setDate = (event, date) => {
+    const {
+      type,
+      nativeEvent: {timestamp},
+    } = event;
+    console.log(date);
+    setShow(false);
+    setMyDate(new Date(date));
+    if(mode=='date') {
+      if(display === 'eventStartDate') seteventStartDate(new Date(date).toISOString().split('T')[0]);
+      else seteventEndDate(new Date(date).toISOString().split('T')[0]);
+    }
+    else{
+      if(display === 'startTime') setstartTime(new Date(date).toLocaleTimeString());
+      else setendTime(new Date(date).toLocaleTimeString());
+    }
+  };
   const uploadProgress = (ProgressEvent) => {
     console.log(ProgressEvent.total);
   };
@@ -114,11 +144,6 @@ export default function Addevent() {
     <Formik
       initialValues={{
         "eventSubject": "",
-        "eventStartDate": "",
-        "startTime": "",
-        "eventEndDate": "",
-        "endTime": "",
-
         "eventLocation": "",
         "eventContent": "",
       }}
@@ -130,6 +155,10 @@ export default function Addevent() {
           ...values, ...{
             "userId": getEncUserId(userDetails.userId),
             "myName": userDetails.firstName,
+            "eventStartDate": eventStartDate,
+            "startTime": startTime,
+            "eventEndDate": eventEndDate,
+            "endTime": endTime,
             "ticketsURL": "",
             "deviceType": "android",
             "imageUrl": imgUrl,
@@ -178,6 +207,8 @@ export default function Addevent() {
               </TouchableOpacity>
             </View>)}
 
+            {show && (<RNDateTimePicker value={mydate} onChange={setDate} display={'default'} mode={mode}/>)}
+
           <View style={styles.addEventFormWRap}>
             <View style={styles.formBox}>
               <TextInput
@@ -197,7 +228,8 @@ export default function Addevent() {
                   placeholder="Start date*"
                   textContentType="username"
                   underlineColorAndroid="transparent"
-                  onChangeText={handleChange('eventStartDate')}
+                  onTouchStart={()=>{showMode('date'),setDiplay('eventStartDate')}}
+                  value={eventStartDate}
                 />
               </View>
 
@@ -208,7 +240,8 @@ export default function Addevent() {
                   placeholder="End date*"
                   textContentType="username"
                   underlineColorAndroid="transparent"
-                  onChangeText={handleChange('eventEndDate')}
+                  onTouchStart={()=>{showMode('date'),setDiplay('eventEndDate')}}
+                  value={eventEndDate}
                 />
               </View>
             </View>
@@ -221,7 +254,8 @@ export default function Addevent() {
                   placeholder="Start time*"
                   textContentType="username"
                   underlineColorAndroid="transparent"
-                  onChangeText={handleChange('startTime')}
+                  onTouchStart={()=>{showMode('time'),setDiplay('startTime')}}
+                  value={startTime}
                 />
               </View>
 
@@ -232,7 +266,8 @@ export default function Addevent() {
                   placeholder="End time*"
                   textContentType="username"
                   underlineColorAndroid="transparent"
-                  onChangeText={handleChange('endTime')}
+                  onTouchStart={()=>{showMode('time'),setDiplay('endTime')}}
+                  value={endTime}
                 />
               </View>
             </View>
