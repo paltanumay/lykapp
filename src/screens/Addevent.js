@@ -237,7 +237,7 @@ export default function Addevent() {
                 <TextInput
                   placeholderTextColor="#AFAFAF"
                   style={styles.input}
-                  placeholder="End date*"
+                  placeholder="End date"
                   textContentType="username"
                   underlineColorAndroid="transparent"
                   onTouchStart={()=>{showMode('date'),setDiplay('eventEndDate')}}
@@ -263,7 +263,7 @@ export default function Addevent() {
                 <TextInput
                   placeholderTextColor="#AFAFAF"
                   style={styles.input}
-                  placeholder="End time*"
+                  placeholder="End time"
                   textContentType="username"
                   underlineColorAndroid="transparent"
                   onTouchStart={()=>{showMode('time'),setDiplay('endTime')}}

@@ -9,6 +9,10 @@ import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 import axios from 'axios';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+import FIcon from 'react-native-vector-icons/Feather';
+
+
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const CALL_LOG = `${API_URL}/LYKCallHistory/getCallHistory`;
@@ -46,7 +50,11 @@ export default function CallList() {
                 renderItem={({ item }) => {
                     return (
                         <View style={styles.listContainer}>
-                            <Text style={styles.date}>{item.callType}</Text>
+                            <Text style={styles.date}>{item.callType} 
+        <IonIcon name="videocam-outline" size={25} color="#bcbcbc" />
+        <FIcon name="volume-1" size={25} color="#bcbcbc" />
+
+                            </Text>
                             <View style={styles.listImgWrap}>
                                 <Image
                                     resizeMode="cover"
