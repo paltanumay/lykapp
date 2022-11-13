@@ -143,11 +143,21 @@ export default function Sidebar() {
         activeBackgroundColor: '#5cbbff',
         activeTintColor: '#ffffff',
       }} */
+
+      
       screenOptions={{
         drawerStyle: {
           backgroundColor: COLORS.blue,
           width: 290,
         },
+        navigationOptions: {
+        drawerIcon: (
+          <Image
+            style={{ width: 24, height: 24 }}
+            source={require("../assets/images/logo.png")}
+          />
+        ),
+      },
         headerStyle: { backgroundColor: COLORS.blue },
         headerTitleAlign: 'center',
         headerTintColor: '#fff',
@@ -160,7 +170,12 @@ export default function Sidebar() {
         ),
         headerRight: () => (
           <TouchableOpacity style={styles.user}>
-            <FIcon name="search" size={25} color="#fff" />
+           <Image
+            resizeMode="contain"
+            source={require('../assets/images/search.png')}
+            style={[styles.searchIcon]}
+          />
+            {/* <FIcon name="search" size={25} color="#fff" /> */}
             {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
           </TouchableOpacity>
         ),
@@ -372,4 +387,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato-Regular',
     fontSize: 20,
   },
+  searchIcon:{
+    width:20,
+    height:20
+  }
 });

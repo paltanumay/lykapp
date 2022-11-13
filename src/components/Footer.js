@@ -14,96 +14,128 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import FIcon from 'react-native-vector-icons/Feather';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 export default function Footer() {
   const [display, setDisplay] = useState(false);
   const navigation = useNavigation();
-    return (
-      <>
-        <View style={[styles.menuItemsWrap,{display:display?'flex':'none'}]}>
-          <View style={styles.menuItemsInnerWrap}>
-            <TouchableOpacity style={styles.menuItems}>
-              {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
-              <View style={styles.iconCont}>
-                <IonIcon
-                  name="chatbubble-outline"
-                  size={25}
-                  color={COLORS.blue}
-                />
-              </View>
-
-              <Text style={[styles.createInnerText]}>Chat</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.menuItems2}>
-              <View style={styles.iconCont}>
-                {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
-                <IonIcon name="people-outline" size={25} color={COLORS.blue} />
-              </View>
-              <Text style={[styles.createInnerText]}>Group</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.menuItems3} onPress={()=>navigation.push('Createpost')}>
-              {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
-              <View style={styles.iconCont}>
-                <IonIcon name="md-card-outline" size={25} color={COLORS.blue} />
-              </View>
-              <Text style={[styles.createInnerText]}>Post</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.footer}>
-          <TouchableOpacity style={[styles.footIconBox, {marginRight: 15}]} onPress={()=>navigation.push('Sidenav')} >
+  return (
+    <>
+      <View
+        style={[styles.menuItemsWrap, {display: display ? 'flex' : 'none'}]}>
+        <View style={styles.menuItemsInnerWrap}>
+          <TouchableOpacity style={styles.menuItems}>
             {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
-            <IonIcon name="ios-home" size={25} color={COLORS.blue} />
+            <View style={styles.iconCont}>
+              <IonIcon
+                name="chatbubble-outline"
+                size={25}
+                color={COLORS.blue}
+              />
+            </View>
 
-            <Text style={[styles.footIconText, styles.active]}>Footer</Text>
+            <Text style={[styles.createInnerText]}>Chat</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.footIconBox, {marginRight: 15}]}>
-            {/* <IonIcon name="ios-people" size={20} color={COLORS.blue} /> */}
-            <IonIcon name="ios-people-outline" size={30} color={COLORS.blue} />
-
-            <Text style={styles.footIconText}>Network</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.footIconBoxCreate} onPress={()=>setDisplay(!display)} >
-            {/* <IonIcon name="ios-people" size={20} color={COLORS.blue} /> */}
-
-            <LinearGradient
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              colors={['#037ee5', '#15a2e0', '#28cad9']}
-              style={styles.createBt}>
-              <FIcon name="plus" size={40} color="#fff" />
-            </LinearGradient>
-
-            <Text style={styles.footIconText}>Create</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.footIconBox}>
-            {/* <IonIcon name="ios-notifications" size={20} color={COLORS.blue} /> */}
-            <IonIcon
-              name="ios-notifications-outline"
-              size={26}
-              color={COLORS.blue}
-            />
-
-            <Text style={styles.footIconText}>Notification</Text>
+          <TouchableOpacity style={styles.menuItems2}>
+            <View style={styles.iconCont}>
+              {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
+              <IonIcon name="people-outline" size={25} color={COLORS.blue} />
+            </View>
+            <Text style={[styles.createInnerText]}>Group</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.footIconBox}
-            onPress={() => navigation.push('Chatnpost')}>
-            {/* <IonIcon name="chatbubbles-sharp" size={20} color={COLORS.blue} /> */}
-            <IonIcon name="chatbubbles-outline" size={26} color={COLORS.blue} />
-
-            <Text style={styles.footIconText}>Chat & Post</Text>
+            style={styles.menuItems3}
+            onPress={() => navigation.push('Createpost')}>
+            {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
+            <View style={styles.iconCont}>
+              <IonIcon name="md-card-outline" size={25} color={COLORS.blue} />
+            </View>
+            <Text style={[styles.createInnerText]}>Post</Text>
           </TouchableOpacity>
         </View>
-      </>
-    );
+      </View>
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[styles.footIconBox, {marginRight: 15}]}
+          onPress={() => navigation.push('Sidenav')}>
+          {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
+          {/* <IonIcon name="ios-home" size={25} color={COLORS.blue} /> */}
+          {/* <Image
+            resizeMode="stretch"
+            source={require('../assets/images/home.png')}
+            style={[styles.homeIcon]}/> */}
+
+          <Image
+            resizeMode="stretch"
+            source={require('../assets/images/home-active.png')}
+            style={[styles.homeIcon]}
+          />
+
+          <Text style={[styles.footIconText, styles.active]}>Home</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.footIconBox, {marginRight: 15}]}>
+          {/* <IonIcon name="ios-people" size={20} color={COLORS.blue} /> */}
+          {/* <IonIcon name="ios-people-outline" size={30} color={COLORS.blue} /> */}
+          <Image
+            resizeMode="stretch"
+            source={require('../assets/images/network.png')}
+            style={[styles.networkIcon]}
+          />
+          <Text style={styles.footIconText}>Network</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.footIconBoxCreate}
+          onPress={() => setDisplay(!display)}>
+          {/* <IonIcon name="ios-people" size={20} color={COLORS.blue} /> */}
+
+          <LinearGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={['#037ee5', '#15a2e0', '#28cad9']}
+            style={styles.createBt}>
+            <FIcon name="plus" size={35} color="#fff" />
+          </LinearGradient>
+
+          <Text style={styles.footIconText}>Create</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.footIconBox}>
+          {/* <IonIcon name="ios-notifications" size={20} color={COLORS.blue} /> */}
+          {/* <IonIcon
+              name="ios-notifications-outline"
+              size={26}
+              color={COLORS.blue}
+            /> */}
+
+          <Image
+            resizeMode="stretch"
+            source={require('../assets/images/notification.png')}
+            style={[styles.notIcon]}
+          />
+
+          <Text style={styles.footIconText}>Notification</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.footIconBox}
+          onPress={() => navigation.push('Chatnpost')}>
+          {/* <IonIcon name="chatbubbles-sharp" size={20} color={COLORS.blue} /> */}
+          {/* <IonIcon name="chatbubbles-outline" size={26} color={COLORS.blue} /> */}
+          <Image
+            resizeMode="stretch"
+            source={require('../assets/images/chat.png')}
+            style={[styles.chatIcon]}
+          />
+
+          <Text style={styles.footIconText}>Chat & Post</Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -116,11 +148,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     position: 'relative',
     zIndex: 999,
+    height: 55,
   },
   footIconBox: {
     alignItems: 'center',
     // backgroundColor:'red',
-    height: 50,
+    height: 45,
     justifyContent: 'space-between',
   },
   footIconText: {
@@ -132,12 +165,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   createBt: {
-    width: 70,
-    height: 70,
+    width: 60,
+    height: 60,
     borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -35,
+    marginTop: -50,
   },
   active: {
     color: COLORS.blue,
@@ -152,13 +185,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     width: '100%',
     height: '100%',
-    alignItems:'flex-end'
+    alignItems: 'flex-end',
   },
   menuItemsInnerWrap: {
     position: 'absolute',
-    bottom:170,
-    left:'50%',
-    marginLeft:-10
+    bottom: 170,
+    left: '50%',
+    marginLeft: -10,
   },
   menuItems: {
     alignItems: 'center',
@@ -207,5 +240,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'SFpro-Regular',
     fontSize: 13,
+  },
+  homeIcon: {
+    width: 26,
+    height: 24,
+  },
+  chatIcon: {
+    width: 32,
+    height: 20,
+  },
+  notIcon: {
+    width: 23,
+    height: 25,
+  },
+  networkIcon: {
+    width: 26,
+    height: 24,
   },
 });
