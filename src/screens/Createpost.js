@@ -6,9 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   PermissionsAndroid,
+  Modal
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import COLORS from '../global/globalColors';
+import * as Progress from 'react-native-progress';
 
 import FIcon from 'react-native-vector-icons/Feather';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -20,6 +22,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const UPLOAD_IMG = `${API_URL}/Chatpost/uploadImage`;
+export const UPLOAD_VIDEO = `https://video.lykapp.com:8090/pro/api/v1/index.php/uploadVideo`;
 export const NEW_POST = `${API_URL}/Postchat/createNewPost`;
 export const CREATE_NEW_POST_SHORT = "cetNwot";
 
@@ -38,6 +41,7 @@ export default function Createpost() {
   });
   const uploadProgress = (ProgressEvent) => {
     console.log(ProgressEvent.total);
+    setProgress(.75);
   };
   const createNewPost = async () => {
     let userDetails = user;
@@ -73,6 +77,25 @@ export default function Createpost() {
       //navigation.push('Sidenav')
     })
   };
+  const uploadVideo = (file) => {
+    let formdata = new FormData();
+    formdata.append('video', {
+      name: "video",
+      type: file.type,
+      uri: file.uri
+    });
+    axios.post(UPLOAD_VIDEO, formdata, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      },
+      onUploadProgress: uploadProgress
+    }).then(res => {
+      //alert(JSON.stringify(res.data.response.imageUrl ))
+      setPost(post=>{return {...post, imageUrl: res.data.response.imageUrl}})
+    }, err => {
+      console.log(err)
+    })
+  };
   const uploadFile = (file) => {
     let formdata = new FormData();
     formdata.append('image', {
@@ -92,7 +115,7 @@ export default function Createpost() {
       console.log(err)
     })
   };
-  const handlePress = async () => {
+  const handlePress = async (type) => {
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
@@ -122,6 +145,7 @@ export default function Createpost() {
         path: 'images',
       },
     };
+    options = type === 'video'? {...options, mediaType: type}: options,
     launchImageLibrary(options, res => {
       console.log('Response = ', res);
       if (res.didCancel) {
@@ -134,7 +158,8 @@ export default function Createpost() {
       } else {
         let source = res;
         console.log('response', JSON.stringify(res));
-        uploadFile(res.assets[0]);
+        if(type==='video') uploadVideo(res.assets[0]);
+        else uploadFile(res.assets[0]);
       }
     });
   };
@@ -176,6 +201,33 @@ export default function Createpost() {
           <Text style={styles.listInfoTitle}>{user && user.firstName}</Text>
         </View>
 
+        {progress>0 && !post?.imageUrl &&
+        
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={true}
+          >
+            <View style={styles.centeredViewInner}>
+              <View style={styles.modalView}>
+                
+                <Progress.Pie progress={progress} size={50} color='grey' />
+
+
+              
+              </View>
+            </View>
+          </Modal>}
+
+        {post && post.imageUrl && (<View style={styles.addPhotoWrap}>
+            <Image
+              style={styles.eventImg}
+              source={{
+                uri: 'https://cdn.lykapp.com/newsImages/images/' + post.imageUrl
+              }}
+            />
+          </View>)}
+
         <View style={styles.postBody}>
           <TextInput
             placeholderTextColor="#AFAFAF"
@@ -193,8 +245,8 @@ export default function Createpost() {
       <View style={styles.postBoxOptions}>
         <View style={styles.postBoxShareOptions}>
           <TouchableOpacity style={styles.shareOptions}>
-            <IonIcon name="ios-earth-outline" size={25} color="#abacb1" />
-            <Text style={styles.shareOptionsText}>Public</Text>
+            <IonIcon name="ios-earth-outline" size={25} color={COLORS.blue} />
+            <Text style={[styles.shareOptionsText, styles.active]}>Public</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.shareOptions}>
@@ -209,13 +261,13 @@ export default function Createpost() {
         </View>
 
         <View style={styles.morePostTools}>
-          <TouchableOpacity style={styles.morePostToolsItem} onPress={handlePress}>
+          <TouchableOpacity style={styles.morePostToolsItem} onPress={()=>handlePress('image')}>
             <IonIcon name="image-outline" size={25} color="#abacb1" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.morePostToolsItem} onPress={handleCameraRoll}>
             <FIcon name="camera" size={25} color="#abacb1" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.morePostToolsItem} onPress={handlePress}>
+          <TouchableOpacity style={styles.morePostToolsItem} onPress={()=>handlePress('video')}>
             <FIcon name="video" size={25} color="#abacb1" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.morePostToolsItem}>
@@ -230,9 +282,9 @@ export default function Createpost() {
           <TouchableOpacity style={styles.morePostToolsItem}>
             <Text style={styles.goLiveText}>Go Live</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.chatSendBt} onPress={createNewPost}>
+          {(post?.imageUrl?.length>0 || post?.videoUrl?.length>0 || post?.title?.length>0) && (<TouchableOpacity style={styles.chatSendBt} onPress={createNewPost}>
             <IonIcon name="send" size={24} color="#fff" />
-          </TouchableOpacity>
+          </TouchableOpacity>)}
         </View>
       </View>
     </>
@@ -240,6 +292,19 @@ export default function Createpost() {
 }
 
 const styles = StyleSheet.create({
+  addPhotoWrap: {
+    backgroundColor: '#dbe0e6',
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  eventImg: {
+    width: '100%',
+    height: '100%',
+  },
+  active: {
+    color: COLORS.blue
+  },
   postBox: {
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -320,4 +385,40 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  centeredViewInner: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    height: '100%',
+    justifyContent: 'center',
+  },
+  modalView: {
+    paddingTop: 30,
+    width: '70%',
+    paddingHorizontal: 55,
+    paddingBottom: 20,
+    backgroundColor: 'white',
+    borderRadius: 32,
+    borderBottomStartRadius: 0,
+    borderBottomEndRadius: 0,
+    overflow: 'hidden',
+    alignSelf: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  linearGradient: {
+    padding: 35,
+    width: '100%',
+  },
+  msg:{
+    fontSize: 15,
+    fontFamily: 'SFpro-Regular',
+    textAlign: 'center',
+    marginBottom:25
+  }
 });
