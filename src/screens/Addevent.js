@@ -32,7 +32,7 @@ import DatePicker from 'react-native-date-picker';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import {useNavigation} from '@react-navigation/native';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {Formik} from 'formik';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
@@ -44,8 +44,8 @@ export const CREATE_EVENT = `${API_URL}/LYKEvent/createEvent`;
 export const CREATE_EVENT_SHORT = 'cetevnt';
 
 export default function Addevent() {
-  const [modalVisible, setModalVisible] = useState(true);
-
+  const [modalVisible, setModalVisible] = useState(false);
+  //const [error, setError] = useState();
   const [mydate, setMyDate] = useState(new Date());
   const navigation = useNavigation();
   const [imgUrl, setImgUrl] = useState();
@@ -82,7 +82,7 @@ export default function Addevent() {
     console.log(ProgressEvent.total);
   };
   const handlePress = async () => {
-    console.log('enter');
+    setModalVisible(false);
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
@@ -123,6 +123,30 @@ export default function Addevent() {
         alert(res.customButton);
       } else {
         let source = res;
+        console.log('response', JSON.stringify(res));
+        uploadFile(res.assets[0]);
+      }
+    });
+  };
+  const handleCameraRoll = () => {
+    setModalVisible(false);
+    let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    launchCamera(options, res => {
+      console.log('Response = ', res);
+      if (res.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (res.error) {
+        console.log('ImagePicker Error: ', res.error);
+      } else if (res.customButton) {
+        console.log('User tapped custom button: ', res.customButton);
+        alert(res.customButton);
+      } else {
+        const source = {uri: res.uri};
         console.log('response', JSON.stringify(res));
         uploadFile(res.assets[0]);
       }
@@ -170,15 +194,15 @@ export default function Addevent() {
 
               </TouchableOpacity> */}
               <Text style={styles.modalText}>Add Image</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={handleCameraRoll}>
                 <Text style={styles.modalBodyText}>Open Camera</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={handlePress}>
                 <Text style={styles.modalBodyText}>Choose Image from Gallery</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={()=>setModalVisible(false)}>
                 <Text style={styles.modalBodyText}>Cancel</Text>
               </TouchableOpacity>
             </View>
@@ -197,6 +221,18 @@ export default function Addevent() {
           eventLocation: '',
           eventContent: '',
         }}
+        validate={(values)=>{
+          let error = {};
+          if(!values.eventSubject) {error.sub='Enter Event Name';return error;}
+          else if(!eventStartDate) {error.sd='Please enter start date'; return error;}
+          else if(!eventEndDate) {error.ed='Please enter end date'; return error;}
+          else if(!startTime) {error.st='Please select Start time'; return error;}
+          else if(!endTime) {error.et='Please select End time'; return error;}
+          else if(!values.eventLocation) {error.loc='Please select location'; return error;}
+        }}
+        validateOnBlur={false}
+        validateOnChange={false}
+        validateOnMount={false}
         onSubmit={async (values, {setSubmitting}) => {
           let userDetails = await AsyncStorage.getItem('userId');
           userDetails = JSON.parse(userDetails);
@@ -252,7 +288,7 @@ export default function Addevent() {
             )
             .catch(err => {});
         }}>
-        {({handleChange, handleSubmit, setFieldValue, isSubmitting}) => (
+        {({handleChange, handleSubmit, errors, isSubmitting, values}) => (
           <View style={globalStyles.innerPagesContainerWhite}>
             {imgUrl ? (
               <View style={styles.addPhotoWrap}>
@@ -297,6 +333,7 @@ export default function Addevent() {
                   onChangeText={handleChange('eventSubject')}
                 />
               </View>
+              {!values.eventSubject && errors.sub && <Text style={styles.error}>{errors.sub}</Text>}
               <View style={styles.startDate}>
                 <View style={[styles.formBox, styles.formBoxinner]}>
                   <TextInput
@@ -326,7 +363,8 @@ export default function Addevent() {
                   />
                 </View>
               </View>
-
+              {errors.sd && <Text style={styles.error}>{errors.sd}</Text>}
+              {errors.ed && <Text style={styles.error}>{errors.ed}</Text>}
               <View style={styles.startDate}>
                 <View style={[styles.formBox, styles.formBoxinner]}>
                   <TextInput
@@ -356,7 +394,8 @@ export default function Addevent() {
                   />
                 </View>
               </View>
-
+              {errors.st && <Text style={styles.error}>{errors.st}</Text>}
+              {errors.et && <Text style={styles.error}>{errors.et}</Text>}
               <View style={styles.formBox}>
                 <TextInput
                   placeholderTextColor="#AFAFAF"
@@ -367,6 +406,7 @@ export default function Addevent() {
                   onChangeText={handleChange('eventLocation')}
                 />
               </View>
+              {errors.loc && <Text style={styles.error}>{errors.loc}</Text>}
 
               <View style={styles.formBox}>
                 <TextInput
