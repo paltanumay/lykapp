@@ -9,8 +9,9 @@ import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 import axios from 'axios';
-import IonIcon from 'react-native-vector-icons/Ionicons';
+import moment from "moment";
 import FIcon from 'react-native-vector-icons/Feather';
+import COLORS from '../global/globalColors';
 
 
 
@@ -50,9 +51,8 @@ export default function CallList() {
                 renderItem={({ item }) => {
                     return (
                         <View style={styles.listContainer}>
-                            <Text style={styles.date}>{item.callType} 
-        <IonIcon name="videocam-outline" size={25} color="#bcbcbc" />
-        <FIcon name="volume-1" size={25} color="#bcbcbc" />
+                            <Text style={styles.date}>
+                                <FIcon name={item.callType==="video"?"video":"phone"} size={25} color={COLORS.blue} />
 
                             </Text>
                             <View style={styles.listImgWrap}>
@@ -66,7 +66,9 @@ export default function CallList() {
                             <View style={styles.listInfo}>
                                 <Text style={styles.listInfoTitle}>{item.firstName}</Text>
                                 <Text style={styles.listInfoSubTitle}>
-                                    {item.mode}{item.timeStamp}
+                                {item.mode === 'outGoing' ? <FIcon name="arrow-up-right" size={20} color={COLORS.blue} />
+                                :<FIcon name="arrow-down-left" size={20} color={COLORS.blue} />}
+                                {moment(new Date()).diff(moment(item.timeStamp.replace(' ','T')+'Z'), 'days') < 2 ? moment(item.timeStamp.replace(' ','T')+'Z').fromNow():moment(item.timeStamp.replace(' ','T')+'Z').format("DD MMM YYYY, h:mm a")}
                                 </Text>
                             </View>
                         </View>
