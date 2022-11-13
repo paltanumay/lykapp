@@ -79,6 +79,8 @@ const styles = StyleSheet.create({
   centeredViewInner: {
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalView: {
     width: '85%',

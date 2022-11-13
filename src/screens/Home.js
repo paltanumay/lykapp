@@ -75,13 +75,13 @@ export default function Home({ navigation }) {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/invited.png')}
                 style={[styles.postImg]}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity>
               <Image
