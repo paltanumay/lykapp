@@ -12,6 +12,7 @@ import {
   Alert,
   Modal,
   Pressable,
+  ToastAndroid,
 } from 'react-native';
 import React, {Component, useState} from 'react';
 import {globalStyles} from '../global/globalStyle';
@@ -36,6 +37,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {Formik} from 'formik';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import moment from 'moment';
 
 const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -51,11 +53,14 @@ export default function Addevent() {
   const [imgUrl, setImgUrl] = useState();
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState('date');
-  const [eventStartDate, seteventStartDate] = useState('');
-  const [eventEndDate, seteventEndDate] = useState('');
-  const [startTime, setstartTime] = useState('');
-  const [endTime, setendTime] = useState('');
+  const [eventStartDate, seteventStartDate] = useState();
+  const [eventEndDate, seteventEndDate] = useState();
+  const [startTime, setstartTime] = useState();
+  const [endTime, setendTime] = useState();
   const [display, setDiplay] = useState('');
+  const showToast = (msg) => {
+    ToastAndroid.show(msg,ToastAndroid.SHORT);
+  };
   const showMode = currentMode => {
     setShow(true);
     setMode(currentMode);
@@ -226,8 +231,10 @@ export default function Addevent() {
           if(!values.eventSubject) {error.sub='Enter Event Name';return error;}
           else if(!eventStartDate) {error.sd='Please enter start date'; return error;}
           else if(!eventEndDate) {error.ed='Please enter end date'; return error;}
+          else if(moment(eventStartDate).diff(moment(eventEndDate),'seconds')>0) { showToast('End Date must be greater than Start Date'); return error}
           else if(!startTime) {error.st='Please select Start time'; return error;}
           else if(!endTime) {error.et='Please select End time'; return error;}
+          else if(moment(eventStartDate +'T'+ startTime+'Z').diff(moment(eventEndDate +'T'+ endTime+'Z'),'seconds')<0) { showToast('End Time must be greater than Start Time'); return error}
           else if(!values.eventLocation) {error.loc='Please select location'; return error;}
         }}
         validateOnBlur={false}
@@ -363,8 +370,8 @@ export default function Addevent() {
                   />
                 </View>
               </View>
-              {errors.sd && <Text style={styles.error}>{errors.sd}</Text>}
-              {errors.ed && <Text style={styles.error}>{errors.ed}</Text>}
+              {!eventStartDate && errors.sd && <Text style={styles.error}>{errors.sd}</Text>}
+              {!eventEndDate && errors.ed && <Text style={styles.error}>{errors.ed}</Text>}
               <View style={styles.startDate}>
                 <View style={[styles.formBox, styles.formBoxinner]}>
                   <TextInput
@@ -394,8 +401,8 @@ export default function Addevent() {
                   />
                 </View>
               </View>
-              {errors.st && <Text style={styles.error}>{errors.st}</Text>}
-              {errors.et && <Text style={styles.error}>{errors.et}</Text>}
+              {!startTime && errors.st && <Text style={styles.error}>{errors.st}</Text>}
+              {!endTime &&errors.et && <Text style={styles.error}>{errors.et}</Text>}
               <View style={styles.formBox}>
                 <TextInput
                   placeholderTextColor="#AFAFAF"

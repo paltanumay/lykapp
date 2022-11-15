@@ -19,6 +19,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useState } from 'react';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import moment from 'moment';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
@@ -105,7 +106,7 @@ export default function Home({ navigation }) {
                   </View>
                   <View style={styles.newstext}>
                     <Text style={styles.newsTitletext}>News & Stories</Text>
-                    <Text style={styles.newsSubTitletext}>{new Date(details.feedTime.split(' ')[0]).toDateString() +' at '+ details.feedTime.split(' ')[1]}</Text>
+                    <Text style={styles.newsSubTitletext}>{moment(new Date()).diff(moment(details.feedTime.replace(' ','T')+'Z'), 'days') < 1 ? moment(details.feedTime.replace(' ','T')+'Z').fromNow():moment(details.feedTime.replace(' ','T')+'Z').format("DD MMM YYYY, h:mm a")}</Text>
                   </View>
                   <TouchableOpacity style={styles.options}>
                     <EnIcon
@@ -214,7 +215,7 @@ export default function Home({ navigation }) {
                     </View>
                     <View style={styles.newstext}>
                       <Text style={styles.newsTitletext}>{details.createdBy.firstName}</Text>
-                      <Text style={styles.newsSubTitletext}>{new Date(details.createdOn.split(' ')[0]).toDateString() +' at '+ details.createdOn.split(' ')[1]}</Text>
+                      <Text style={styles.newsSubTitletext}>{moment(new Date()).diff(moment(details.createdOn.replace(' ','T')+'Z'), 'days') < 1 ? moment(details.createdOn.replace(' ','T')+'Z').fromNow():moment(details.createdOn.replace(' ','T')+'Z').format("DD MMM YYYY, h:mm a")}</Text>
                     </View>
                     <TouchableOpacity style={styles.options}>
                       <EnIcon

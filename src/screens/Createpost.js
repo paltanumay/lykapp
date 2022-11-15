@@ -86,7 +86,7 @@ export default function Createpost() {
       )
       .then(res => {
         console.log(JSON.stringify(res.data));
-        //navigation.push('Sidenav')
+        navigation.push('Sidenav')
       });
   };
   const uploadVideo = file => {
