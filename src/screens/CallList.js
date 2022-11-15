@@ -11,6 +11,7 @@ import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 import axios from 'axios';
 import moment from "moment";
 import FIcon from 'react-native-vector-icons/Feather';
+import SIcon from 'react-native-vector-icons/SimpleLineIcons';
 import COLORS from '../global/globalColors';
 
 
@@ -52,7 +53,7 @@ export default function CallList() {
                     return (
                         <View style={styles.listContainer}>
                             <Text style={styles.date}>
-                                <FIcon name={item.callType==="video"?"video":"phone"} size={25} color={COLORS.blue} />
+                                <SIcon name={item.callType==="camrecorder"?"camrecorder":"phone"} size={23} color={COLORS.blue} />
 
                             </Text>
                             <View style={styles.listImgWrap}>

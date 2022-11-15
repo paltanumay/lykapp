@@ -58,8 +58,8 @@ export default function Addevent() {
   const [startTime, setstartTime] = useState();
   const [endTime, setendTime] = useState();
   const [display, setDiplay] = useState('');
-  const showToast = (msg) => {
-    ToastAndroid.show(msg,ToastAndroid.SHORT);
+  const showToast = msg => {
+    ToastAndroid.show(msg, ToastAndroid.SHORT);
   };
   const showMode = currentMode => {
     setShow(true);
@@ -204,10 +204,12 @@ export default function Addevent() {
               </TouchableOpacity>
 
               <TouchableOpacity onPress={handlePress}>
-                <Text style={styles.modalBodyText}>Choose Image from Gallery</Text>
+                <Text style={styles.modalBodyText}>
+                  Choose Image from Gallery
+                </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={()=>setModalVisible(false)}>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={styles.modalBodyText}>Cancel</Text>
               </TouchableOpacity>
             </View>
@@ -226,16 +228,40 @@ export default function Addevent() {
           eventLocation: '',
           eventContent: '',
         }}
-        validate={(values)=>{
+        validate={values => {
           let error = {};
-          if(!values.eventSubject) {error.sub='Enter Event Name';return error;}
-          else if(!eventStartDate) {error.sd='Please enter start date'; return error;}
-          else if(!eventEndDate) {error.ed='Please enter end date'; return error;}
-          else if(moment(eventStartDate).diff(moment(eventEndDate),'seconds')>0) { showToast('End Date must be greater than Start Date'); return error}
-          else if(!startTime) {error.st='Please select Start time'; return error;}
-          else if(!endTime) {error.et='Please select End time'; return error;}
-          else if(moment(eventStartDate +'T'+ startTime+'Z').diff(moment(eventEndDate +'T'+ endTime+'Z'),'seconds')<0) { showToast('End Time must be greater than Start Time'); return error}
-          else if(!values.eventLocation) {error.loc='Please select location'; return error;}
+          if (!values.eventSubject) {
+            error.sub = 'Enter Event Name';
+            return error;
+          } else if (!eventStartDate) {
+            error.sd = 'Please enter start date';
+            return error;
+          } else if (!eventEndDate) {
+            error.ed = 'Please enter end date';
+            return error;
+          } else if (
+            moment(eventStartDate).diff(moment(eventEndDate), 'seconds') > 0
+          ) {
+            showToast('End Date must be greater than Start Date');
+            return error;
+          } else if (!startTime) {
+            error.st = 'Please select Start time';
+            return error;
+          } else if (!endTime) {
+            error.et = 'Please select End time';
+            return error;
+          } else if (
+            moment(eventStartDate + 'T' + startTime + 'Z').diff(
+              moment(eventEndDate + 'T' + endTime + 'Z'),
+              'seconds',
+            ) < 0
+          ) {
+            showToast('End Time must be greater than Start Time');
+            return error;
+          } else if (!values.eventLocation) {
+            error.loc = 'Please select location';
+            return error;
+          }
         }}
         validateOnBlur={false}
         validateOnChange={false}
@@ -311,8 +337,7 @@ export default function Addevent() {
                 <TouchableOpacity
                   style={styles.addPhotoBt}
                   // onPress={handlePress}
-                  onPress={() => setModalVisible(true)}
-                  >
+                  onPress={() => setModalVisible(true)}>
                   <FIcon name="plus" size={22} color={COLORS.blue} />
 
                   <Text style={styles.addPhotoBtText}>Add photo</Text>
@@ -330,79 +355,104 @@ export default function Addevent() {
             )}
 
             <View style={styles.addEventFormWRap}>
-              <View style={styles.formBox}>
-                <TextInput
-                  placeholderTextColor="#AFAFAF"
-                  style={styles.input}
-                  placeholder="Event Name*"
-                  textContentType="username"
-                  underlineColorAndroid="transparent"
-                  onChangeText={handleChange('eventSubject')}
-                />
-              </View>
-              {!values.eventSubject && errors.sub && <Text style={styles.error}>{errors.sub}</Text>}
-              <View style={styles.startDate}>
-                <View style={[styles.formBox, styles.formBoxinner]}>
+              <View style={{marginBottom: 15}}>
+                <View style={styles.formBox}>
                   <TextInput
                     placeholderTextColor="#AFAFAF"
                     style={styles.input}
-                    placeholder="Start date*"
+                    placeholder="Event Name*"
                     textContentType="username"
                     underlineColorAndroid="transparent"
-                    onTouchStart={() => {
-                      showMode('date'), setDiplay('eventStartDate');
-                    }}
-                    value={eventStartDate}
+                    onChangeText={handleChange('eventSubject')}
                   />
+                </View>
+                {!values.eventSubject && errors.sub && (
+                  <Text style={styles.error}>{errors.sub}</Text>
+                )}
+              </View>
+
+              <View style={styles.startDate}>
+                <View style={[styles.formBoxinner, {marginBottom: 15}]}>
+                  <View style={[styles.formBox]}>
+                    <TextInput
+                      placeholderTextColor="#AFAFAF"
+                      style={styles.input}
+                      placeholder="Start date*"
+                      textContentType="username"
+                      underlineColorAndroid="transparent"
+                      onTouchStart={() => {
+                        showMode('date'), setDiplay('eventStartDate');
+                      }}
+                      value={eventStartDate}
+                    />
+                  </View>
+                  {!eventStartDate && errors.sd && (
+                    <Text style={styles.error}>{errors.sd}</Text>
+                  )}
                 </View>
 
-                <View style={[styles.formBox, styles.formBoxinner]}>
-                  <TextInput
-                    placeholderTextColor="#AFAFAF"
-                    style={styles.input}
-                    placeholder="End date"
-                    textContentType="username"
-                    underlineColorAndroid="transparent"
-                    onTouchStart={() => {
-                      showMode('date'), setDiplay('eventEndDate');
-                    }}
-                    value={eventEndDate}
-                  />
+                <View style={[styles.formBoxinner, {marginBottom: 15}]}>
+                  <View style={[styles.formBox]}>
+                    <TextInput
+                      placeholderTextColor="#AFAFAF"
+                      style={styles.input}
+                      placeholder="End date"
+                      textContentType="username"
+                      underlineColorAndroid="transparent"
+                      onTouchStart={() => {
+                        showMode('date'), setDiplay('eventEndDate');
+                      }}
+                      value={eventEndDate}
+                    />
+                  </View>
+                  {!eventEndDate && errors.ed && (
+                    <Text style={styles.error}>{errors.ed}</Text>
+                  )}
                 </View>
               </View>
-              {!eventStartDate && errors.sd && <Text style={styles.error}>{errors.sd}</Text>}
-              {!eventEndDate && errors.ed && <Text style={styles.error}>{errors.ed}</Text>}
+
               <View style={styles.startDate}>
-                <View style={[styles.formBox, styles.formBoxinner]}>
-                  <TextInput
-                    placeholderTextColor="#AFAFAF"
-                    style={styles.input}
-                    placeholder="Start time*"
-                    textContentType="username"
-                    underlineColorAndroid="transparent"
-                    onTouchStart={() => {
-                      showMode('time'), setDiplay('startTime');
-                    }}
-                    value={startTime}
-                  />
+                <View style={[styles.formBoxinner, {marginBottom: 15}]}>
+                  <View style={[styles.formBox]}>
+                    <TextInput
+                      placeholderTextColor="#AFAFAF"
+                      style={styles.input}
+                      placeholder="Start time*"
+                      textContentType="username"
+                      underlineColorAndroid="transparent"
+                      onTouchStart={() => {
+                        showMode('time'), setDiplay('startTime');
+                      }}
+                      value={startTime}
+                    />
+                  </View>
+                  {!startTime && errors.st && (
+                    <Text style={styles.error}>{errors.st}</Text>
+                  )}
                 </View>
 
-                <View style={[styles.formBox, styles.formBoxinner]}>
-                  <TextInput
-                    placeholderTextColor="#AFAFAF"
-                    style={styles.input}
-                    placeholder="End time"
-                    textContentType="username"
-                    underlineColorAndroid="transparent"
-                    onTouchStart={() => {
-                      showMode('time'), setDiplay('endTime');
-                    }}
-                    value={endTime}
-                  />
+                <View style={[styles.formBoxinner, {marginBottom: 15}]}>
+                  <View style={[styles.formBox]}>
+                    <TextInput
+                      placeholderTextColor="#AFAFAF"
+                      style={styles.input}
+                      placeholder="End time"
+                      textContentType="username"
+                      underlineColorAndroid="transparent"
+                      onTouchStart={() => {
+                        showMode('time'), setDiplay('endTime');
+                      }}
+                      value={endTime}
+                    />
+                  </View>
+                  {!endTime && errors.et && (
+                    <Text style={styles.error}>{errors.et}</Text>
+                  )}
                 </View>
               </View>
-              {!startTime && errors.st && <Text style={styles.error}>{errors.st}</Text>}
-              {!endTime &&errors.et && <Text style={styles.error}>{errors.et}</Text>}
+
+              <View style={{marginBottom: 15}}>
+
               <View style={styles.formBox}>
                 <TextInput
                   placeholderTextColor="#AFAFAF"
@@ -414,12 +464,16 @@ export default function Addevent() {
                 />
               </View>
               {errors.loc && <Text style={styles.error}>{errors.loc}</Text>}
+              </View>
 
               <View style={styles.formBox}>
                 <TextInput
                   placeholderTextColor="#AFAFAF"
-                  style={[styles.input, {textAlignVertical: 'top'}]}
-                  placeholder="Type your message"
+                  style={[
+                    styles.input,
+                    {textAlignVertical: 'top', width: '100%'},
+                  ]}
+                  placeholder="More info"
                   textContentType="username"
                   underlineColorAndroid="transparent"
                   multiline={true}
@@ -487,7 +541,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     paddingHorizontal: 8,
     flexDirection: 'row',
-    marginBottom: 15,
+    //marginBottom: 15,
   },
   startDate: {
     flexDirection: 'row',
@@ -566,7 +620,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     // paddingVertical:15
 
-    paddingLeft:25
+    paddingLeft: 25,
   },
   mSignupBt: {
     backgroundColor: '#fff',
@@ -616,5 +670,12 @@ const styles = StyleSheet.create({
     right: 8,
     top: 10,
     zIndex: 999,
+  },
+  error: {
+    color: 'red',
+    fontFamily: 'SFpro-Regular',
+    fontSize:12,
+    marginTop:3
+
   },
 });

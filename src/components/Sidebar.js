@@ -138,13 +138,14 @@ const CustomDrawer = props => {
 export default function Sidebar() {
   return (
     <Drawer.Navigator
+    
       drawerContent={props => <CustomDrawer {...props} />}
       /* drawerContentOptions={{
         activeBackgroundColor: '#5cbbff',
         activeTintColor: '#ffffff',
       }} */
 
-      
+     
       screenOptions={{
         drawerStyle: {
           backgroundColor: COLORS.blue,
@@ -168,6 +169,16 @@ export default function Sidebar() {
             style={[styles.logoSmall]}
           />
         ),
+        // headerLeft: () => (
+        //   <TouchableOpacity style={styles.hambg}>
+        //    <Image
+        //     resizeMode="contain"
+        //     source={require('../assets/images/ham.png')}
+        //     style={[styles.hamIcon]}
+        //   />
+            
+        //   </TouchableOpacity>
+        // ),
         headerRight: () => (
           <TouchableOpacity style={styles.user}>
            <Image
@@ -180,6 +191,7 @@ export default function Sidebar() {
           </TouchableOpacity>
         ),
       }}
+      
       useLegacyImplementation
       initialRouteName="Home">
       <Drawer.Screen
@@ -366,6 +378,11 @@ const styles = StyleSheet.create({
     right: 15,
     top: 20,
   },
+  hambg: {
+    position: 'absolute',
+    left: 15,
+    top: 20,
+  },
   avatarImgWrap: {
     width: 60,
     height: 60,
@@ -390,5 +407,9 @@ const styles = StyleSheet.create({
   searchIcon:{
     width:20,
     height:20
+  },
+  hamIcon:{
+    width:20,
+    height:25
   }
 });
