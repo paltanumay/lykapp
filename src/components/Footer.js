@@ -97,8 +97,8 @@ export default function Footer() {
             end={{x: 1, y: 0}}
             colors={['#037ee5', '#15a2e0', '#28cad9']}
             style={styles.createBt}>
-            <FIcon name="plus" size={35} color="#fff" />
-            {/* <FIcon name="x" size={35} color="#fff" /> */}
+            {!display?<FIcon name="plus" size={35} color="#fff" />
+            : <FIcon name="x" size={35} color="#fff" /> }
           </LinearGradient>
 
           <Text style={styles.footIconText}>Create</Text>

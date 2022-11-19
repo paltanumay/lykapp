@@ -254,7 +254,7 @@ export default function Addevent() {
             moment(eventStartDate + 'T' + startTime + 'Z').diff(
               moment(eventEndDate + 'T' + endTime + 'Z'),
               'seconds',
-            ) < 0
+            ) > 0
           ) {
             showToast('End Time must be greater than Start Time');
             return error;

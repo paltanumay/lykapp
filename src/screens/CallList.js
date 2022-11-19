@@ -53,7 +53,7 @@ export default function CallList() {
                     return (
                         <View style={styles.listContainer}>
                             <Text style={styles.date}>
-                                <SIcon name={item.callType==="camrecorder"?"camrecorder":"phone"} size={23} color={COLORS.blue} />
+                                <SIcon name={item.callType==="video"?"camrecorder":"phone"} size={23} color={COLORS.blue} />
 
                             </Text>
                             <View style={styles.listImgWrap}>
