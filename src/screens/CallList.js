@@ -9,6 +9,12 @@ import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 import axios from 'axios';
+import moment from "moment";
+import FIcon from 'react-native-vector-icons/Feather';
+import SIcon from 'react-native-vector-icons/SimpleLineIcons';
+import COLORS from '../global/globalColors';
+
+
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const CALL_LOG = `${API_URL}/LYKCallHistory/getCallHistory`;
@@ -46,7 +52,10 @@ export default function CallList() {
                 renderItem={({ item }) => {
                     return (
                         <View style={styles.listContainer}>
-                            <Text style={styles.date}>{item.callType}</Text>
+                            <Text style={styles.date}>
+                                <SIcon name={item.callType==="video"?"camrecorder":"phone"} size={23} color={COLORS.blue} />
+
+                            </Text>
                             <View style={styles.listImgWrap}>
                                 <Image
                                     resizeMode="cover"
@@ -58,7 +67,9 @@ export default function CallList() {
                             <View style={styles.listInfo}>
                                 <Text style={styles.listInfoTitle}>{item.firstName}</Text>
                                 <Text style={styles.listInfoSubTitle}>
-                                    {item.mode}{item.timeStamp}
+                                {item.mode === 'outGoing' ? <FIcon name="arrow-up-right" size={20} color={COLORS.blue} />
+                                :<FIcon name="arrow-down-left" size={20} color={COLORS.blue} />}
+                                {moment(new Date()).diff(moment(item.timeStamp.replace(' ','T')+'Z'), 'days') < 2 ? moment(item.timeStamp.replace(' ','T')+'Z').fromNow():moment(item.timeStamp.replace(' ','T')+'Z').format("DD MMM YYYY, h:mm a")}
                                 </Text>
                             </View>
                         </View>

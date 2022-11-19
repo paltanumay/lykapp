@@ -30,6 +30,8 @@ import Login from './src/screens/Login';
 import Selectcountry from './src/screens/Selectcountry';
 import Signup from './src/screens/Signup';
 import Verification from './src/screens/Verification';
+import Events from './src/screens/Events';
+import EventsDetails from './src/screens/EventsDetails';
 
 const Section = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -68,7 +70,7 @@ const App = () => {
 
   return (
       <NavigationContainer>
-      <Stack.Navigator initialRouteName="Addevent">
+      <Stack.Navigator initialRouteName="Intro">
         <Stack.Screen options={{headerShown: false}} name="Sidenav" component={Sidebar} />
         <Stack.Screen options={{headerShown: false}} name="Login" component={Login} />
         <Stack.Screen options={{headerShown: false}} name="Intro" component={Intro} />
@@ -80,6 +82,8 @@ const App = () => {
         <Stack.Screen options={{headerShown: true}} name="Createpost" component={Createpost} />
         <Stack.Screen options={{headerShown: true}} name="Chatdetails" component={Chatdetails} />
         <Stack.Screen options={{headerShown: true}} name="Addevent" component={Addevent} />
+        <Stack.Screen options={{headerShown: true}} name="Events" component={Events} />
+        <Stack.Screen options={{headerShown: true}} name="EventsDetails" component={EventsDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -86,7 +86,8 @@ export default function Chatnpost() {
 
 const styles = StyleSheet.create({
   chatPostContainer: {
-    backgroundColor: '#e7ebf6',
+    // backgroundColor: '#e7ebf6',
+    backgroundColor: '#fff',
     flex: 10
   },
   tabWrap: {

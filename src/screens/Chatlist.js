@@ -4,11 +4,11 @@ import {
     StyleSheet,
     Image,
     FlatList,
+    TouchableOpacity
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import socketIO from 'socket.io-client';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443/';

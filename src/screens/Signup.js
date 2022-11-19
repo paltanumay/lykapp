@@ -18,6 +18,7 @@ import { Buffer } from 'buffer';
 import Acalreadyexitmodal from '../shared/Acalreadyexitmodal';
 import Findconnectionsmodal from '../shared/Findconnectionsmodal';
 import AsyncStorage from '@react-native-community/async-storage';
+import Agemodal from '../shared/Agemodal';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
 export const SIGNUP_URL = `https://api.lykapp.com/lykjwt/index.php?/user/newUserRegister_V2`;
@@ -29,6 +30,7 @@ export default function Signup({ navigation }) {
   const [userInfo, setuserInfo] = useState();
   const [loggedIn, setLoggedIn] = useState();
   const [alreadyExist, setAlreadyExist] = useState();
+  const [modal, setModal] = useState();
   const phone = useRef();
   useEffect(() => {
     GoogleSignin.configure({
@@ -210,6 +212,7 @@ export default function Signup({ navigation }) {
           const s = (x) => { return x.charCodeAt() };
           let enc = Buffer.from(xorWithKey(JSON.stringify(values).split('').map(s), "x09c22f5".split('').map(s)), 'utf-8').toString('base64');
           axios.post(SIGNUP_URL, { url: enc }).then(res => {
+            setModal(true);
             if (res.data.response.respCode === 3 || res.data.response.respCode === 2) setAlreadyExist(true);
             else navigation.push('Verification', { number: values.countryCode + ' ' + values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId) });
           }, err => {
@@ -313,6 +316,7 @@ export default function Signup({ navigation }) {
       </Formik>
       <Findconnectionsmodal />
       {alreadyExist && <Acalreadyexitmodal />}
+      {modal && <Agemodal />}
     </>
   )
 }

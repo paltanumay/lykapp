@@ -24,7 +24,7 @@ import { useState } from 'react';
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Agemodal() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
 
   const [isSelected, setSelection] = useState(true);
   return (
@@ -41,7 +41,7 @@ export default function Agemodal() {
 
           <View style={styles.centeredViewInner}>
             <View style={styles.modalView}>
-              <TouchableOpacity style={styles.modalClose} onPress={() => this.setModalVisible(!modalVisible)}>
+              <TouchableOpacity style={styles.modalClose} onPress={() => setModalVisible(!modalVisible)}>
                 <IonIcon name="md-close" size={23} color="#333" />
 
               </TouchableOpacity>
@@ -51,6 +51,19 @@ export default function Agemodal() {
               </Text>
               <TouchableOpacity>
                 <Text style={styles.privacyLinkText}>Terms of use and Privacy Policy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={globalStyles.gradBt}  
+                onPress={() =>{ 
+                  setModalVisible(!modalVisible);
+                }}>
+                <LinearGradient
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  colors={['#037ee5', '#15a2e0', '#28cad9']}
+                  style={globalStyles.linearGradient}>
+                  <Text style={globalStyles.buttonText}>Yes, I am sure</Text>
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           </View>

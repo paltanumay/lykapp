@@ -19,6 +19,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useState } from 'react';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import moment from 'moment';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
@@ -75,13 +76,13 @@ export default function Home({ navigation }) {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/invited.png')}
                 style={[styles.postImg]}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity>
               <Image
@@ -105,7 +106,7 @@ export default function Home({ navigation }) {
                   </View>
                   <View style={styles.newstext}>
                     <Text style={styles.newsTitletext}>News & Stories</Text>
-                    <Text style={styles.newsSubTitletext}>{new Date(details.feedTime.split(' ')[0]).toDateString() +' at '+ details.feedTime.split(' ')[1]}</Text>
+                    <Text style={styles.newsSubTitletext}>{moment(new Date()).diff(moment(details.feedTime.replace(' ','T')+'Z'), 'days') < 1 ? moment(details.feedTime.replace(' ','T')+'Z').fromNow():moment(details.feedTime.replace(' ','T')+'Z').format("DD MMM YYYY, h:mm a")}</Text>
                   </View>
                   <TouchableOpacity style={styles.options}>
                     <EnIcon
@@ -136,9 +137,14 @@ export default function Home({ navigation }) {
                 <View style={styles.likeCommentShare}>
                   <View style={styles.likeCommentShareBox}>
                     <View style={styles.likeCommentShareIconWrap}>
-                      <TouchableOpacity style={styles.roundBase}>
+                    <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/liked.png')}
+                        style={[styles.likeImg]}
+                      />
+                      {/* <TouchableOpacity style={styles.roundBase}>
                         <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
-                      </TouchableOpacity>
+                      </TouchableOpacity> */}
 
                       <Text style={styles.iconText}>{details.likeCount} Like</Text>
                     </View>
@@ -146,9 +152,14 @@ export default function Home({ navigation }) {
 
                   <View style={styles.likeCommentShareBox}>
                     <View style={styles.likeCommentShareIconWrap}>
-                      <TouchableOpacity style={styles.roundBase}>
+                      {/* <TouchableOpacity style={styles.roundBase}>
                         <AntIcon name="message1" size={22} color="#c1cb99" />
-                      </TouchableOpacity>
+                      </TouchableOpacity> */}
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/comment.png')}
+                        style={[styles.likeImg]}
+                      />
 
                       <Text style={styles.iconText}>{details.commentCount} Comment</Text>
                     </View>
@@ -156,9 +167,14 @@ export default function Home({ navigation }) {
 
                   <View style={styles.likeCommentShareBox}>
                     <View style={styles.likeCommentShareIconWrap}>
-                      <TouchableOpacity style={styles.roundBase}>
+                      {/* <TouchableOpacity style={styles.roundBase}>
                         <AntIcon name="sharealt" size={22} color="#f8767a" />
-                      </TouchableOpacity>
+                      </TouchableOpacity> */}
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/share.png')}
+                        style={[styles.likeImg]}
+                      />
 
                       <Text style={styles.iconText}>{details.shareCount} Share</Text>
                     </View>
@@ -199,7 +215,7 @@ export default function Home({ navigation }) {
                     </View>
                     <View style={styles.newstext}>
                       <Text style={styles.newsTitletext}>{details.createdBy.firstName}</Text>
-                      <Text style={styles.newsSubTitletext}>{new Date(details.createdOn.split(' ')[0]).toDateString() +' at '+ details.createdOn.split(' ')[1]}</Text>
+                      <Text style={styles.newsSubTitletext}>{moment(new Date()).diff(moment(details.createdOn.replace(' ','T')+'Z'), 'days') < 1 ? moment(details.createdOn.replace(' ','T')+'Z').fromNow():moment(details.createdOn.replace(' ','T')+'Z').format("DD MMM YYYY, h:mm a")}</Text>
                     </View>
                     <TouchableOpacity style={styles.options}>
                       <EnIcon
@@ -230,9 +246,15 @@ export default function Home({ navigation }) {
                   <View style={styles.likeCommentShare}>
                     <View style={styles.likeCommentShareBox}>
                       <View style={styles.likeCommentShareIconWrap}>
-                        <TouchableOpacity style={styles.roundBase}>
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/liked.png')}
+                        style={[styles.likeImg]}
+                      />
+
+                        {/* <TouchableOpacity style={styles.roundBase}>
                           <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
 
                         <Text style={styles.iconText}>{details.likeCount} Like</Text>
                       </View>
@@ -333,12 +355,16 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   newsTitletext: {
-    color: '#080d14',
-    fontFamily: 'Lato-Bold',
-    fontSize: 16,
+    color: '#323a42',
+    fontFamily: 'SFpro-Medium',
+    fontSize: 14,
   },
   newsSubTitletext: {
     color: '#9e9c9c',
+    fontSize: 12,
+    fontFamily: 'SFpro-Regular',
+
+
   },
   options: {
     position: 'absolute',
@@ -356,15 +382,15 @@ const styles = StyleSheet.create({
   },
   mainDesc: {
     color: '#333',
-    fontFamily: 'Lato-regular',
-    fontSize: 16,
+    fontFamily: 'SFpro-Regular',
+    fontSize: 14,
     paddingHorizontal: 15,
     lineHeight: 20,
   },
   secDesc: {
     color: '#333',
-    fontFamily: 'Lato-regular',
-    fontSize: 13,
+    fontFamily: 'SFpro-Regular',
+    fontSize: 14,
     paddingHorizontal: 15,
     lineHeight: 18,
   },
@@ -434,5 +460,10 @@ const styles = StyleSheet.create({
     width: '88%',
     paddingHorizontal: 10,
 
+  },
+  likeImg:{
+    width:40,
+    height:40,
+ 
   }
 });
