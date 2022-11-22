@@ -7,8 +7,8 @@
  */
 
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -19,6 +19,7 @@ import {
 import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
+import AsyncStorage from '@react-native-community/async-storage';
 import Sidebar from './src/components/Sidebar';
 import Addevent from './src/screens/Addevent';
 import Chatdetails from './src/screens/Chatdetails';
@@ -32,34 +33,10 @@ import Signup from './src/screens/Signup';
 import Verification from './src/screens/Verification';
 import Events from './src/screens/Events';
 import EventsDetails from './src/screens/EventsDetails';
-
-const Section = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+import SocketProvider from './src/shared/socketContext';
 
 const App = () => {
+  const [user, setUser] = useState();
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -68,24 +45,58 @@ const App = () => {
 
   const Stack = createNativeStackNavigator();
 
+  useEffect(() => {
+    async function userInfo() {
+      let userDetails = await AsyncStorage.getItem('userId');
+      userDetails = JSON.parse(userDetails);
+      setUser(userDetails);
+    }
+    userInfo();
+  }, [])
+
   return (
-      <NavigationContainer>
-      <Stack.Navigator initialRouteName="Intro">
-        <Stack.Screen options={{headerShown: false}} name="Sidenav" component={Sidebar} />
-        <Stack.Screen options={{headerShown: false}} name="Login" component={Login} />
-        <Stack.Screen options={{headerShown: false}} name="Intro" component={Intro} />
-        <Stack.Screen options={{headerShown: false}} name="Verification" component={Verification} />
-        <Stack.Screen options={{headerShown: false}} name="Country" component={Selectcountry} />
-        <Stack.Screen options={{headerShown: false}} name="SignUp" component={Signup} />
-        <Stack.Screen options={{headerShown: true}} name="Creategroup" component={Creategroup} />
-        <Stack.Screen options={{headerShown: false}} name="Chatnpost" component={Chatnpost} />
-        <Stack.Screen options={{headerShown: true}} name="Createpost" component={Createpost} />
-        <Stack.Screen options={{headerShown: true}} name="Chatdetails" component={Chatdetails} />
-        <Stack.Screen options={{headerShown: true}} name="Addevent" component={Addevent} />
-        <Stack.Screen options={{headerShown: true}} name="Events" component={Events} />
-        <Stack.Screen options={{headerShown: true}} name="EventsDetails" component={EventsDetails} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      {user && (
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName={user?"Sidenav":"Intro"}>
+            <Stack.Screen options={{ headerShown: false }} name="Login" component={Login} />
+            <Stack.Screen options={{ headerShown: false }} name="Intro" component={Intro} />
+            <Stack.Screen options={{ headerShown: false }} name="Verification" component={Verification} />
+            <Stack.Screen options={{ headerShown: false }} name="Country" component={Selectcountry} />
+            <Stack.Screen options={{ headerShown: false }} name="SignUp" component={Signup} />
+            <Stack.Screen options={{ headerShown: false }} name="Sidenav">
+              {() => {
+                return (
+                  <SocketProvider>
+                    <Sidebar />
+                  </SocketProvider>)
+              }}
+            </Stack.Screen>
+            <Stack.Screen options={{ headerShown: true }} name="Creategroup" component={Creategroup} />
+            <Stack.Screen options={{ headerShown: false }} name="Chatnpost">
+              {() => {
+                return (
+                  <SocketProvider>
+                    <Chatnpost />
+                  </SocketProvider>)
+              }}
+            </Stack.Screen>
+            <Stack.Screen options={{ headerShown: true }} name="Createpost" component={Createpost} />
+            <Stack.Screen options={{ headerShown: true }} name="Chatdetails">
+              {() => {
+                return (
+                  <SocketProvider>
+                    <Chatdetails />
+                  </SocketProvider>)
+              }}
+            </Stack.Screen>
+            <Stack.Screen options={{ headerShown: true }} name="Addevent" component={Addevent} />
+            <Stack.Screen options={{ headerShown: true }} name="Events" component={Events} />
+            <Stack.Screen options={{ headerShown: true }} name="EventsDetails" component={EventsDetails} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      )}
+    </>
   );
 };
 

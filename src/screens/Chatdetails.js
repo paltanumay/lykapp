@@ -23,6 +23,7 @@ import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 import axios from 'axios';
+import { useRoute } from '@react-navigation/native';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const CHAT_LOG = `${API_URL}/gtsngchtmsgs`;
@@ -30,7 +31,8 @@ const CHAT_LOG_SHORT = "5S2rYn";
 export const TEMP_ID_PREFIX = "9xxxxxxxxxxxxxxxxxxxxxxx";
 const offset = 0, limit = 25;
 
-export default function Chatdetails({ route }) {
+export default function Chatdetails() {
+  const route = useRoute();
   const scrollRef = useRef();
   const [user, setUser] = useState();
   const [logs, setLogs] = useState([]);
