@@ -8,14 +8,12 @@ import {
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-import socketIO from 'socket.io-client';
 import { useNavigation } from '@react-navigation/native';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443/';
 export const CHAT_LOG = `${API_URL}/gtmchts`;
 const CHAT_LOG_SHORT = "ebc3DeR";
 const offset = 0, limit = 25;
-export const socket = socketIO(API_URL, { jsonp: false, transports: ['websocket'] });
 
 
 export default function ChatList() {

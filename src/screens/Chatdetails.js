@@ -23,7 +23,6 @@ import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 import axios from 'axios';
-import { socket } from './Chatlist';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const CHAT_LOG = `${API_URL}/gtsngchtmsgs`;
@@ -32,7 +31,6 @@ export const TEMP_ID_PREFIX = "9xxxxxxxxxxxxxxxxxxxxxxx";
 const offset = 0, limit = 25;
 
 export default function Chatdetails({ route }) {
-  global.lastDate = 0;
   const scrollRef = useRef();
   const [user, setUser] = useState();
   const [logs, setLogs] = useState([]);
@@ -79,7 +77,9 @@ export default function Chatdetails({ route }) {
           token: token
         }
       }).then(res => {
-        setLogs(res.data.response.messages)
+        if(userDetails.userId===route.params.toUserId)
+          setLogs(res.data.response.messages)
+        else setLogs(res.data.response.messages.reverse())
       }, err => {
         alert(err + userDetails.userId + token)
       }
@@ -93,7 +93,7 @@ export default function Chatdetails({ route }) {
 
       <ScrollView ref={scrollRef} style={globalStyles.innerPagesContainerWhite} onContentSizeChange={() => scrollRef.current.scrollToEnd()}>
         <View style={styles.chatBody}>
-          {logs && logs.reverse().map((ele, i) => (
+          {logs && logs.map((ele, i) => (
             <View key={i}>
               {(() => {
                 if (new Date(lastDate).getDate() == new Date(ele.msgTime).getDate()) return null;
@@ -148,36 +148,37 @@ export default function Chatdetails({ route }) {
               </View>
             </View>))}
         </View>
+      </ScrollView>
 
-        <View style={styles.chatTypeBox}>
-          <View style={styles.chatTypeInputWrap}>
-            <TouchableOpacity style={styles.chatTypeTool}>
-              <IonIcon name="add-circle-outline" size={34} color="#abacb1" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.chatTypeTool}>
-              <OctIcon name="smiley" size={27} color="#8e8f91" />
-            </TouchableOpacity>
 
-            <TextInput
-              placeholderTextColor="#AFAFAF"
-              style={styles.input}
-              placeholder="Type your message"
-              textContentType="username"
-              underlineColorAndroid="transparent"
-              multiline={true}
-              numberOfLines={10}
-              onChangeText={(e) => setSentMsg(e)}
-            />
+      <View style={styles.chatTypeBox}>
+        <View style={styles.chatTypeInputWrap}>
+          <TouchableOpacity style={styles.chatTypeTool}>
+            <IonIcon name="add-circle-outline" size={34} color="#abacb1" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.chatTypeTool}>
+            <OctIcon name="smiley" size={27} color="#8e8f91" />
+          </TouchableOpacity>
 
-            <TouchableOpacity style={styles.chatTypeTool}>
-              <MatIcon name="incognito" size={27} color="#8e8f91" />
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity style={styles.chatSendBt} onPress={sendMsg}>
-            <IonIcon name="send" size={24} color="#fff" />
+          <TextInput
+            placeholderTextColor="#AFAFAF"
+            style={styles.input}
+            placeholder="Type your message"
+            textContentType="username"
+            underlineColorAndroid="transparent"
+            multiline={true}
+            numberOfLines={10}
+            onChangeText={(e) => setSentMsg(e)}
+          />
+
+          <TouchableOpacity style={styles.chatTypeTool}>
+            <MatIcon name="incognito" size={27} color="#8e8f91" />
           </TouchableOpacity>
         </View>
-      </ScrollView>
+        <TouchableOpacity style={styles.chatSendBt} onPress={sendMsg}>
+          <IonIcon name="send" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
     </>
   );
 }
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
   chatBody: {
     paddingHorizontal: 10,
     paddingVertical: 15,
-    flex: 10,
+    flex: .9,
   },
   chatLImg: {
     width: 40,
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   chatTypeBox: {
-    flex: 1,
+    flex: .1,
     borderTopColor: '#b0b0b0',
     borderTopWidth: 1,
     paddingHorizontal: 15,
