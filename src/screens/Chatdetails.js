@@ -8,7 +8,7 @@ import {
   ScrollView,
   FlatList,
 } from 'react-native';
-import React, { Component, useEffect, useState, useRef } from 'react';
+import React, { Component, useEffect, useState, useRef, useContext } from 'react';
 import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
@@ -24,6 +24,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
+import { SocketContext } from '../shared/socketContext';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const CHAT_LOG = `${API_URL}/gtsngchtmsgs`;
@@ -33,6 +34,7 @@ const offset = 0, limit = 25;
 
 export default function Chatdetails() {
   const route = useRoute();
+  const { typing, reload } = useContext(SocketContext);
   const scrollRef = useRef();
   const [user, setUser] = useState();
   const [logs, setLogs] = useState([]);
@@ -68,6 +70,14 @@ export default function Chatdetails() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
       setUser(userDetails);
+      let data = {
+        "type": "single_chat_msg_read",
+        "replyToMsg": {
+          "__rec": "single_chat_reply_message",
+        },
+        "seen": true,
+      }
+      socket.emit('singleChatSeenMessage', data);
       let token = await AsyncStorage.getItem("token") + "-" + CHAT_LOG_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
       axios.post(CHAT_LOG, {
         "userId": getEncUserId(userDetails.userId),
@@ -88,7 +98,7 @@ export default function Chatdetails() {
       )
     }
     getLogs()
-  }, [refresh])
+  }, [refresh, reload])
   return (
     <>
       <Gmodal />
@@ -140,7 +150,7 @@ export default function Chatdetails() {
 
                     <View style={styles.chatInfo}>
                       <Text style={styles.chatInfoTitle}>
-                        {ele.msgText}
+                        {ele.msgText}{typing}
                       </Text>
 
                       <Text style={styles.chatInfoTime}>{new Date(ele.msgTime).toLocaleTimeString()}</Text>
@@ -149,6 +159,22 @@ export default function Chatdetails() {
 
               </View>
             </View>))}
+            {typing && <View style={styles.chatL}>
+                    <View style={styles.chatLImg}>
+                      <Image
+                        resizeMode="cover"
+                        source={require('../assets/images/avatar.jpg')}
+                        style={[styles.chatLImgM]}
+                      />
+                    </View>
+
+                    <View style={styles.chatInfo}>
+                      <Text style={styles.chatInfoTitle}>
+                        <OctIcon name="kebab-horizontal" size={30} color="#8e8f91" /> 
+                      </Text>
+
+                    </View>
+                  </View>}
         </View>
       </ScrollView>
 
@@ -170,7 +196,21 @@ export default function Chatdetails() {
             underlineColorAndroid="transparent"
             multiline={true}
             numberOfLines={10}
-            onChangeText={(e) => setSentMsg(e)}
+            onBlur={()=>{
+              socket.emit('singleChatUserTypingStop',{
+                chatId: route.params.chatId,
+                userId: user.userId,
+                toUserId: route.params.toUserId,
+              })
+            }}
+            onFocus={()=>{
+              socket.emit('singleChatUserTyping',{
+                chatId: route.params.chatId,
+                userId: user.userId,
+                toUserId: route.params.toUserId,
+              })
+            }}
+            onChangeText={(e) => {setSentMsg(e)}}
           />
 
           <TouchableOpacity style={styles.chatTypeTool}>

@@ -73,28 +73,6 @@ export default function ChatList() {
             setLogs(a);
             userDetails = JSON.parse(userDetails);
             setUser(userDetails);
-            // Add a connect listener
-            socket.on('connect_error', function (error) {
-                console.log(error)
-            })
-            socket.on('connect', async function (e) {
-                console.log('Connected!');
-                await socket.emit('userRoomJoin', userDetails.userId.toString());
-                socket.on('erlangStatus', (data) => console.log('type' + data.type));
-                socket.on('userRoomJoin', (e) => {
-                    console.log('joinroom' + e.userId)
-                    if (userDetails.userId.toString().localeCompare(e.userId) === 0) {
-                        console.log('inside --->')
-                        syncChatThreads(e.userId, socket);
-                    }
-                });
-                socket.on('myChats', onChatThreadSync);
-                console.log("XXXXXXX", "emmit on");
-
-                socket.on('myMsgs', onChatMsgSync);
-
-                console.log("XXXXXXX", "emmit on last");
-            });
         }
         getLogs()
     }, [])
