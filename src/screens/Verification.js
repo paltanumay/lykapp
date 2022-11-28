@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { globalStyles } from '../global/globalStyle';
@@ -135,6 +136,7 @@ export default function Verification({ navigation, route }) {
         isSubmitting
       }) => (
         <View style={styles.container}>
+        <ScrollView contentContainerStyle={{alignItems:"center"}}>
           <Text style={styles.loginText}>Sign Up</Text>
 
           <View style={styles.phoneInputWrap}>
@@ -166,7 +168,7 @@ export default function Verification({ navigation, route }) {
           <Text style={styles.probWithVcode}>Problem with {"\n"} your verification code?</Text>
 
           <Text style={styles.youCanText}>You can use one of the sign up{"\n"}
-            options below instead your verification code?</Text>
+            options below instead</Text>
 
 
           <TouchableOpacity style={styles.gBt} onPress={_signIn}>
@@ -189,7 +191,7 @@ export default function Verification({ navigation, route }) {
 
 
 
-          <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Login')}>
+          <TouchableOpacity style={[globalStyles.gradBt, {width:'45%', marginTop:30}]} onPress={() => navigation.push('Login')}>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -199,7 +201,7 @@ export default function Verification({ navigation, route }) {
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Country')}>
+          <TouchableOpacity style={[globalStyles.gradBt, {width:'45%'}]} onPress={() => navigation.push('Country')}>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -216,18 +218,20 @@ export default function Verification({ navigation, route }) {
             </Text>
 
             <TouchableOpacity style={styles.termsW}>
-              <Text style={styles.terms}>Terms of use </Text>
+              <Text style={styles.terms}>Terms of use and Privacy Policy </Text>
             </TouchableOpacity>
-            <Text style={styles.IagreeText}> and </Text>
+            {/* <Text style={styles.IagreeText}> and </Text>
             <TouchableOpacity>
               <Text style={styles.terms}>Privacy Policy.</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           <Image
             style={styles.lbimg}
             source={require('../assets/images/login-b-img.png')}
           />
+
+</ScrollView>
         </View>
       )}
     </Formik>
@@ -254,7 +258,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf2fe',
     borderWidth: 1,
     borderColor: '#488bb4',
-    width: '55%',
+    width: '70%',
     borderRadius: 100,
     height: 45,
     alignItems: 'center',
@@ -267,7 +271,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#434343',
     borderWidth: 1,
     borderColor: '#434343',
-    width: '55%',
+    width: '70%',
     borderRadius: 100,
     height: 45,
     alignItems: 'center',
@@ -310,7 +314,7 @@ const styles = StyleSheet.create({
   },
   termsW: {
     position: 'relative',
-    marginTop: 10,
+    // marginTop: 10,
   },
   terms: {
     color: COLORS.blue,
@@ -343,5 +347,13 @@ const styles = StyleSheet.create({
     textAlign: 'center'
 
 
+  },
+  lbimg:{
+    width:150,
+    height:150,
+    marginTop:25
+  },
+  input:{
+    color:'#333'
   }
 });

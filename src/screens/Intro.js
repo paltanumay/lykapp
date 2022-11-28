@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignItems: 'center',
     paddingTop: 35,
-    paddingHorizontal:25
+    paddingHorizontal:10
   },
   slideMainText: {
     fontSize: 29,

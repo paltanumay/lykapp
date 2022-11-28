@@ -51,7 +51,7 @@ export default function Findconnectionsmodal() {
             </Text>
 
             <View style={styles.learnmoreBtWrapmain}>
-                <TouchableOpacity style={[styles.learnmoreBtWrap,{borderRightColor:'#333', borderRightWidth:1}]}>
+                <TouchableOpacity style={[styles.learnmoreBtWrap,{borderRightColor:'#ccc', borderRightWidth:1}]}>
                     <Text style={styles.learnmoreBtText}>Learn more</Text>
                 </TouchableOpacity>
 
@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
     textAlign:'center',
     paddingVertical:15,
     paddingTop:0,
+    color:'#333'
 
   },
   linearGradient: {
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     width:'50%',
     alignItems:'center',
     borderTopWidth:1,
-    borderTopColor:'#333',
+    borderTopColor:'#ccc',
     paddingVertical:10
   },
   learnmoreBtText:{

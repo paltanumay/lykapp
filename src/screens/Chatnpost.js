@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontFamily: 'SFpro-Regular',
+    color:'#333'
   },
   tabActiveText: {
     color: COLORS.blue,

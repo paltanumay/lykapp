@@ -159,7 +159,7 @@ export default function Sidebar() {
           />
         ),
       },
-        headerStyle: { backgroundColor: COLORS.blue },
+        headerStyle: { backgroundColor: COLORS.blue},
         headerTitleAlign: 'center',
         headerTintColor: '#fff',
         headerTitle: () => (
@@ -214,7 +214,7 @@ export default function Sidebar() {
           ),
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
        name="Chatnpost" 
        component={Chatnpost}
        options={{
@@ -222,7 +222,7 @@ export default function Sidebar() {
           display: 'none'
         }
        }} 
-      />
+      /> */}
 
       <Drawer.Screen
         name="Event Calendar"
@@ -235,11 +235,13 @@ export default function Sidebar() {
             color: 'red',
           },
           drawerIcon: ({ focused, size }) => (
-            <FIcon
-              name="calendar"
-              size={size}
-              color={focused ? '#fff' : '#fff'}
-            />
+
+            <Image
+            resizeMode="contain"
+            source={require('../assets/images/calendar-m.png')}
+            style={[styles.searchIcon]}
+          />
+           
           ),
         }}
       />
@@ -252,11 +254,12 @@ export default function Sidebar() {
           drawerInactiveTintColor: '#fff',
 
           drawerIcon: ({ focused, size }) => (
-            <IonIcon
-              name="wallet-outline"
-              size={size}
-              color={focused ? '#fff' : '#fff'}
-            />
+            <Image
+            resizeMode="contain"
+            source={require('../assets/images/wallet.png')}
+            style={[styles.searchIcon]}
+          />
+           
           ),
         }}
       />
@@ -270,11 +273,11 @@ export default function Sidebar() {
           drawerInactiveTintColor: '#fff',
 
           drawerIcon: ({ focused, size }) => (
-            <FIcon
-              name="briefcase"
-              size={size}
-              color={focused ? '#fff' : '#fff'}
-            />
+            <Image
+            resizeMode="contain"
+            source={require('../assets/images/businessPage.png')}
+            style={[styles.searchIcon]}
+          />
           ),
         }}
       />
@@ -288,11 +291,11 @@ export default function Sidebar() {
           drawerInactiveTintColor: '#fff',
 
           drawerIcon: ({ focused, size }) => (
-            <FIcon
-              name="briefcase"
-              size={size}
-              color={focused ? '#fff' : '#fff'}
-            />
+            <Image
+            resizeMode="contain"
+            source={require('../assets/images/businessPage.png')}
+            style={[styles.searchIcon]}
+          />
           ),
         }}
       />
@@ -306,7 +309,11 @@ export default function Sidebar() {
           drawerInactiveTintColor: '#fff',
 
           drawerIcon: ({ focused, size }) => (
-            <FIcon name="users" size={size} color={focused ? '#fff' : '#fff'} />
+            <Image
+            resizeMode="contain"
+            source={require('../assets/images/referral.png')}
+            style={[styles.searchIcon]}
+          />
           ),
         }}
       />
@@ -320,11 +327,11 @@ export default function Sidebar() {
           drawerInactiveTintColor: '#fff',
 
           drawerIcon: ({ focused, size }) => (
-            <FIcon
-              name="volume-2"
-              size={size}
-              color={focused ? '#fff' : '#fff'}
-            />
+            <Image
+            resizeMode="contain"
+            source={require('../assets/images/contests.png')}
+            style={[styles.searchIcon]}
+          />
           ),
         }}
       />
@@ -351,7 +358,7 @@ export default function Sidebar() {
         name="Logout"
         component={Logout}
         options={{
-          title: 'Logout',
+          title: 'Sign Out',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
 

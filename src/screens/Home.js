@@ -328,6 +328,7 @@ const styles = StyleSheet.create({
   postImg: {
     width: '100%',
     height: 260,
+    marginBottom:15
   },
   newsCardsWrap: {
     padding: 15,

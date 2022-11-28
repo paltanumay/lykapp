@@ -13,6 +13,7 @@ import COLORS from '../global/globalColors';
 import Findconnectionsmodal from '../shared/Findconnectionsmodal';
 
 import FIcon from 'react-native-vector-icons/Feather';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import { Formik } from 'formik';
 import PhoneInput from 'react-native-phone-number-input';
@@ -210,14 +211,15 @@ export default function Login({ navigation }) {
               <TextInput
                 placeholderTextColor="#AFAFAF"
                 style={styles.input}
-                placeholder="Type your password"
+                placeholder="Password"
                 textContentType="username"
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 onChangeText={handleChange('password')}
               />
               <TouchableOpacity style={styles.passNShow}>
-                <FIcon name="eye-off" size={20} color={COLORS.blue} />
+                <IonIcon name="eye-outline" size={20} color={COLORS.blue} />
+                {/* <IonIcon name="ios-eye-off-outline" size={20} color={COLORS.blue} /> */}
               </TouchableOpacity>
             </View>
 
@@ -235,12 +237,12 @@ export default function Login({ navigation }) {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity style={globalStyles.gradBt} onPress={handleSubmit} disabled={isSubmitting}>
+            <TouchableOpacity style={[globalStyles.gradBt, {width:'40%'}]} onPress={handleSubmit} disabled={isSubmitting}>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 colors={['#037ee5', '#15a2e0', '#28cad9']}
-                style={globalStyles.linearGradient}>
+                style={[globalStyles.linearGradient, {height:40}]}>
                 <Text style={globalStyles.buttonText}>Next</Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -269,17 +271,17 @@ export default function Login({ navigation }) {
 
             <View style={styles.Iagree}>
               <Text style={styles.IagreeText}>
-                By signing in you confirm that you are 13 years of age or above and
+                By signing in you confirm that you are 13 {'\n'} years of age or above and
                 agree to our
               </Text>
 
               <TouchableOpacity style={styles.termsW}>
-                <Text style={styles.terms}>Terms of use </Text>
+                <Text style={styles.terms}>Terms of use and Privacy Policy</Text>
               </TouchableOpacity>
-              <Text style={styles.IagreeText}> and </Text>
+              {/* <Text style={styles.IagreeText}> and </Text>
               <TouchableOpacity>
                 <Text style={styles.terms}>Privacy Policy.</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
 
             <Image
@@ -321,9 +323,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf2fe',
     borderWidth: 1,
     borderColor: '#488bb4',
-    width: 260,
+    width: 300,
     borderRadius: 100,
-    height: 47,
+    height: 50,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -334,9 +336,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#434343',
     borderWidth: 1,
     borderColor: '#434343',
-    width: 260,
+    width: 300,
     borderRadius: 100,
-    height: 47,
+    height: 50,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -366,10 +368,10 @@ const styles = StyleSheet.create({
   Iagree: {
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+   // flexWrap: 'wrap',
     width: '80%',
     marginTop: 15,
+    flexDirection:'column'
   },
   IagreeText: {
     textAlign: 'center',
@@ -379,7 +381,7 @@ const styles = StyleSheet.create({
   },
   termsW: {
     position: 'relative',
-    marginTop: 10,
+    //marginTop: 10,
   },
   terms: {
     color: COLORS.blue,
@@ -414,6 +416,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 14,
     fontFamily: 'Lato-Regular',
+    color:'#333'
   },
   lbimg: {
     width: 150,
