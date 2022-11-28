@@ -13,6 +13,7 @@ import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
 import Gmodal from '../shared/Gmodal';
+import { Buffer } from 'buffer';
 import LinearGradient from 'react-native-linear-gradient';
 
 import OctIcon from 'react-native-vector-icons/Octicons';
@@ -34,14 +35,26 @@ const offset = 0, limit = 25;
 
 export default function Chatdetails() {
   const route = useRoute();
-  const { typing, reload } = useContext(SocketContext);
+  const { typing, reload, reconnect } = useContext(SocketContext);
   const scrollRef = useRef();
   const [user, setUser] = useState();
   const [logs, setLogs] = useState([]);
   const [sentMsg, setSentMsg] = useState();
   const [refresh, setRefresh] = useState();
+  const xorWithKey = (a, key) => {
+    let out = new Array(a.length);
+    for (let i = 0; i < a.length; i++) {
+      out[i] = (a[i] ^ key[i % key.length]);
+    }
+    return out;
+  }
   const sendMsg = () => {
     console.log(route.params.chatId + user.userId + route.params.toUserId + sentMsg)
+    encMsg = route.params.chatId + "<->" + sentMsg;
+    const s = (x) => { return x.charCodeAt() };
+    let currentUserId = getEncUserId(route.params.toUserId);
+    let enc = Buffer.from(xorWithKey(encMsg.split('').map(s), currentUserId.split('').map(s)), 'utf-8').toString('base64');
+    console.log('enc msg=>'+ enc);
     let params = {
       "type": "single_chat_msg_sent",
       "chatId": route.params.chatId,
@@ -51,33 +64,22 @@ export default function Chatdetails() {
       "userId": user.userId,
       "toUserId": route.params.toUserId,
       "msgText": sentMsg,
-      "msgTalk": "",
-      "imageUrl": "",
-      "videoUrl": "",
-      "placeName": "",
+      "msgTalk": enc,
       "msgTime": new Date().getTime(),
-      "lat": "",
-      "lng": "",
       "isReply": false,
       "isDisappearing": false,
       "enc": true,
+      "replyToMsg":{"__rec":"single_chat_reply_message"}
     }
     socket.emit('singleChatMessage', params);
-    setRefresh(true);
+    //reconnect();
+    setRefresh(!refresh);
   }
   useEffect(() => {
     async function getLogs() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
       setUser(userDetails);
-      let data = {
-        "type": "single_chat_msg_read",
-        "replyToMsg": {
-          "__rec": "single_chat_reply_message",
-        },
-        "seen": true,
-      }
-      socket.emit('singleChatSeenMessage', data);
       let token = await AsyncStorage.getItem("token") + "-" + CHAT_LOG_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
       axios.post(CHAT_LOG, {
         "userId": getEncUserId(userDetails.userId),
@@ -92,6 +94,39 @@ export default function Chatdetails() {
         if(userDetails.userId===route.params.toUserId)
           setLogs(res.data.response.messages)
         else setLogs(res.data.response.messages.reverse())
+        let data = {
+          "type": "single_chat_msg_read",
+          "replyToMsg": {
+            "__rec": "single_chat_reply_message",
+          },
+          "seen": true,
+        }
+
+        let replyToMsgDict = {};
+                    let replyToMsg = res.data.response.messages[17]; 
+                    let msgText = replyToMsg?.msgText;
+                     if(msgText) {
+                        replyToMsgDict["__rec"] = "single_chat_reply_message"
+                        replyToMsgDict["msgId"] = replyToMsg.msgId || ""
+                        replyToMsgDict["myName"] = replyToMsg.myName || ""
+                        replyToMsgDict["userId"] = replyToMsg.userId || ""
+                        replyToMsgDict["toUserId"] = replyToMsg.toUserId || ""
+                        replyToMsgDict["msgText"] = msgText
+                        replyToMsgDict["msgTalk"] = replyToMsg.msgTalk || ""
+                        replyToMsgDict["imageUrl"] = replyToMsg.imageUrl || ""
+                        replyToMsgDict["placeName"] = replyToMsg.placeName || ""
+                        replyToMsgDict["lat"] = replyToMsg.lat
+                        replyToMsgDict["lng"] = replyToMsg.lng
+                        replyToMsgDict["isReply"] = replyToMsg.isReply
+                        replyToMsgDict["isDisappearing"] = replyToMsg.isDisappearing
+                        replyToMsgDict["enc"] = replyToMsg.enc
+                    } else {
+                        replyToMsgDict["__rec"] = "single_chat_reply_message"
+                    }
+                    data["replyToMsg"] = replyToMsgDict
+  
+      console.log('seen->'+JSON.stringify(data));
+      //socket.emit('singleChatSeenMessage', data);
       }, err => {
         alert(err + userDetails.userId + token)
       }

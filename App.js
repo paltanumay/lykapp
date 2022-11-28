@@ -10,6 +10,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   StyleSheet,
   Text,
   useColorScheme,
@@ -20,6 +21,7 @@ import {
   Colors
 } from 'react-native/Libraries/NewAppScreen';
 import AsyncStorage from '@react-native-community/async-storage';
+import messaging from '@react-native-firebase/messaging';
 import Sidebar from './src/components/Sidebar';
 import Addevent from './src/screens/Addevent';
 import Chatdetails from './src/screens/Chatdetails';
@@ -34,10 +36,18 @@ import Verification from './src/screens/Verification';
 import Events from './src/screens/Events';
 import EventsDetails from './src/screens/EventsDetails';
 import SocketProvider from './src/shared/socketContext';
+import axios from 'axios';
+import { getEncTokenAnyUserId, getEncUserId } from './src/shared/encryption';
+import DeviceInfo from 'react-native-device-info';
+
+const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
+export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
+export const INSERT_PUSH_SHORT = "isrPs";
 
 const App = () => {
   const [route, setRoute] = useState();
   const isDarkMode = useColorScheme() === 'dark';
+  global.toggle = false;
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -45,14 +55,78 @@ const App = () => {
 
   const Stack = createNativeStackNavigator();
 
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  }
+
   useEffect(() => {
     async function userInfo() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
+      let token = await AsyncStorage.getItem("token") + "-" + INSERT_PUSH_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
       if(userDetails) setRoute('Sidenav');
       else setRoute('Intro');
+
+      if(requestUserPermission()){
+        messaging().getToken().then(FCMtoken=>{
+          console.log('token>>>>'+FCMtoken)
+          axios.post(INSERT_PUSH, {
+            "userId": getEncUserId(userDetails.userId),
+            "pushKeyString": FCMtoken,
+            "deviceType": "android",
+            "deviceId": DeviceInfo.getDeviceId(),
+          },
+          {
+            headers:{
+              token: token
+            }
+          }
+        ).then(()=>{})
+      })
+      }
     }
     userInfo();
+
+    // Assume a message-notification contains a "type" property in the data payload of the screen to open
+
+    messaging().onNotificationOpenedApp(async (remoteMessage) => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage.notification,
+      );
+    });
+
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then(async (remoteMessage) => {
+        if (remoteMessage) {
+          console.log(
+            'Notification caused app to open from quit state:',
+            remoteMessage.notification,
+          );
+        }
+      });
+      
+
+      // Register background handler
+      messaging().setBackgroundMessageHandler(async remoteMessage => {
+        console.log('Message handled in the background!', remoteMessage);
+      });
+
+
+      const unsubscribe = messaging().onMessage(async remoteMessage => {
+        console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      });
+  
+      return unsubscribe;
   }, [])
 
   return route ? (
