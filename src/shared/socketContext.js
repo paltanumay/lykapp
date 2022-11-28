@@ -33,8 +33,11 @@ const SocketProvider = ({ children }) => {
             AsyncStorage.setItem('chats', JSON.stringify(data.msgs))
     }
     const onMessageReceived = (data, currentUserId) => {
-        if (data.toUserId.localeCompare(currentUserId)) {
-            console.log(data.toUserId);
+        console.log('userid=='+currentUserId+"data=="+data.userId);
+        if (data.toUserId === currentUserId) {
+            setReload(!toggle);
+            toggle = !toggle;
+            console.log(data.msgTalk+'--'+data.msgText);
             let params = {
                 "type": "single_chat_msg_recv",
                 "msgId": data.msgId,
@@ -87,7 +90,9 @@ const SocketProvider = ({ children }) => {
             });
             socket.on('singleChatSentMessage', () => console.log('onMessageSent'));
 
-            socket.on('singleChatReceiveMessage', (data) => onMessageReceived(data, userDetails.userId));
+            socket.on('singleChatReceiveMessage', (data) =>{ console.log('onMessageReceived'), onMessageReceived(data, userDetails.userId)});
+
+            socket.on('singleChatDeliveryMessage', ()=>console.log('onMessageDelivered'+userDetails.userId))
         });
     }
     useEffect(() => {
@@ -96,7 +101,11 @@ const SocketProvider = ({ children }) => {
     return (
         <SocketContext.Provider value={{
             typing: typing,
-            reload: reload
+            reload: reload,
+            reconnect: () => {
+                console.log('Reconnected!');
+                initializeSocket();
+            }
             }}>
             {children}
         </SocketContext.Provider>
