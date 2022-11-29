@@ -530,6 +530,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 14,
     fontFamily: 'Lato-Regular',
+    color:'#333'
   },
   addEventFormWRap: {
     paddingHorizontal: 25,

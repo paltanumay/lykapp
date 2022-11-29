@@ -38,10 +38,10 @@ export default function Findconnectionsmodal() {
         }}>
         <View style={styles.centeredViewInner}>
           <View style={styles.modalView}>
-          <TouchableOpacity  style={styles.modalClose} onPress={() => setModalVisible(!modalVisible)}>
+          {/* <TouchableOpacity  style={styles.modalClose} onPress={() => setModalVisible(!modalVisible)}>
               <IonIcon name="md-close" size={23} color="#333" />
 
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             <Text style={styles.modalText}>Find LYKMinded Connections</Text>
             <Text style={styles.modalBodyText}>
               LYK uploads your address book on LYK server securely to match
@@ -56,7 +56,7 @@ export default function Findconnectionsmodal() {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.learnmoreBtWrap} onPress={() => setModalVisible(!modalVisible)}>
-                    <Text style={styles.learnmoreBtText}>Ok</Text>
+                    <Text style={[styles.learnmoreBtText, {textTransform:'uppercase'}]}>Ok</Text>
                 </TouchableOpacity>
             </View>
           </View>
@@ -181,6 +181,7 @@ const styles = StyleSheet.create({
   learnmoreBtText:{
     color:COLORS.blue,
     fontFamily: 'SFpro-Medium',
+    textTransform:'uppercase'
 
   },
   modalClose: {
