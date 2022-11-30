@@ -7,13 +7,16 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  Alert,
+  Modal,
+  Pressable,
 } from 'react-native';
-import React, { Component, useEffect, useState, useRef, useContext } from 'react';
-import { globalStyles } from '../global/globalStyle';
+import React, {Component, useEffect, useState, useRef, useContext} from 'react';
+import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
 import Gmodal from '../shared/Gmodal';
-import { Buffer } from 'buffer';
+import {Buffer} from 'buffer';
 import LinearGradient from 'react-native-linear-gradient';
 
 import OctIcon from 'react-native-vector-icons/Octicons';
@@ -22,20 +25,22 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
-import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import axios from 'axios';
-import { useRoute } from '@react-navigation/native';
-import { SocketContext } from '../shared/socketContext';
+import {useRoute} from '@react-navigation/native';
+import {SocketContext} from '../shared/socketContext';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const CHAT_LOG = `${API_URL}/gtsngchtmsgs`;
-const CHAT_LOG_SHORT = "5S2rYn";
-export const TEMP_ID_PREFIX = "9xxxxxxxxxxxxxxxxxxxxxxx";
-const offset = 0, limit = 25;
+const CHAT_LOG_SHORT = '5S2rYn';
+export const TEMP_ID_PREFIX = '9xxxxxxxxxxxxxxxxxxxxxxx';
+const offset = 0,
+  limit = 25;
 
 export default function Chatdetails() {
+  const [modalVisible, setModalVisible] = useState(false);
   const route = useRoute();
-  const { typing, reload, reconnect } = useContext(SocketContext);
+  const {typing, reload, reconnect} = useContext(SocketContext);
   const scrollRef = useRef();
   const [user, setUser] = useState();
   const [logs, setLogs] = useState([]);
@@ -44,171 +49,274 @@ export default function Chatdetails() {
   const xorWithKey = (a, key) => {
     let out = new Array(a.length);
     for (let i = 0; i < a.length; i++) {
-      out[i] = (a[i] ^ key[i % key.length]);
+      out[i] = a[i] ^ key[i % key.length];
     }
     return out;
-  }
+  };
   const sendMsg = () => {
-    console.log(route.params.chatId + user.userId + route.params.toUserId + sentMsg)
-    encMsg = route.params.chatId + "<->" + sentMsg;
-    const s = (x) => { return x.charCodeAt() };
+    console.log(
+      route.params.chatId + user.userId + route.params.toUserId + sentMsg,
+    );
+    encMsg = route.params.chatId + '<->' + sentMsg;
+    const s = x => {
+      return x.charCodeAt();
+    };
     let currentUserId = getEncUserId(route.params.toUserId);
-    let enc = Buffer.from(xorWithKey(encMsg.split('').map(s), currentUserId.split('').map(s)), 'utf-8').toString('base64');
-    console.log('enc msg=>'+ enc);
+    let enc = Buffer.from(
+      xorWithKey(encMsg.split('').map(s), currentUserId.split('').map(s)),
+      'utf-8',
+    ).toString('base64');
+    console.log('enc msg=>' + enc);
     let params = {
-      "type": "single_chat_msg_sent",
-      "chatId": route.params.chatId,
-      "tempId": TEMP_ID_PREFIX + new Date().getTime(),
-      "myName": user.firstName,
-      "chatType": "solo",
-      "userId": user.userId,
-      "toUserId": route.params.toUserId,
-      "msgText": sentMsg,
-      "msgTalk": enc,
-      "msgTime": new Date().getTime(),
-      "isReply": false,
-      "isDisappearing": false,
-      "enc": true,
-      "replyToMsg":{"__rec":"single_chat_reply_message"}
-    }
+      type: 'single_chat_msg_sent',
+      chatId: route.params.chatId,
+      tempId: TEMP_ID_PREFIX + new Date().getTime(),
+      myName: user.firstName,
+      chatType: 'solo',
+      userId: user.userId,
+      toUserId: route.params.toUserId,
+      msgText: sentMsg,
+      msgTalk: enc,
+      msgTime: new Date().getTime(),
+      isReply: false,
+      isDisappearing: false,
+      enc: true,
+      replyToMsg: {__rec: 'single_chat_reply_message'},
+    };
     socket.emit('singleChatMessage', params);
     //reconnect();
     setRefresh(!refresh);
-  }
+  };
   useEffect(() => {
     async function getLogs() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
       setUser(userDetails);
-      let token = await AsyncStorage.getItem("token") + "-" + CHAT_LOG_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
-      axios.post(CHAT_LOG, {
-        "userId": getEncUserId(userDetails.userId),
-        "chatId": route.params.chatId,
-        "limit": limit,
-        "offset": offset,
-      }, {
-        headers: {
-          token: token
-        }
-      }).then(res => {
-        if(userDetails.userId===route.params.toUserId)
-          setLogs(res.data.response.messages)
-        else setLogs(res.data.response.messages.reverse())
-        res.data.response.messages?.filter(o=>!o.seen).forEach(ele=>{
-          let params = {
-            "type": "single_chat_msg_read",
-            "msgId": ele.msgId,
-            "delivered": true,
-            "chatId": ele.chatId,
-            "tempId": TEMP_ID_PREFIX + new Date().getTime(),
-            "myName": ele.firstName,
-            "chatType": "solo",
-            "userId": ele.userId,
-            "toUserId": ele.toUserId,
-            "msgText": ele.msgText,
-            "msgTalk": ele.msgTalk,
-            "msgTime": new Date().getTime(),
-            "isReply": false,
-            "isDisappearing": false,
-            "enc": true,
-            "replyToMsg":{"__rec":"single_chat_reply_message"},
-            "sent": true,
-            "seen": true,
-          }
-          socket.emit('singleChatSeenMessage', params);
-        })
-      }, err => {
-        alert(err + userDetails.userId + token)
-      }
-      )
+      let token =
+        (await AsyncStorage.getItem('token')) +
+        '-' +
+        CHAT_LOG_SHORT +
+        '-' +
+        getEncTokenAnyUserId(userDetails.userId);
+      axios
+        .post(
+          CHAT_LOG,
+          {
+            userId: getEncUserId(userDetails.userId),
+            chatId: route.params.chatId,
+            limit: limit,
+            offset: offset,
+          },
+          {
+            headers: {
+              token: token,
+            },
+          },
+        )
+        .then(
+          res => {
+            if (userDetails.userId === route.params.toUserId)
+              setLogs(res.data.response.messages);
+            else setLogs(res.data.response.messages.reverse());
+            res.data.response.messages
+              ?.filter(o => !o.seen)
+              .forEach(ele => {
+                let params = {
+                  type: 'single_chat_msg_read',
+                  msgId: ele.msgId,
+                  delivered: true,
+                  chatId: ele.chatId,
+                  tempId: TEMP_ID_PREFIX + new Date().getTime(),
+                  myName: ele.firstName,
+                  chatType: 'solo',
+                  userId: ele.userId,
+                  toUserId: ele.toUserId,
+                  msgText: ele.msgText,
+                  msgTalk: ele.msgTalk,
+                  msgTime: new Date().getTime(),
+                  isReply: false,
+                  isDisappearing: false,
+                  enc: true,
+                  replyToMsg: {__rec: 'single_chat_reply_message'},
+                  sent: true,
+                  seen: true,
+                };
+                socket.emit('singleChatSeenMessage', params);
+              });
+          },
+          err => {
+            alert(err + userDetails.userId + token);
+          },
+        );
     }
-    getLogs()
-  }, [refresh, reload])
+    getLogs();
+  }, [refresh, reload]);
   return (
     <>
       <Gmodal />
 
-      <ScrollView ref={scrollRef} style={globalStyles.innerPagesContainerWhite} onContentSizeChange={() => scrollRef.current.scrollToEnd()}>
+      <ScrollView
+        ref={scrollRef}
+        style={globalStyles.innerPagesContainerWhite}
+        onContentSizeChange={() => scrollRef.current.scrollToEnd()}>
         <View style={styles.chatBody}>
-          {logs && logs.map((ele, i) => (
-            <View key={i}>
-              {(() => {
-                if (new Date(lastDate).getDate() == new Date(ele.msgTime).getDate()) return null;
-                else {
-                  lastDate = ele.msgTime;
-                  return (<View style={styles.chatDateTop}>
-                    <Text style={styles.chatDateTopText}>{new Date(ele.msgTime).toDateString()}</Text>
-                  </View>)
-                }
-              })()}
+          {logs &&
+            logs.map((ele, i) => (
+              <View key={i}>
+                {(() => {
+                  if (
+                    new Date(lastDate).getDate() ==
+                    new Date(ele.msgTime).getDate()
+                  )
+                    return null;
+                  else {
+                    lastDate = ele.msgTime;
+                    return (
+                      <View style={styles.chatDateTop}>
+                        <Text style={styles.chatDateTopText}>
+                          {new Date(ele.msgTime).toDateString()}
+                        </Text>
+                      </View>
+                    );
+                  }
+                })()}
 
-              <View style={styles.chatDetails}>
+                <View style={styles.chatDetails}>
+                  {ele.userId === user.userId ? (
+                    <View style={styles.chatR}>
+                      <View style={[styles.chatInfoR]}>
+                        <Text style={styles.chatInfoTxitle}>{ele.msgText}</Text>
 
-                {ele.userId === user.userId ?
-                  <View style={styles.chatR}>
-                    <View style={[styles.chatInfoR]}>
-                      <Text style={styles.chatInfoTxitle}>{ele.msgText}</Text>
+                        <Text style={styles.chatInfoTime}>
+                          {new Date(ele.msgTime).toLocaleTimeString()}
+                        </Text>
+                      </View>
+                      <View style={styles.chatLImgMain}>
+                        <View style={styles.chatLImg}>
+                          <Image
+                            resizeMode="cover"
+                            source={require('../assets/images/music.webp')}
+                            style={[styles.chatLImgM]}
+                          />
+                        </View>
 
-                      <Text style={styles.chatInfoTime}>{new Date(ele.msgTime).toLocaleTimeString()}</Text>
+                        <IonIcon
+                          name={
+                            ele.seen || ele.delivered
+                              ? 'checkmark-done'
+                              : 'checkmark-outline'
+                          }
+                          size={22}
+                          color={ele.seen ? COLORS.blue : null}
+                        />
+                      </View>
                     </View>
-                    <View style={styles.chatLImgMain}>
+                  ) : (
+                    <View style={styles.chatL}>
                       <View style={styles.chatLImg}>
                         <Image
                           resizeMode="cover"
-                          source={require('../assets/images/music.webp')}
+                          source={require('../assets/images/avatar.jpg')}
                           style={[styles.chatLImgM]}
                         />
                       </View>
 
-                      <IonIcon name={ele.seen || ele.delivered ? "checkmark-done" : "checkmark-outline"} size={22} color={ele.seen ? COLORS.blue : null} />
+                      <View style={styles.chatInfo}>
+                        <Text style={styles.chatInfoTitle}>
+                          {ele.msgText}
+                          {typing}
+                        </Text>
+
+                        <Text style={styles.chatInfoTime}>
+                          {new Date(ele.msgTime).toLocaleTimeString()}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-
-                  : <View style={styles.chatL}>
-                    <View style={styles.chatLImg}>
-                      <Image
-                        resizeMode="cover"
-                        source={require('../assets/images/avatar.jpg')}
-                        style={[styles.chatLImgM]}
-                      />
-                    </View>
-
-                    <View style={styles.chatInfo}>
-                      <Text style={styles.chatInfoTitle}>
-                        {ele.msgText}{typing}
-                      </Text>
-
-                      <Text style={styles.chatInfoTime}>{new Date(ele.msgTime).toLocaleTimeString()}</Text>
-                    </View>
-                  </View>}
-
+                  )}
+                </View>
               </View>
-            </View>))}
-            {typing && <View style={styles.chatL}>
-                    <View style={styles.chatLImg}>
-                      <Image
-                        resizeMode="cover"
-                        source={require('../assets/images/avatar.jpg')}
-                        style={[styles.chatLImgM]}
-                      />
-                    </View>
+            ))}
+          {typing && (
+            <View style={styles.chatL}>
+              <View style={styles.chatLImg}>
+                <Image
+                  resizeMode="cover"
+                  source={require('../assets/images/avatar.jpg')}
+                  style={[styles.chatLImgM]}
+                />
+              </View>
 
-                    <View style={styles.chatInfo}>
-                      <Text style={styles.chatInfoTitle}>
-                        <OctIcon name="kebab-horizontal" size={30} color="#8e8f91" /> 
-                      </Text>
-
-                    </View>
-                  </View>}
+              <View style={styles.chatInfo}>
+                <Text style={styles.chatInfoTitle}>
+                  <OctIcon name="kebab-horizontal" size={30} color="#8e8f91" />
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
       </ScrollView>
 
-
       <View style={styles.chatTypeBox}>
         <View style={styles.chatTypeInputWrap}>
-          <TouchableOpacity style={styles.chatTypeTool}>
+          <TouchableOpacity
+            style={styles.chatTypeTool}
+            onPress={() => setModalVisible(true)}>
             <IonIcon name="add-circle-outline" size={34} color="#abacb1" />
           </TouchableOpacity>
+
+          <View style={styles.centeredView}>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setModalVisible(!modalVisible);
+              }}>
+              <View style={styles.centeredViewInner}>
+                <View style={styles.modalView}>
+                  <View style={styles.addMod}>
+                    <Image
+                      resizeMode="cover"
+                      source={require('../assets/images/location.png')}
+                      style={[styles.locationIcon]}
+                    />
+                    <Text style={styles.locationTxt}>Location</Text>
+                  </View>
+
+                  <View style={styles.addMod}>
+                    <Image
+                      resizeMode="cover"
+                      source={require('../assets/images/camera-new.png')}
+                      style={[styles.locationIcon]}
+                    />
+                    <Text style={styles.locationTxt}>Camera</Text>
+                  </View>
+
+                  <View style={styles.addMod}>
+                    <Image
+                      resizeMode="cover"
+                      source={require('../assets/images/gallery.png')}
+                      style={[styles.locationIcon]}
+                    />
+                    <Text style={styles.locationTxt}>Gallery</Text>
+                  </View>
+                  {/* <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => setModalVisible(!modalVisible)}>
+                    <Text style={styles.textStyle}>Hide Modal</Text>
+                  </Pressable> */}
+                </View>
+              </View>
+            </Modal>
+            {/* <Pressable
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.textStyle}>Show Modal</Text>
+      </Pressable> */}
+          </View>
+
           <TouchableOpacity style={styles.chatTypeTool}>
             <OctIcon name="smiley" size={27} color="#8e8f91" />
           </TouchableOpacity>
@@ -221,21 +329,23 @@ export default function Chatdetails() {
             underlineColorAndroid="transparent"
             multiline={true}
             numberOfLines={10}
-            onBlur={()=>{
-              socket.emit('singleChatUserTypingStop',{
+            onBlur={() => {
+              socket.emit('singleChatUserTypingStop', {
                 chatId: route.params.chatId,
                 userId: user.userId,
                 toUserId: route.params.toUserId,
-              })
+              });
             }}
-            onFocus={()=>{
-              socket.emit('singleChatUserTyping',{
+            onFocus={() => {
+              socket.emit('singleChatUserTyping', {
                 chatId: route.params.chatId,
                 userId: user.userId,
                 toUserId: route.params.toUserId,
-              })
+              });
             }}
-            onChangeText={(e) => {setSentMsg(e)}}
+            onChangeText={e => {
+              setSentMsg(e);
+            }}
           />
 
           <TouchableOpacity style={styles.chatTypeTool}>
@@ -270,7 +380,7 @@ const styles = StyleSheet.create({
   chatBody: {
     paddingHorizontal: 10,
     paddingVertical: 15,
-    flex: .9,
+    flex: 0.9,
   },
   chatLImg: {
     width: 40,
@@ -325,7 +435,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   chatTypeBox: {
-    flex: .1,
+    flex: 0.1,
     borderTopColor: '#b0b0b0',
     borderTopWidth: 1,
     paddingHorizontal: 15,
@@ -348,6 +458,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '65%',
+    color: '#333',
   },
   chatSendBt: {
     width: 40,
@@ -357,4 +468,78 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  chatInfoTxitle: {
+    color: '#5d6770',
+  },
+  // Modal
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    position: 'absolute',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    zIndex: 9999,
+  },
+  centeredViewInner: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    height: '90%',
+    justifyContent: 'flex-end',
+    paddingBottom:15
+  },
+  modalView: {
+    paddingTop: 30,
+    width: '100%',
+    flexDirection:'row',
+   justifyContent:'space-between',
+    paddingHorizontal:55,
+    paddingBottom: 20,
+    backgroundColor: 'white',
+    borderRadius: 32,
+
+
+    overflow: 'hidden',
+    alignSelf: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  linearGradient: {
+    padding: 35,
+    width: '100%',
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  locationIcon: {
+    width: 44,
+    height: 44,
+  },
+  locationTxt: {
+    color: '#5d6770',
+    fontFamily: 'SFpro-Medium',
+  },
+  addMod:{
+   marginHorizontal:15
+  }
 });
