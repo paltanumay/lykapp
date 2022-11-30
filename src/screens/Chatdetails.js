@@ -486,7 +486,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     height: '90%',
     justifyContent: 'flex-end',
-    paddingBottom:15
+    paddingBottom:15,
+    paddingHorizontal:8,
   },
   modalView: {
     paddingTop: 30,
@@ -495,6 +496,7 @@ const styles = StyleSheet.create({
    justifyContent:'space-between',
     paddingHorizontal:55,
     paddingBottom: 20,
+    
     backgroundColor: 'white',
     borderRadius: 32,
 
