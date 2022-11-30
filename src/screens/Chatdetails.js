@@ -94,39 +94,29 @@ export default function Chatdetails() {
         if(userDetails.userId===route.params.toUserId)
           setLogs(res.data.response.messages)
         else setLogs(res.data.response.messages.reverse())
-        let data = {
-          "type": "single_chat_msg_read",
-          "replyToMsg": {
-            "__rec": "single_chat_reply_message",
-          },
-          "seen": true,
-        }
-
-        let replyToMsgDict = {};
-                    let replyToMsg = res.data.response.messages[17]; 
-                    let msgText = replyToMsg?.msgText;
-                     if(msgText) {
-                        replyToMsgDict["__rec"] = "single_chat_reply_message"
-                        replyToMsgDict["msgId"] = replyToMsg.msgId || ""
-                        replyToMsgDict["myName"] = replyToMsg.myName || ""
-                        replyToMsgDict["userId"] = replyToMsg.userId || ""
-                        replyToMsgDict["toUserId"] = replyToMsg.toUserId || ""
-                        replyToMsgDict["msgText"] = msgText
-                        replyToMsgDict["msgTalk"] = replyToMsg.msgTalk || ""
-                        replyToMsgDict["imageUrl"] = replyToMsg.imageUrl || ""
-                        replyToMsgDict["placeName"] = replyToMsg.placeName || ""
-                        replyToMsgDict["lat"] = replyToMsg.lat
-                        replyToMsgDict["lng"] = replyToMsg.lng
-                        replyToMsgDict["isReply"] = replyToMsg.isReply
-                        replyToMsgDict["isDisappearing"] = replyToMsg.isDisappearing
-                        replyToMsgDict["enc"] = replyToMsg.enc
-                    } else {
-                        replyToMsgDict["__rec"] = "single_chat_reply_message"
-                    }
-                    data["replyToMsg"] = replyToMsgDict
-  
-      console.log('seen->'+JSON.stringify(data));
-      //socket.emit('singleChatSeenMessage', data);
+        res.data.response.messages?.filter(o=>!o.seen).forEach(ele=>{
+          let params = {
+            "type": "single_chat_msg_read",
+            "msgId": ele.msgId,
+            "delivered": true,
+            "chatId": ele.chatId,
+            "tempId": TEMP_ID_PREFIX + new Date().getTime(),
+            "myName": ele.firstName,
+            "chatType": "solo",
+            "userId": ele.userId,
+            "toUserId": ele.toUserId,
+            "msgText": ele.msgText,
+            "msgTalk": ele.msgTalk,
+            "msgTime": new Date().getTime(),
+            "isReply": false,
+            "isDisappearing": false,
+            "enc": true,
+            "replyToMsg":{"__rec":"single_chat_reply_message"},
+            "sent": true,
+            "seen": true,
+          }
+          socket.emit('singleChatSeenMessage', params);
+        })
       }, err => {
         alert(err + userDetails.userId + token)
       }

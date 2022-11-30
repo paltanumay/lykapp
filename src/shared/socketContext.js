@@ -3,6 +3,7 @@ import React, { createContext, useEffect, useState } from "react";
 import socketIO from 'socket.io-client';
 
 const SOCKET_URL = process.env.API_URL || 'https://socket.lykapp.com:8443/';
+export const TEMP_ID_PREFIX = "9xxxxxxxxxxxxxxxxxxxxxxx";
 
 export const SocketContext = createContext(null);
 
@@ -42,9 +43,23 @@ const SocketProvider = ({ children }) => {
                 "type": "single_chat_msg_recv",
                 "msgId": data.msgId,
                 "delivered": true,
+                "chatId": data.chatId,
+                "tempId": TEMP_ID_PREFIX + new Date().getTime(),
+                "myName": data.firstName,
+                "chatType": "solo",
+                "userId": data.userId,
+                "toUserId": data.toUserId,
+                "msgText": data.msgText,
+                "msgTalk": data.msgTalk,
+                "msgTime": new Date().getTime(),
+                "isReply": false,
+                "isDisappearing": false,
+                "enc": true,
+                "replyToMsg":{"__rec":"single_chat_reply_message"},
                 "sent": true,
             }
             socket.emit('singleChatDeliveryMessage', params);
+            socket.emit('singleChatSeenMessage', {...params, seen: true, type: "single_chat_msg_read"});
         }
     }
     const initializeSocket = async () => {

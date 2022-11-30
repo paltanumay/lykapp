@@ -70,27 +70,29 @@ const App = () => {
     async function userInfo() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
-      let token = await AsyncStorage.getItem("token") + "-" + INSERT_PUSH_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
-      if(userDetails) setRoute('Sidenav');
+      if(userDetails) {
+        setRoute('Sidenav');
+        let token = await AsyncStorage.getItem("token") + "-" + INSERT_PUSH_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
+        if(requestUserPermission()){
+          messaging().getToken().then(FCMtoken=>{
+            console.log('token>>>>'+FCMtoken)
+            axios.post(INSERT_PUSH, {
+              "userId": getEncUserId(userDetails.userId),
+              "pushKeyString": FCMtoken,
+              "deviceType": "android",
+              "deviceId": DeviceInfo.getDeviceId(),
+            },
+            {
+              headers:{
+                token: token
+              }
+            }
+          ).then(()=>{})
+        })
+        }
+      }
       else setRoute('Intro');
 
-      if(requestUserPermission()){
-        messaging().getToken().then(FCMtoken=>{
-          console.log('token>>>>'+FCMtoken)
-          axios.post(INSERT_PUSH, {
-            "userId": getEncUserId(userDetails.userId),
-            "pushKeyString": FCMtoken,
-            "deviceType": "android",
-            "deviceId": DeviceInfo.getDeviceId(),
-          },
-          {
-            headers:{
-              token: token
-            }
-          }
-        ).then(()=>{})
-      })
-      }
     }
     userInfo();
 
@@ -123,7 +125,7 @@ const App = () => {
 
 
       const unsubscribe = messaging().onMessage(async remoteMessage => {
-        console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+        Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
       });
   
       return unsubscribe;
