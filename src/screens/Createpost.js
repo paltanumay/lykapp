@@ -31,7 +31,7 @@ export const NEW_POST = `${API_URL}/Postchat/createNewPost`;
 export const CREATE_NEW_POST_SHORT = 'cetNwot';
 
 export default function Createpost() {
-  const [activeTab, setActiveTab] = useState('a');
+  const [activeTab, setActiveTab] = useState('b');
   const navigation = useNavigation();
   const [user, setUser] = useState();
   const [post, setPost] = useState();
