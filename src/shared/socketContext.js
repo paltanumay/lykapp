@@ -8,7 +8,7 @@ export const TEMP_ID_PREFIX = "9xxxxxxxxxxxxxxxxxxxxxxx";
 export const SocketContext = createContext(null);
 
 const SocketProvider = ({ children }) => {
-    const [user, setUser] = useState();
+    const [typinguser, setTypingUser] = useState();
     const [typing, setTypeing] = useState();
     const [reload, setReload] = useState();
     global.lastDate = 0;
@@ -28,16 +28,18 @@ const SocketProvider = ({ children }) => {
     }
     const onChatThreadSync = (data) => {
         //console.log(JSON.stringify(data));
+        if (data.chats.length > 0)
+            AsyncStorage.setItem('chtmsg', JSON.stringify(data.chats))
     }
     const onChatMsgSync = async (data) => {
-        if (data.msgs.length > 0)
-            AsyncStorage.setItem('chats', JSON.stringify(data.msgs))
+        /* if (data.msgs.length > 0)
+            AsyncStorage.setItem('chats', JSON.stringify(data.msgs)) */
     }
     const onMessageReceived = (data, currentUserId) => {
         console.log('userid=='+currentUserId+"data=="+data.userId);
         if (data.toUserId === currentUserId) {
-            setReload(!toggle);
-            toggle = !toggle;
+            //setReload(!toggle);
+            //toggle = !toggle;
             console.log(data.msgTalk+'--'+data.msgText);
             let params = {
                 "type": "single_chat_msg_recv",
@@ -47,8 +49,8 @@ const SocketProvider = ({ children }) => {
                 "tempId": TEMP_ID_PREFIX + new Date().getTime(),
                 "myName": data.firstName,
                 "chatType": "solo",
-                "userId": data.userId,
-                "toUserId": data.toUserId,
+                "userId": data.toUserId,
+                "toUserId": data.userId,
                 "msgText": data.msgText,
                 "msgTalk": data.msgTalk,
                 "msgTime": new Date().getTime(),
@@ -65,7 +67,7 @@ const SocketProvider = ({ children }) => {
     const initializeSocket = async () => {
         let userDetails = await AsyncStorage.getItem('userId');
         userDetails = JSON.parse(userDetails);
-        setUser(userDetails);
+        //setUser(userDetails);
         // Add a connect listener
         socket.on('connect_error', function (error) {
             console.log(error)
@@ -89,7 +91,8 @@ const SocketProvider = ({ children }) => {
             console.log("XXXXXXX", "emmit on last");
 
             socket.on('singleChatUserTyping', (data)=>{
-                console.log('onTyping');
+                console.log('onTyping'+data.userId);
+                setTypingUser(data.userId);
                 if(userDetails.userId===data.toUserId) setTypeing(true);
             });
             socket.on('singleChatDelMessage', ()=>console.log('singleMsgDelForAll'));
@@ -101,7 +104,10 @@ const SocketProvider = ({ children }) => {
 
             socket.on('singleChatSeenMessage', (data) => {
                 console.log('onReadMsg')
-                if(userDetails.userId===data.toUserId) setReload(!reload);
+                if(userDetails.userId===data.userId){ 
+                    setReload(!toggle);
+                    toggle = !toggle;
+                }
             });
             socket.on('singleChatSentMessage', () => console.log('onMessageSent'));
 
@@ -117,6 +123,7 @@ const SocketProvider = ({ children }) => {
         <SocketContext.Provider value={{
             typing: typing,
             reload: reload,
+            typinguser: typinguser,
             reconnect: () => {
                 console.log('Reconnected!');
                 initializeSocket();

@@ -48,6 +48,7 @@ const App = () => {
   const [route, setRoute] = useState();
   const isDarkMode = useColorScheme() === 'dark';
   global.toggle = false;
+  global.chatmsg = [];
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
