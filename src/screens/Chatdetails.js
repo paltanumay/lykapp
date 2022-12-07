@@ -10,13 +10,14 @@ import {
   Alert,
   Modal,
   Pressable,
+  PermissionsAndroid,
 } from 'react-native';
-import React, {Component, useEffect, useState, useRef, useContext} from 'react';
-import {globalStyles} from '../global/globalStyle';
+import React, { Component, useEffect, useState, useRef, useContext } from 'react';
+import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Header from '../components/Header';
 import Gmodal from '../shared/Gmodal';
-import {Buffer} from 'buffer';
+import { Buffer } from 'buffer';
 import LinearGradient from 'react-native-linear-gradient';
 
 import OctIcon from 'react-native-vector-icons/Octicons';
@@ -25,13 +26,15 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
-import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
+import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 import axios from 'axios';
-import {useRoute} from '@react-navigation/native';
-import {SocketContext} from '../shared/socketContext';
+import { useRoute } from '@react-navigation/native';
+import { SocketContext } from '../shared/socketContext';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const CHAT_LOG = `${API_URL}/gtsngchtmsgs`;
+export const UPLOAD_IMG = 'https://api.lykapp.com/lykjwt/index.php?/Chatpost/uploadImage';
 const CHAT_LOG_SHORT = '5S2rYn';
 export const TEMP_ID_PREFIX = '9xxxxxxxxxxxxxxxxxxxxxxx';
 const offset = 0,
@@ -40,9 +43,10 @@ const offset = 0,
   // const EmojiPicker = require('react-native-emoji-picker');
 
 export default function Chatdetails() {
+  const [imgUrl, setImgUrl] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const route = useRoute();
-  const {typing, reload, reconnect} = useContext(SocketContext);
+  const { typing, reload, reconnect } = useContext(SocketContext);
   const scrollRef = useRef();
   const [user, setUser] = useState();
   const [logs, setLogs] = useState([]);
@@ -83,11 +87,19 @@ export default function Chatdetails() {
       isReply: false,
       isDisappearing: false,
       enc: true,
-      replyToMsg: {__rec: 'single_chat_reply_message'},
+      replyToMsg: { __rec: 'single_chat_reply_message' },
     };
+    if (imgUrl) params = { ...params, imageUrl: imgUrl };
     socket.emit('singleChatMessage', params);
     //reconnect();
+    socket.emit('singleChatUserTypingStop', {
+      chatId: route.params.chatId,
+      userId: user.userId,
+      toUserId: route.params.toUserId,
+    });
     setRefresh(!refresh);
+    setModalVisible(false);
+    setImgUrl();
   };
   useEffect(() => {
     async function getLogs() {
@@ -139,7 +151,7 @@ export default function Chatdetails() {
                   isReply: false,
                   isDisappearing: false,
                   enc: true,
-                  replyToMsg: {__rec: 'single_chat_reply_message'},
+                  replyToMsg: { __rec: 'single_chat_reply_message' },
                   sent: true,
                   seen: true,
                 };
@@ -153,10 +165,105 @@ export default function Chatdetails() {
     }
     getLogs();
   }, [refresh, reload]);
-
-  // _emojiSelected(emoji) {
-  //   console.log(emoji)
-  // }
+  const uploadProgress = ProgressEvent => {
+    console.log(ProgressEvent.total);
+  };
+  const handlePress = async () => {
+    setModalVisible(false);
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Access Storage',
+          message: 'Access Storage for the pictures',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use read from the storage');
+      } else {
+        console.log('Storage permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+    var options = {
+      title: 'Select Image',
+      customButtons: [
+        {
+          name: 'customOptionKey',
+          title: 'Choose file from Custom Option',
+        },
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    launchImageLibrary(options, res => {
+      console.log('Response = ', res);
+      if (res.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (res.error) {
+        console.log('ImagePicker Error: ', res.error);
+      } else if (res.customButton) {
+        console.log('User tapped custom button: ', res.customButton);
+        alert(res.customButton);
+      } else {
+        let source = res;
+        console.log('response', JSON.stringify(res));
+        uploadFile(res.assets[0]);
+      }
+    });
+  };
+  const handleCameraRoll = () => {
+    setModalVisible(false);
+    let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    launchCamera(options, res => {
+      console.log('Response = ', res);
+      if (res.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (res.error) {
+        console.log('ImagePicker Error: ', res.error);
+      } else if (res.customButton) {
+        console.log('User tapped custom button: ', res.customButton);
+        alert(res.customButton);
+      } else {
+        const source = { uri: res.uri };
+        console.log('response', JSON.stringify(res));
+        uploadFile(res.assets[0]);
+      }
+    });
+  };
+  const uploadFile = file => {
+    let formdata = new FormData();
+    formdata.append('image', {
+      name: 'image',
+      type: file.type,
+      uri: file.uri,
+    });
+    axios
+      .post(UPLOAD_IMG, formdata, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: uploadProgress,
+      })
+      .then(
+        res => {
+          //alert(JSON.stringify(res.data.response.imageUrl ))
+          setImgUrl(res.data.response.imageUrl);
+          setModalVisible(true);
+        },
+        err => {
+          console.log(err);
+        },
+      );
+  };
   return (
     <>
       <Gmodal />
@@ -191,7 +298,17 @@ export default function Chatdetails() {
                   {ele.userId === user.userId ? (
                     <View style={styles.chatR}>
                       <View style={[styles.chatInfoR]}>
-                        <Text style={styles.chatInfoTxitle}>{ele.msgText}</Text>
+                        <Text style={styles.chatInfoTxitle}>{ele.msgText}
+                          {ele.imageUrl && <View style={styles.addPhotoWrap}>
+                            <Image
+                              style={styles.eventImg}
+                              source={{
+                                uri: 'https://cdn.lykapp.com/newsImages/images/' + ele.imageUrl,
+                              }}
+                            />
+                          </View>}
+                        </Text>
+
 
                         <Text style={styles.chatInfoTime}>
                           {new Date(ele.msgTime).toLocaleTimeString()}
@@ -231,6 +348,14 @@ export default function Chatdetails() {
                         <Text style={styles.chatInfoTitle}>
                           {ele.msgText}
                           {typing}
+                          {ele.imageUrl && <View style={styles.addPhotoWrap}>
+                            <Image
+                              style={styles.eventImg}
+                              source={{
+                                uri: 'https://cdn.lykapp.com/newsImages/images/' + ele.imageUrl,
+                              }}
+                            />
+                          </View>}
                         </Text>
 
                         <Text style={styles.chatInfoTime}>
@@ -286,7 +411,11 @@ export default function Chatdetails() {
                 Alert.alert('Modal has been closed.');
                 setModalVisible(!modalVisible);
               }}>
-              <View style={styles.centeredViewInner}>
+              <TouchableOpacity
+                style={styles.centeredViewInner}
+                activeOpacity={1}
+                onPressOut={() => { setModalVisible(false) }}
+              >
                 <View style={styles.modalView}>
                   <TouchableOpacity style={styles.addMod}>
                     <Image
@@ -297,30 +426,37 @@ export default function Chatdetails() {
                     <Text style={styles.locationTxt}>Location</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.addMod}>
-                    <Image
-                      resizeMode="cover"
-                      source={require('../assets/images/camera-new.png')}
-                      style={[styles.locationIcon]}
-                    />
-                    <Text style={styles.locationTxt}>Camera</Text>
-                  </TouchableOpacity>
+                  <View style={styles.addMod}>
+                    <TouchableOpacity onPress={handleCameraRoll}>
+                      <Image
+                        resizeMode="cover"
+                        source={require('../assets/images/camera-new.png')}
+                        style={[styles.locationIcon]}
+                      />
+                      <Text style={styles.locationTxt}>Camera</Text>
+                    </TouchableOpacity>
+                  </View>
 
-                  <TouchableOpacity style={styles.addMod}>
+                  <View style={styles.addMod}>
+                    <TouchableOpacity onPress={handlePress}>
+                      <Image
+                        resizeMode="cover"
+                        source={require('../assets/images/gallery.png')}
+                        style={[styles.locationIcon]}
+                      />
+                      <Text style={styles.locationTxt}>Gallery</Text>
+                    </TouchableOpacity>
+                  </View>
+                  {imgUrl && <View style={styles.addPhotoWrap}>
                     <Image
-                      resizeMode="cover"
-                      source={require('../assets/images/gallery.png')}
-                      style={[styles.locationIcon]}
+                      style={styles.eventImg}
+                      source={{
+                        uri: 'https://cdn.lykapp.com/newsImages/images/' + imgUrl,
+                      }}
                     />
-                    <Text style={styles.locationTxt}>Gallery</Text>
-                  </TouchableOpacity>
-                  {/* <Pressable
-                    style={[styles.button, styles.buttonClose]}
-                    onPress={() => setModalVisible(!modalVisible)}>
-                    <Text style={styles.textStyle}>Hide Modal</Text>
-                  </Pressable> */}
+                  </View>}
                 </View>
-              </View>
+              </TouchableOpacity>
             </Modal>
             {/* <Pressable
         style={[styles.button, styles.buttonOpen]}
@@ -500,17 +636,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     height: '90%',
     justifyContent: 'flex-end',
-    paddingBottom:15,
-    paddingHorizontal:8,
+    paddingBottom: 15,
+    paddingHorizontal: 8,
   },
   modalView: {
     paddingTop: 30,
     width: '100%',
-    flexDirection:'row',
-   justifyContent:'space-between',
-    paddingHorizontal:55,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 55,
     paddingBottom: 20,
-    
+
     backgroundColor: 'white',
     borderRadius: 32,
 
@@ -555,7 +691,18 @@ const styles = StyleSheet.create({
     color: '#5d6770',
     fontFamily: 'SFpro-Medium',
   },
-  addMod:{
-   marginHorizontal:15
-  }
+  addMod: {
+    marginHorizontal: 15
+  },
+  addPhotoWrap: {
+    backgroundColor: '#dbe0e6',
+    height: 150,
+    width: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  eventImg: {
+    width: '100%',
+    height: '100%',
+  },
 });

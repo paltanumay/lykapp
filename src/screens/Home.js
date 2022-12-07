@@ -230,7 +230,7 @@ export default function Home({ navigation }) {
                   {details.title}
                 </Text> */}
 
-                  <View style={styles.newsCoverImg}>
+                  {details.imageUrl && <View style={styles.newsCoverImg}>
                     <Image
                       resizeMode="stretch"
                       source={{
@@ -238,7 +238,7 @@ export default function Home({ navigation }) {
                       }}
                       style={[styles.postImg]}
                     />
-                  </View>
+                  </View>}
                   <Text style={styles.secDesc}>
                     {details.title}
                   </Text>

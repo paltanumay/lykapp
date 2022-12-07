@@ -37,7 +37,9 @@ export default function Footer() {
             <Text style={[styles.createInnerText]}>Chat</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItems2}>
+          <TouchableOpacity 
+            style={styles.menuItems2}
+            onPress={() => navigation.push('Creategroup')}>
             <View style={styles.iconCont}>
               {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
               <IonIcon name="people-outline" size={25} color={COLORS.blue} />

@@ -48,6 +48,7 @@ const App = () => {
   const [route, setRoute] = useState();
   const isDarkMode = useColorScheme() === 'dark';
   global.toggle = false;
+  global.chatmsg = [];
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -157,7 +158,14 @@ const App = () => {
                 </SocketProvider>)
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: true }} name="Createpost" component={Createpost} />
+          <Stack.Screen options={{ headerShown: true }} name="Createpost">
+          {() => {
+              return (
+                <SocketProvider>
+                  <Createpost />
+                </SocketProvider>)
+            }}
+          </Stack.Screen>
           <Stack.Screen options={{ headerShown: true }} name="Chatdetails">
             {() => {
               return (
