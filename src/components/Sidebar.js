@@ -147,6 +147,7 @@ export default function Sidebar() {
 
      
       screenOptions={{
+        headerShown: false,
         drawerStyle: {
           backgroundColor: COLORS.blue,
           width: 290,
