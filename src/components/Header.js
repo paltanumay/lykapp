@@ -1,13 +1,14 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Text, TouchableOpacity, View, Image, StyleSheet} from 'react-native';
 import COLORS from '../global/globalColors';
 import FIcon from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
 
-export default class Header extends Component {
-  render() {
+export default function Header () {
+  const navigation = useNavigation();
     return (
       <View style={styles.header}>
-        <TouchableOpacity style={[styles.backIconWrap]}>
+        <TouchableOpacity style={[styles.backIconWrap]} onPress={()=>navigation.toggleDrawer()}>
         {/* <FIcon name="arrow-left" size={25} color="#333" /> */}
         <FIcon name="menu" size={25} color="#fff" />
           {/* <Image
@@ -47,7 +48,6 @@ export default class Header extends Component {
        
       </View>
     );
-  }
 }
 const styles = StyleSheet.create({
   backIconWrap: {

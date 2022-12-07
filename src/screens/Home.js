@@ -20,6 +20,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { useState } from 'react';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
 import moment from 'moment';
+import Header from '../components/Header';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
@@ -62,6 +63,7 @@ export default function Home({ navigation }) {
   }, [])
   return (
     <>
+    <Header />
       <View style={globalStyles.innerPagesContainer}>
         <ScrollView
           showsVerticalScrollIndicator={false}
