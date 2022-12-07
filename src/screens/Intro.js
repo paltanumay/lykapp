@@ -46,7 +46,7 @@ const slides = [
     key: 5,
     title: 'Get rewarded for\n your activities\n on LYK',
     text: 'Increase your engagement\n and earn rewards',
-    image: require('../assets/images/intro-4.png'),
+    image: require('../assets/images/intro-5.png'),
     backgroundColor: '#22bcb5',
   }
 
