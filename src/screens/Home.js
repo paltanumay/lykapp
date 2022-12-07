@@ -262,9 +262,14 @@ export default function Home({ navigation }) {
 
                     <View style={styles.likeCommentShareBox}>
                       <View style={styles.likeCommentShareIconWrap}>
-                        <TouchableOpacity style={styles.roundBase}>
+                        {/* <TouchableOpacity style={styles.roundBase}>
                           <AntIcon name="message1" size={22} color="#c1cb99" />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
+                        <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/comment.png')}
+                        style={[styles.likeImg]}
+                      />
 
                         <Text style={styles.iconText}>{details.commentCount} Comment</Text>
                       </View>
@@ -272,9 +277,14 @@ export default function Home({ navigation }) {
 
                     <View style={styles.likeCommentShareBox}>
                       <View style={styles.likeCommentShareIconWrap}>
-                        <TouchableOpacity style={styles.roundBase}>
+                        {/* <TouchableOpacity style={styles.roundBase}>
                           <AntIcon name="sharealt" size={22} color="#f8767a" />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
+                        <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/share.png')}
+                        style={[styles.likeImg]}
+                      />
 
                         <Text style={styles.iconText}>{details.shareCount} Share</Text>
                       </View>
@@ -343,8 +353,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoImg: {
-    width: 30,
-    height: 30,
+    width: '100%',
+    height: '100%',
   },
   cardTitle: {
     alignItems: 'center',

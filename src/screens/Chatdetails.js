@@ -37,6 +37,8 @@ export const TEMP_ID_PREFIX = '9xxxxxxxxxxxxxxxxxxxxxxx';
 const offset = 0,
   limit = 25;
 
+  // const EmojiPicker = require('react-native-emoji-picker');
+
 export default function Chatdetails() {
   const [modalVisible, setModalVisible] = useState(false);
   const route = useRoute();
@@ -151,6 +153,10 @@ export default function Chatdetails() {
     }
     getLogs();
   }, [refresh, reload]);
+
+  // _emojiSelected(emoji) {
+  //   console.log(emoji)
+  // }
   return (
     <>
       <Gmodal />
@@ -264,6 +270,13 @@ export default function Chatdetails() {
             <IonIcon name="add-circle-outline" size={34} color="#abacb1" />
           </TouchableOpacity>
 
+{/*           
+          <View style={styles.container}>
+        <EmojiPicker 
+          style={styles.emojiPicker} 
+          onEmojiSelected={this._emojiSelected}/>
+      </View> */}
+
           <View style={styles.centeredView}>
             <Modal
               animationType="slide"
@@ -275,32 +288,32 @@ export default function Chatdetails() {
               }}>
               <View style={styles.centeredViewInner}>
                 <View style={styles.modalView}>
-                  <View style={styles.addMod}>
+                  <TouchableOpacity style={styles.addMod}>
                     <Image
                       resizeMode="cover"
                       source={require('../assets/images/location.png')}
                       style={[styles.locationIcon]}
                     />
                     <Text style={styles.locationTxt}>Location</Text>
-                  </View>
+                  </TouchableOpacity>
 
-                  <View style={styles.addMod}>
+                  <TouchableOpacity style={styles.addMod}>
                     <Image
                       resizeMode="cover"
                       source={require('../assets/images/camera-new.png')}
                       style={[styles.locationIcon]}
                     />
                     <Text style={styles.locationTxt}>Camera</Text>
-                  </View>
+                  </TouchableOpacity>
 
-                  <View style={styles.addMod}>
+                  <TouchableOpacity style={styles.addMod}>
                     <Image
                       resizeMode="cover"
                       source={require('../assets/images/gallery.png')}
                       style={[styles.locationIcon]}
                     />
                     <Text style={styles.locationTxt}>Gallery</Text>
-                  </View>
+                  </TouchableOpacity>
                   {/* <Pressable
                     style={[styles.button, styles.buttonClose]}
                     onPress={() => setModalVisible(!modalVisible)}>
@@ -452,6 +465,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     width: '85%',
+
   },
   chatTypeTool: {
     marginRight: 8,

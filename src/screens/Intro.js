@@ -15,37 +15,37 @@ import AppIntroSlider from 'react-native-app-intro-slider';
 const slides = [
   {
     key: 1,
-    title: 'Private comments over public posts',
-    text: 'Private comments give your social network more privacy! Privately comment on public posts',
+    title: 'Private comments\n over\n public posts',
+    text: 'Private comments give\n your social network\n more privacy!\n Privately comment on\n public posts',
     image: require('../assets/images/intro-1.webp'),
     backgroundColor: '#59b2ab',
   },
   {
     key: 2,
-    title: 'Private comments over group chat conversation',
-    text: 'Private comments give your social network more privacy! Privately comment on group chat',
+    title: 'Private comments\n over group chat\n conversation',
+    text: 'Private comments give\n your social network\n more privacy!\n Privately comment on\n group chat',
     image: require('../assets/images/intro-2.png'),
     backgroundColor: '#febe29',
   },
   {
     key: 3,
-    title: 'An app with invisible connections',
-    text: 'Create invisible connections that no one else can see! Any activity between you and invisible connections is only seen by you',
+    title: 'An app with\n invisible\n connections',
+    text: 'Create invisible connections\n that no one else can see!\n Any activity between you and\n invisible connections is only\n seen by you',
     image: require('../assets/images/intro-3.png'),
     backgroundColor: '#22bcb5',
   },
   {
     key: 4,
-    title: 'Sharing disappearing messages with private chat',
-    text: 'Use disappearing messages to control the privacy on your social network!',
+    title: 'Sharing\n disappearing\n messages with\n private chat',
+    text: 'Use disappearing messages to\n control the privacy on your\n social network!',
     image: require('../assets/images/intro-4.png'),
     backgroundColor: '#22bcb5',
   },
 
   {
     key: 5,
-    title: 'Get rewarded for your activities on LYK',
-    text: 'Increase your engagement and earn rewards',
+    title: 'Get rewarded for\n your activities\n on LYK',
+    text: 'Increase your engagement\n and earn rewards',
     image: require('../assets/images/intro-4.png'),
     backgroundColor: '#22bcb5',
   }
