@@ -266,11 +266,12 @@ export default function Chatdetails() {
   };
   return (
     <>
+     <Header isBack= {true}/>
       <Gmodal />
 
       <ScrollView
         ref={scrollRef}
-        style={globalStyles.innerPagesContainerWhite}
+        style={[globalStyles.innerPagesContainerWhite, {flex:1}]}
         onContentSizeChange={() => scrollRef.current.scrollToEnd()}>
         <View style={styles.chatBody}>
           {logs &&
@@ -402,70 +403,6 @@ export default function Chatdetails() {
           onEmojiSelected={this._emojiSelected}/>
       </View> */}
 
-          <View style={styles.centeredView}>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
-                setModalVisible(!modalVisible);
-              }}>
-              <TouchableOpacity
-                style={styles.centeredViewInner}
-                activeOpacity={1}
-                onPressOut={() => { setModalVisible(false) }}
-              >
-                <View style={styles.modalView}>
-                  <TouchableOpacity style={styles.addMod}>
-                    <Image
-                      resizeMode="cover"
-                      source={require('../assets/images/location.png')}
-                      style={[styles.locationIcon]}
-                    />
-                    <Text style={styles.locationTxt}>Location</Text>
-                  </TouchableOpacity>
-
-                  <View style={styles.addMod}>
-                    <TouchableOpacity onPress={handleCameraRoll}>
-                      <Image
-                        resizeMode="cover"
-                        source={require('../assets/images/camera-new.png')}
-                        style={[styles.locationIcon]}
-                      />
-                      <Text style={styles.locationTxt}>Camera</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={styles.addMod}>
-                    <TouchableOpacity onPress={handlePress}>
-                      <Image
-                        resizeMode="cover"
-                        source={require('../assets/images/gallery.png')}
-                        style={[styles.locationIcon]}
-                      />
-                      <Text style={styles.locationTxt}>Gallery</Text>
-                    </TouchableOpacity>
-                  </View>
-                  {imgUrl && <View style={styles.addPhotoWrap}>
-                    <Image
-                      style={styles.eventImg}
-                      source={{
-                        uri: 'https://cdn.lykapp.com/newsImages/images/' + imgUrl,
-                      }}
-                    />
-                  </View>}
-                </View>
-              </TouchableOpacity>
-            </Modal>
-            {/* <Pressable
-        style={[styles.button, styles.buttonOpen]}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.textStyle}>Show Modal</Text>
-      </Pressable> */}
-          </View>
-
           <TouchableOpacity style={styles.chatTypeTool}>
             <OctIcon name="smiley" size={27} color="#8e8f91" />
           </TouchableOpacity>
@@ -505,6 +442,70 @@ export default function Chatdetails() {
           <IonIcon name="send" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
+
+      
+      {modalVisible && 
+          <View style={styles.centeredView}>
+          
+              <TouchableOpacity
+                style={styles.centeredViewInner}
+                activeOpacity={1}
+                onPressOut={() => { setModalVisible(false) }}
+              >
+                <View style={styles.modalView}>
+                <View style={styles.lcgWrap}>
+                  <TouchableOpacity style={styles.addMod}>
+                    <Image
+                      resizeMode="cover"
+                      source={require('../assets/images/location.png')}
+                      style={[styles.locationIcon]}
+                    />
+                    <Text style={styles.locationTxt}>Location</Text>
+                  </TouchableOpacity>
+
+                  <View style={styles.addMod}>
+                    <TouchableOpacity onPress={handleCameraRoll}>
+                      <Image
+                        resizeMode="cover"
+                        source={require('../assets/images/camera-new.png')}
+                        style={[styles.locationIcon]}
+                      />
+                      <Text style={styles.locationTxt}>Camera</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.addMod}>
+                    <TouchableOpacity onPress={handlePress}>
+                      <Image
+                        resizeMode="cover"
+                        source={require('../assets/images/gallery.png')}
+                        style={[styles.locationIcon]}
+                      />
+                      <Text style={styles.locationTxt}>Gallery</Text>
+                    </TouchableOpacity>
+                  </View>
+</View>
+
+                  {imgUrl && <View style={styles.addPhotoWrapNew}>
+                    <Image
+                      style={styles.eventImg}
+                      source={{
+                        uri: 'https://cdn.lykapp.com/newsImages/images/' + imgUrl,
+                      }}
+                    />
+                  </View>}
+                </View>
+              </TouchableOpacity>
+            
+            {/* <Pressable
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.textStyle}>Show Modal</Text>
+      </Pressable> */}
+          </View>
+          }
+
     </>
   );
 }
@@ -529,7 +530,8 @@ const styles = StyleSheet.create({
   chatBody: {
     paddingHorizontal: 10,
     paddingVertical: 15,
-    flex: 0.9,
+    height:'100%'
+
   },
   chatLImg: {
     width: 40,
@@ -625,30 +627,31 @@ const styles = StyleSheet.create({
 
   centeredView: {
     flex: 1,
+    height:'90%',
     justifyContent: 'center',
     alignItems: 'center',
 
     position: 'absolute',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     zIndex: 9999,
   },
   centeredViewInner: {
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    height: '90%',
+   // backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    height: '100%',
     justifyContent: 'flex-end',
     paddingBottom: 15,
     paddingHorizontal: 8,
+    width:'94%'
   },
   modalView: {
-    paddingTop: 30,
+   // paddingTop: 30,
     width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 55,
-    paddingBottom: 20,
+    flexDirection: 'column',
+    
+    // paddingBottom: 20,
 
     backgroundColor: 'white',
-    borderRadius: 32,
+    borderRadius:13,
 
 
     overflow: 'hidden',
@@ -662,6 +665,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  lcgWrap:{
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 55,
+    paddingVertical:20,
+  },
+  addPhotoWrapNew:{
+    width:'100%',
+    height:150
   },
   linearGradient: {
     padding: 35,

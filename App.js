@@ -149,7 +149,7 @@ const App = () => {
                 </SocketProvider>)
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: true }} name="Creategroup" component={Creategroup} />
+          <Stack.Screen options={{ headerShown: false }} name="Creategroup" component={Creategroup} />
           <Stack.Screen options={{ headerShown: false }} name="Chatnpost">
             {() => {
               return (
@@ -158,7 +158,7 @@ const App = () => {
                 </SocketProvider>)
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: true }} name="Createpost">
+          <Stack.Screen options={{ headerShown: false }} name="Createpost">
           {() => {
               return (
                 <SocketProvider>
@@ -166,7 +166,7 @@ const App = () => {
                 </SocketProvider>)
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: true }} name="Chatdetails">
+          <Stack.Screen options={{ headerShown: false }} name="Chatdetails">
             {() => {
               return (
                 <SocketProvider>
@@ -174,9 +174,9 @@ const App = () => {
                 </SocketProvider>)
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: true }} name="Addevent" component={Addevent} />
-          <Stack.Screen options={{ headerShown: true }} name="Events" component={Events} />
-          <Stack.Screen options={{ headerShown: true }} name="EventsDetails" component={EventsDetails} />
+          <Stack.Screen options={{ headerShown: false }} name="Addevent" component={Addevent} />
+          <Stack.Screen options={{ headerShown: false }} name="Events" component={Events} />
+          <Stack.Screen options={{ headerShown: false }} name="EventsDetails" component={EventsDetails} />
         </Stack.Navigator>
       </NavigationContainer>
     </>

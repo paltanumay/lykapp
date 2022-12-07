@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 import ChatList from './Chatlist';
 import CallList from './CallList';
 import Postlist from './Postlist';
+import Header from '../components/Header';
 
 const DATA = [
   {
@@ -42,6 +43,7 @@ export default function Chatnpost() {
   const [activeTab, setActiveTab] = useState('a');
   return (
     <>
+    <Header/>
       <View style={styles.chatPostContainer}>
         <View style={styles.tabWrap}>
           <TouchableOpacity style={[styles.tab, activeTab === 'a' ? styles.tabActive : '']} onPress={() => setActiveTab('a')}>

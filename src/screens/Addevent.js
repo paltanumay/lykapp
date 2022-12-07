@@ -183,6 +183,8 @@ export default function Addevent() {
   };
   return (
     <>
+      <Header isBack= {true}/>
+
       <View style={styles.centeredView}>
         <Modal
           animationType="slide"
@@ -221,7 +223,7 @@ export default function Addevent() {
           <Text style={styles.textStyle}>Show Modal</Text>
         </Pressable> */}
       </View>
-
+    
       <Formik
         initialValues={{
           eventSubject: '',

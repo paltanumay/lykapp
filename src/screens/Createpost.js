@@ -22,6 +22,7 @@ import axios from 'axios';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useNavigation} from '@react-navigation/native';
+import HeaderWithTitle from '../components/HeaderWithTitle';
 
 const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -218,6 +219,7 @@ export default function Createpost() {
   };
   return (
     <>
+    <HeaderWithTitle isBack= {true}/>
     <View style={styles.chatPostContainer}>
       <View style={styles.tabWrap}>
         <TouchableOpacity
