@@ -15,6 +15,7 @@ import {
   Text,
   useColorScheme,
   View,
+  StatusBar
 } from 'react-native';
 
 import {
@@ -134,6 +135,10 @@ const App = () => {
 
   return route ? (
     <>
+      <StatusBar
+        animated={true}
+        backgroundColor="#0a89e2"
+ />
       <NavigationContainer>
         <Stack.Navigator initialRouteName={route}>
           <Stack.Screen options={{ headerShown: false }} name="Login" component={Login} />

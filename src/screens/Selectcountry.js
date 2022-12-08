@@ -149,7 +149,7 @@ export default function Selectcountry({navigation}) {
               </Text> */}
 
               <Text style={styles.selectCountryTitile}>
-                Select your Country
+              Select your country
               </Text>
               <TouchableOpacity
                 style={[styles.flagButtonView]}
@@ -298,8 +298,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: 80,
+    height: 80,
   },
   swp:{
     fontSize:16,
@@ -330,17 +330,18 @@ const styles = StyleSheet.create({
   },
   welcomeSubtextNew: {
     color: COLORS.blue,
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'SFpro-Bold',
     fontSize: 25,
     marginTop: 25,
     textAlign: 'center',
     marginBottom: 20,
   },
   selectCountryTitile: {
-    color: COLORS.blue,
-    fontFamily: 'Lato-Bold',
+    color: '#006dd2',
+    fontFamily: 'SFpro-Bold',
     fontSize: 25,
     marginTop: 25,
+    fontSize:18
   },
   searchBox: {
     width: '80%',

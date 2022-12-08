@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   btcont: {
-    width: '70%'
+    width: '50%'
   },
   buttonCircle: {
     width: 15,
