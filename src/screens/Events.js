@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import Header from '../components/Header';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const MY_EVENT = `${API_URL}/LYKEvent/getMyEvent`;
@@ -69,6 +70,7 @@ export default function Events() {
   }, [])
   return (
     <>
+      <Header />
       <TouchableOpacity style={styles.floatingBt} onPress={() => navigation.push('Addevent')}>
         <LinearGradient
           start={{ x: 0, y: 0 }}

@@ -43,7 +43,7 @@ export default function Chatnpost() {
   const [activeTab, setActiveTab] = useState('a');
   return (
     <>
-    <Header/>
+    <Header isBack={true} />
       <View style={styles.chatPostContainer}>
         <View style={styles.tabWrap}>
           <TouchableOpacity style={[styles.tab, activeTab === 'a' ? styles.tabActive : '']} onPress={() => setActiveTab('a')}>
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   chatPostContainer: {
     // backgroundColor: '#e7ebf6',
     backgroundColor: '#fff',
-    flex: 10
+    flex: 1
   },
   tabWrap: {
     backgroundColor: '#f6f7fb',

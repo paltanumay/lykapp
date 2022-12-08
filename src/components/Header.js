@@ -29,10 +29,6 @@ export default function Header(props) {
             />
           </View>
 
-          <TouchableOpacity style={styles.user}>
-            <FIcon name="search" size={25} color="#fff" />
-            {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
-          </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.header}>
