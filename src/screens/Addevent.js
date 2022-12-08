@@ -182,48 +182,11 @@ export default function Addevent() {
       );
   };
   return (
-    <>
+    <View style={{flex:1}}>
       <Header isBack= {true}/>
 
-      <View style={styles.centeredView}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            setModalVisible(!modalVisible);
-          }}>
-          <View style={styles.centeredViewInner}>
-            <View style={styles.modalView}>
-              {/* <TouchableOpacity  style={styles.modalClose} onPress={() => setModalVisible(!modalVisible)}>
-              <IonIcon name="md-close" size={23} color="#333" />
-
-              </TouchableOpacity> */}
-              <Text style={styles.modalText}>Add Image</Text>
-              <TouchableOpacity onPress={handleCameraRoll}>
-                <Text style={styles.modalBodyText}>Open Camera</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={handlePress}>
-                <Text style={styles.modalBodyText}>
-                  Choose Image from Gallery
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalBodyText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-        {/* <Pressable
-          style={[styles.button, styles.buttonOpen]}
-          onPress={() => setModalVisible(true)}>
-          <Text style={styles.textStyle}>Show Modal</Text>
-        </Pressable> */}
-      </View>
-    
+     
+    <View style={{flex:10}}>
       <Formik
         initialValues={{
           eventSubject: '',
@@ -323,8 +286,10 @@ export default function Addevent() {
             )
             .catch(err => {});
         }}>
+        
         {({handleChange, handleSubmit, errors, isSubmitting, values}) => (
-          <View style={globalStyles.innerPagesContainerWhite}>
+          
+          <View>
             {imgUrl ? (
               <View style={styles.addPhotoWrap}>
                 <Image
@@ -500,7 +465,8 @@ export default function Addevent() {
           </View>
         )}
       </Formik>
-    </>
+      </View>
+    </View>
   );
 }
 

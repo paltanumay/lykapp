@@ -31,6 +31,7 @@ import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
 import { SocketContext } from '../shared/socketContext';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import HeaderChat from '../components/HeaderChat';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const CHAT_LOG = `${API_URL}/gtsngchtmsgs`;
@@ -265,14 +266,16 @@ export default function Chatdetails() {
       );
   };
   return (
-    <>
-     <Header isBack= {true}/>
+    <View style={{flex:1}}>
+    <HeaderChat isBack = {true}/>
       <Gmodal />
-
+<View style={{flex:10}}>
       <ScrollView
         ref={scrollRef}
-        style={[globalStyles.innerPagesContainerWhite, {flex:1}]}
+        style={[globalStyles.innerPagesContainerWhite]}
         onContentSizeChange={() => scrollRef.current.scrollToEnd()}>
+
+
         <View style={styles.chatBody}>
           {logs &&
             logs.map((ele, i) => (
@@ -387,7 +390,7 @@ export default function Chatdetails() {
           )}
         </View>
       </ScrollView>
-
+</View>
       <View style={styles.chatTypeBox}>
         <View style={styles.chatTypeInputWrap}>
           <TouchableOpacity
@@ -506,7 +509,7 @@ export default function Chatdetails() {
           </View>
           }
 
-    </>
+    </View>
   );
 }
 
@@ -530,7 +533,7 @@ const styles = StyleSheet.create({
   chatBody: {
     paddingHorizontal: 10,
     paddingVertical: 15,
-    height:'100%'
+  
 
   },
   chatLImg: {
@@ -586,7 +589,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   chatTypeBox: {
-    flex: 0.1,
+    flex: 0.7,
     borderTopColor: '#b0b0b0',
     borderTopWidth: 1,
     paddingHorizontal: 15,
