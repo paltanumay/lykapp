@@ -34,7 +34,7 @@ export default function HeaderChat(props) {
                 style={[styles.proImgIcon]}
               />
             </View>
-            <Text style={styles.nameText}>Srijan roy</Text>
+            <Text style={styles.nameText}>{props.title}</Text>
           </View>
 
           <View style={styles.video}>
