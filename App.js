@@ -158,7 +158,7 @@ const App = () => {
                 </SocketProvider>)
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: false }} name="Creategroup" component={Videocall} />
+          <Stack.Screen options={{ headerShown: false }} name="Creategroup" component={Creategroup} />
           <Stack.Screen options={{ headerShown: false }} name="Chatnpost">
             {() => {
               return (
