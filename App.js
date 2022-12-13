@@ -40,6 +40,8 @@ import SocketProvider from './src/shared/socketContext';
 import axios from 'axios';
 import { getEncTokenAnyUserId, getEncUserId } from './src/shared/encryption';
 import DeviceInfo from 'react-native-device-info';
+import Audiocall from './src/screens/Audiocall';
+import Videocall from './src/screens/Videocall';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
@@ -146,6 +148,8 @@ const App = () => {
           <Stack.Screen options={{ headerShown: false }} name="Verification" component={Verification} />
           <Stack.Screen options={{ headerShown: false }} name="Country" component={Selectcountry} />
           <Stack.Screen options={{ headerShown: false }} name="SignUp" component={Signup} />
+          <Stack.Screen options={{ headerShown: false }} name="Audiocall" component={Audiocall} />
+          <Stack.Screen options={{ headerShown: false }} name="Videocall" component={Videocall} />
           <Stack.Screen options={{ headerShown: false }} name="Sidenav">
             {() => {
               return (
@@ -154,7 +158,7 @@ const App = () => {
                 </SocketProvider>)
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: false }} name="Creategroup" component={Creategroup} />
+          <Stack.Screen options={{ headerShown: false }} name="Creategroup" component={Videocall} />
           <Stack.Screen options={{ headerShown: false }} name="Chatnpost">
             {() => {
               return (
