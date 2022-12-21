@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import React, {useState} from 'react';
 import {globalStyles} from '../global/globalStyle';
@@ -20,6 +21,30 @@ import CountryPicker, {
 import axios from 'axios';
 
 const interests = [
+  {
+    text: 'Dance',
+    image: require('../assets/images/dance.jpg'),
+  },
+  {
+    text: 'Music',
+    image: require('../assets/images/music.webp'),
+  },
+  {
+    text: 'Politics',
+    image: require('../assets/images/politics.png'),
+  },
+  {
+    text: 'Theatre',
+    image: require('../assets/images/theatre.jpg'),
+  },
+  {
+    text: 'Gardening',
+    image: require('../assets/images/gardening.webp'),
+  },
+  {
+    text: 'Pets',
+    image: require('../assets/images/pets.jpg'),
+  },
   {
     text: 'Dance',
     image: require('../assets/images/dance.jpg'),
@@ -89,198 +114,228 @@ export default function Selectcountry({navigation}) {
       )
       .then(
         res => {},
-        err => {
-        },
+        err => {},
       )
-      .catch(err =>{});
+      .catch(err => {});
   };
   return (
-    <View style={styles.mainContainer}>
+    <>
       <LinearGradient
         start={{x: 0, y: 0}}
         end={{x: 1, y: 0}}
-        colors={['#037ee5', '#15a2e0', '#28cad9']}
-        style={styles.linearGradient}>
-        <View style={styles.logoWrap}>
-          <Image
-            style={styles.logo}
-            source={require('../assets/images/logo.png')}
-          />
-          <Text style={styles.swp}>Social network {"\n"} with privacy</Text>
-        </View>
-
-        <View style={styles.welcomeWrap}>
-          <View style={styles.radioMainWrap}>
-            {radioBtnsData.map((data, key) => {
-              return (
-                <View key={key}>
-                  {checked == key ? (
-                    <TouchableOpacity style={styles.btn}>
-                      <Image
-                        style={styles.img}
-                        source={require('../assets/images/rb_unselected.png')}
-                      />
-                      <Text>{data}</Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setChecked(key);
-                      }}
-                      style={styles.btn}>
-                      <Image
-                        style={styles.img}
-                        source={require('../assets/images/rb_selected.png')}
-                      />
-                      <Text>{data}</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              );
-            })}
+        colors={['#037ee5', '#15a2e0', '#28cad9']}>
+        <StatusBar
+          animated={true}
+          translucent={true}
+          backgroundColor={'transparent'}
+        />
+      </LinearGradient>
+      <View style={styles.mainContainer}>
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          colors={['#037ee5', '#15a2e0', '#28cad9']}
+          style={styles.linearGradient}>
+          <View style={styles.logoWrap}>
+            <Image
+              style={styles.logo}
+              source={require('../assets/images/logo.png')}
+            />
+            <Text style={styles.swp}>Social network {'\n'} with privacy</Text>
           </View>
 
-          {!checked ? (
-            <ScrollView contentContainerStyle={{alignItems: 'center'}}>
-              {/* <Text style={styles.welcomeTitle}>Welcome Ayan</Text>
+          <View style={styles.welcomeWrap}>
+            <TouchableOpacity style={styles.backIcon}>
+              <Image
+                style={styles.aleft}
+                source={require('../assets/images/arrow-simple-left.png')}
+              />
+            </TouchableOpacity>
+            <View style={styles.radioMainWrap}>
+              {radioBtnsData.map((data, key) => {
+                return (
+                  <View key={key}>
+                    {checked == key ? (
+                      <TouchableOpacity style={styles.btn}>
+                        <Image
+                          resizeMode="stretch"
+                          style={styles.img}
+                          source={require('../assets/images/rb_unselected.png')}
+                        />
+                        <Text>{data}</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setChecked(key);
+                        }}
+                        style={styles.btn}>
+                        <Image
+                          resizeMode="stretch"
+                          style={styles.img}
+                          source={require('../assets/images/rb_selected.png')}
+                        />
+                        <Text>{data}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+
+            {!checked ? (
+              <ScrollView contentContainerStyle={{alignItems: 'center'}}>
+                {/* <Text style={styles.welcomeTitle}>Welcome Ayan</Text>
               <Text style={styles.welcomeSubtext}>
                 Please help us answer the next few questions about yourself to
                 make your experience enjoyable
               </Text> */}
 
-              <Text style={styles.selectCountryTitile}>
-              Select your country
-              </Text>
-              <TouchableOpacity
-                style={[styles.flagButtonView]}
-                onPress={() => setModalVisible(true)}>
-                <View style={styles.caretDown}>
-                  <IonIcon
-                    name="ios-caret-down"
-                    size={7}
-                    color={COLORS.blue}
-                  />
-                </View>
-
-                <CountryPicker
-                  onSelect={onSelect}
-                  withEmoji
-                  withFilter
-                  withFlag
-                  countryCode={countryCode}
-                  withCallingCode
-                  visible={modalVisible}
-                  theme={DEFAULT_THEME}
-                  renderFlagButton={renderFlagButton}
-                  onClose={() => setModalVisible(false)}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[globalStyles.gradBt, {width:'80%'}]}
-                onPress={() => setChecked(1)}>
-                <LinearGradient
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
-                  colors={['#037ee5', '#15a2e0', '#28cad9']}
-                  style={[globalStyles.linearGradient, {height:40}]}>
-                  <Text style={globalStyles.buttonText}>Next</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </ScrollView>
-          ) : (
-            <ScrollView contentContainerStyle={{alignItems: 'center'}}>
-              <Text style={styles.welcomeSubtextNew}>
-                Let us know what you are interested in
-              </Text>
-
-              <View style={styles.searchBox}>
-                <TextInput
-                  placeholderTextColor="#AFAFAF"
-                  style={styles.input}
-                  placeholder="Search for more interests"
-                  textContentType="username"
-                  underlineColorAndroid="transparent"
-                  autoCapitalize="none"
-                  onChangeText={(e)=>setSearch(e)}
-                />
-                <TouchableOpacity style={styles.search}>
-                  <FIcon name="search" size={22} color="#ccc" />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.chooseCategoriesWrap}>
-                {interests
-                .filter(o=>!search || o.text.toLowerCase().includes(search))
-                .map(
-                  (item, key) =>
-                    interest.indexOf(key.toString()) < 0 ? (
-                      <TouchableOpacity
-                        style={styles.catBoxCont}
-                        key={key}
-                        onPress={() =>
-                          setInterest(oldArray => [...oldArray, key.toString()])
-                        }>
-
-                        <View style={styles.catBox}>
-                          <Image
-                            style={styles.catBoxImg}
-                            resizeMode="cover"
-                            source={item.image}
-                          />
-                        </View>
-
-                        <Text style={styles.catText}>{item.text}</Text>
-                      </TouchableOpacity>
-                    ):(
-                      <TouchableOpacity
-                        style={styles.catBoxCont}
-                        key={key}
-                        onPress={() =>
-                          setInterest(interest.filter(o=>o!=key.toString()))
-                        }>
-                        <View style={styles.catBoxActive}>
-                          <FIcon name="check" size={28} color="#fff" />
-                        </View>
-
-                        <View style={styles.catBox}>
-                          <Image
-                            style={styles.catBoxImg}
-                            resizeMode="cover"
-                            source={item.image}
-                          />
-                        </View>
-
-                        <Text style={styles.catText}>{item.text}</Text>
-                      </TouchableOpacity>
-                    ),
-                )}
-              </View>
-
-              {interest.length < 3 ? (
-                <TouchableOpacity style={styles.pickInterest}>
-                  <Text style={styles.pickInterestText}>
-                    Pick atleast 3 interests
-                  </Text>
-                </TouchableOpacity>
-              ) : (
+                <Text style={styles.selectCountryTitile}>
+                  Select your country
+                </Text>
                 <TouchableOpacity
-                  style={globalStyles.gradBt}
-                  onPress={saveInterests}>
+                  style={[styles.flagButtonView]}
+                  onPress={() => setModalVisible(true)}>
+                  <View style={styles.caretDown}>
+                    <IonIcon
+                      name="ios-caret-down"
+                      size={7}
+                      color={COLORS.blue}
+                    />
+                  </View>
+
+                  <CountryPicker
+                    onSelect={onSelect}
+                    withEmoji
+                    withFilter
+                    withFlag
+                    countryCode={countryCode}
+                    withCallingCode
+                    visible={modalVisible}
+                    theme={DEFAULT_THEME}
+                    renderFlagButton={renderFlagButton}
+                    onClose={() => setModalVisible(false)}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[globalStyles.gradBt, {width: '80%'}]}
+                  onPress={() => setChecked(1)}>
                   <LinearGradient
                     start={{x: 0, y: 0}}
                     end={{x: 1, y: 0}}
                     colors={['#037ee5', '#15a2e0', '#28cad9']}
-                    style={globalStyles.linearGradient}>
+                    style={[globalStyles.linearGradient, {height: 40}]}>
                     <Text style={globalStyles.buttonText}>Next</Text>
                   </LinearGradient>
                 </TouchableOpacity>
-              )}
-            </ScrollView>
-          )}
-        </View>
-      </LinearGradient>
-    </View>
+              </ScrollView>
+            ) : (
+              <View style={{alignItems: 'center', width: '80%'}}>
+                <Text style={styles.welcomeSubtextNew}>
+                  Let us know what you {'\n'} are interested in
+                </Text>
+
+                <View style={styles.searchBox}>
+                  <TextInput
+                    placeholderTextColor="#AFAFAF"
+                    style={styles.input}
+                    placeholder="Search for more interests"
+                    textContentType="username"
+                    underlineColorAndroid="transparent"
+                    autoCapitalize="none"
+                    onChangeText={e => setSearch(e)}
+                  />
+                  <TouchableOpacity style={styles.search}>
+                    <FIcon name="search" size={22} color="#ccc" />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.interestList}>
+                  <ScrollView
+                    contentContainerStyle={styles.chooseCategoriesWrap}>
+                    {interests
+                      .filter(
+                        o => !search || o.text.toLowerCase().includes(search),
+                      )
+                      .map((item, key) =>
+                        interest.indexOf(key.toString()) < 0 ? (
+                          <TouchableOpacity
+                            style={styles.catBoxCont}
+                            key={key}
+                            onPress={() =>
+                              setInterest(oldArray => [
+                                ...oldArray,
+                                key.toString(),
+                              ])
+                            }>
+                            <View style={styles.catBox}>
+                              <Image
+                                style={styles.catBoxImg}
+                                resizeMode="cover"
+                                source={item.image}
+                              />
+                              <View style={styles.plus}>
+                                <FIcon name="plus" size={15} color="#fff" />
+                              </View>
+                            </View>
+
+                            <Text style={styles.catText}>{item.text}</Text>
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            style={styles.catBoxCont}
+                            key={key}
+                            onPress={() =>
+                              setInterest(
+                                interest.filter(o => o != key.toString()),
+                              )
+                            }>
+                            <View style={styles.catBoxActive}>
+                              <FIcon name="check" size={28} color="#fff" />
+                            </View>
+
+                            <View style={styles.catBox}>
+                              <Image
+                                style={styles.catBoxImg}
+                                resizeMode="cover"
+                                source={item.image}
+                              />
+                            </View>
+
+                            <Text style={styles.catText}>{item.text}</Text>
+                          </TouchableOpacity>
+                        ),
+                      )}
+                  </ScrollView>
+                </View>
+
+                {interest.length < 3 ? (
+                  <TouchableOpacity style={styles.pickInterest}>
+                    <Text style={styles.pickInterestText}>
+                      Pick atleast 3 interests
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={[globalStyles.gradBt, {width: 200}]}
+                    onPress={saveInterests}>
+                    <LinearGradient
+                      start={{x: 0, y: 0}}
+                      end={{x: 1, y: 0}}
+                      colors={['#037ee5', '#15a2e0', '#28cad9']}
+                      style={[globalStyles.linearGradient, {height: 40}]}>
+                      <Text style={globalStyles.buttonText}>Next</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          </View>
+        </LinearGradient>
+      </View>
+    </>
   );
 }
 
@@ -301,11 +356,11 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
   },
-  swp:{
-    fontSize:16,
-    color:'#fff',
-    textAlign:'center',
-    marginTop:12
+  swp: {
+    fontSize: 16,
+    color: '#fff',
+    textAlign: 'center',
+    marginTop: 12,
   },
   welcomeWrap: {
     backgroundColor: '#fff',
@@ -314,7 +369,7 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     flex: 6,
-    paddingTop: 50,
+    paddingTop: 20,
   },
   welcomeTitle: {
     color: COLORS.blue,
@@ -331,8 +386,8 @@ const styles = StyleSheet.create({
   welcomeSubtextNew: {
     color: COLORS.blue,
     fontFamily: 'SFpro-Bold',
-    fontSize: 25,
-    marginTop: 25,
+    fontSize: 18,
+    marginTop: 17,
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -341,25 +396,26 @@ const styles = StyleSheet.create({
     fontFamily: 'SFpro-Bold',
     fontSize: 25,
     marginTop: 25,
-    fontSize:18
+    fontSize: 18,
   },
   searchBox: {
-    width: '80%',
+    width: '70%',
     borderRadius: 100,
     borderWidth: 1,
     borderColor: COLORS.blue,
-    height: 50,
-    paddingHorizontal: 20,
+    height: 38,
+    paddingTop: 0,
+    paddingHorizontal: 15,
     paddingRight: 45,
   },
   search: {
     position: 'absolute',
-    right: 20,
-    top: 12,
+    right: 15,
+    top: 6,
   },
   catBox: {
-    width: 100,
-    height: 100,
+    width: 77,
+    height: 77,
     borderRadius: 15,
     overflow: 'hidden',
     alignItems: 'center',
@@ -377,11 +433,13 @@ const styles = StyleSheet.create({
   },
   chooseCategoriesWrap: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     flexWrap: 'wrap',
+    width: '80%',
+    alignItems:'flex-start'
   },
   catText: {
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     color: '#333',
     marginTop: 8,
   },
@@ -392,19 +450,20 @@ const styles = StyleSheet.create({
     borderColor: COLORS.blue,
     height: 40,
     paddingHorizontal: 20,
-    paddingRight: 45,
+    // paddingRight: 45,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 30,
     marginBottom: 10,
   },
   pickInterestText: {
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'SFpro-Regular',
     color: '#333',
+    fontSize:14
   },
   img: {
     height: 25,
-    width: 25,
+    width: 22,
   },
   btn: {
     flexDirection: 'row',
@@ -449,12 +508,40 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
 
-    width: 100,
-    height: 100,
+    width: 77,
+    height: 77,
     borderRadius: 15,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
   },
+  interestList: {
+    width: '100%',
+    alignItems: 'center',
+    height: 270,
+    marginTop: 15,
+    marginBottom: 15,
+  },
+  input: {
+    color: '#333',
+    height: 38,
+    fontSize: 12,
+    fontFamily: 'SFpro-Regular',
+    width: '100%',
+  },
+  plus: {
+    position: 'absolute',
+    right: 3,
+    top: 3,
+  },
+  backIcon:{
+    position:'absolute',
+    left:25,
+    top:25
+  },
+  aleft:{
+    width:10,
+    height:17
+  }
 });

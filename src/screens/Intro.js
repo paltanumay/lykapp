@@ -17,7 +17,7 @@ const slides = [
     key: 1,
     title: 'Private comments\n over\n public posts',
     text: 'Private comments give\n your social network\n more privacy!\n Privately comment on\n public posts',
-    image: require('../assets/images/intro-1.webp'),
+    image: require('../assets/images/intro-5.png'),
     backgroundColor: '#59b2ab',
   },
   {
@@ -46,7 +46,7 @@ const slides = [
     key: 5,
     title: 'Get rewarded for\n your activities\n on LYK',
     text: 'Increase your engagement\n and earn rewards',
-    image: require('../assets/images/intro-5.png'),
+    image: require('../assets/images/intro-1.png'),
     backgroundColor: '#22bcb5',
   }
 
@@ -83,7 +83,7 @@ export default function Intro({ navigation }) {
                   end={{ x: 1, y: 0 }}
                   colors={['#0a89e2', '#17A8DD', '#27cbd8']}
                   style={globalStyles.linearGradient}>
-                  <Text style={globalStyles.buttonText}>Login</Text>
+                  <Text style={globalStyles.buttonText}>Log In</Text>
                 </LinearGradient>
               </TouchableOpacity>
 

@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
   },
   searchIcon:{
     width:20,
-    height:20
+    height:19
   },
   hamIcon:{
     width:20,

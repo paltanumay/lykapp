@@ -63,7 +63,11 @@ export default function Header(props) {
         </TouchableOpacity> */}
 
           <TouchableOpacity style={styles.user}>
-            <FIcon name="search" size={25} color="#fff" />
+          <Image
+            resizeMode="contain"
+            source={require('../assets/images/search.png')}
+            style={[styles.searchIcon]}
+          />
             {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
           </TouchableOpacity>
         </View>
@@ -129,4 +133,8 @@ const styles = StyleSheet.create({
     right: 15,
     top: 20,
   },
+  searchIcon:{
+    width:19,
+    height:20
+  }
 });
