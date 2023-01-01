@@ -43,7 +43,7 @@
     "react-native-svg": "^13.5.0",
     "react-native-tab-view": "^3.3.0",
     "react-native-vector-icons": "^9.2.0",
-    "react-native-webrtc": "1.87.2",
+    "react-native-webrtc": "1.94.2",
     "socket.io-client": "^2.1.1"
   },
   "devDependencies": {

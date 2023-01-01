@@ -54,7 +54,7 @@ export default function CallList() {
                 data={logs}
                 renderItem={({ item }) => {
                     return (
-                        <TouchableOpacity onPress={()=>navigation.push('Callscreen')}>
+                        <TouchableOpacity onPress={()=>navigation.push('Callscreen', {toUserId: item.userId})}>
                         <View style={styles.listContainer}>
                             <Text style={styles.date}>
                                 <SIcon name={item.callType==="video"?"camrecorder":"phone"} size={23} color={COLORS.blue} />

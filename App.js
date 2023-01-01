@@ -129,11 +129,11 @@ const App = () => {
       });
 
 
-      /* const unsubscribe = messaging().onMessage(async remoteMessage => {
+      const unsubscribe = messaging().onMessage(async remoteMessage => {
         Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
       });
   
-      return unsubscribe; */
+      return unsubscribe;
   }, [])
 
   return route ? (
@@ -151,7 +151,14 @@ const App = () => {
           <Stack.Screen options={{ headerShown: false }} name="SignUp" component={Signup} />
           <Stack.Screen options={{ headerShown: false }} name="Audiocall" component={Audiocall} />
           <Stack.Screen options={{ headerShown: false }} name="Videocall" component={Videocall} />
-          <Stack.Screen options={{ headerShown: false }} name="Callscreen" component={CallScreen} />
+          <Stack.Screen options={{ headerShown: false }} name="Callscreen">
+            {() => {
+                return (
+                  <SocketProvider>
+                    <CallScreen />
+                  </SocketProvider>)
+              }}
+          </Stack.Screen>
           <Stack.Screen options={{ headerShown: false }} name="Sidenav">
             {() => {
               return (

@@ -2,10 +2,9 @@ import React, {useEffect, useState, useCallback} from 'react';
 import {View, StyleSheet, Alert, TextInput, Button, Text} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation, useRoute} from '@react-navigation/native';
 
 import InCallManager from 'react-native-incall-manager';
-import messaging from '@react-native-firebase/messaging';
 
 import {
   RTCPeerConnection,
@@ -25,7 +24,9 @@ export const SEND_AUDIO_NOTIFICATION = `${API_URL}/sndaudntfy`;
 export const UPLOAD_IMG = 'https://api.lykapp.com/lykjwt/index.php?/Chatpost/uploadImage';
 const SEND_AUDIO_NOTIFICATION_SHORT = 'fQtL21J';
 
-export default function CallScreen({navigation, ...props}) {
+export default function CallScreen() {
+  const navigation = useNavigation();
+  const route = useRoute();
   let name;
   let connectedUser;
   const [userId, setUserId] = useState('');
@@ -34,18 +35,14 @@ export default function CallScreen({navigation, ...props}) {
   // Video Scrs
   const [localStream, setLocalStream] = useState({toURL: () => null});
   const [remoteStream, setRemoteStream] = useState({toURL: () => null});
-  //const [conn, setConn] = useState(new WebSocket('ws://socket.lykapp.com:8443'));
+  //const [conn, setConn] = useState(new WebSocket('http://socket.lykapp.com:8443'));
   const [yourConn, setYourConn] = useState(
     //change the config as you need
     new RTCPeerConnection({
       iceServers: [
         {
           urls: 'stun:stun.l.google.com:19302',  
-        }, {
-          urls: 'stun:stun1.l.google.com:19302',    
-        }, {
-          urls: 'stun:stun2.l.google.com:19302',    
-        }
+        },
 
       ],
     }),
@@ -53,12 +50,12 @@ export default function CallScreen({navigation, ...props}) {
 
   const [offer, setOffer] = useState(null);
 
-  const [callToUsername, setCallToUsername] = useState(null);
+  const [callToUsername, setCallToUsername] = useState(route.params.toUserId);
 
   useFocusEffect(
     useCallback(() => {
       AsyncStorage.getItem('userId').then(id => {
-        console.log(id);
+        //console.log(id);
         let userDetails = JSON.parse(id);
         if (id) {
           setUserId(userDetails.userId);
@@ -104,54 +101,51 @@ export default function CallScreen({navigation, ...props}) {
   }, [userId]);
 
   const onLogin = () => {};
+  
+  //when we got a message from a signaling server
+  const onmessage = msg => {
+    let data;
+    console.log("from socket"+msg);
+    if (msg.data === 'Hello world') {
+      data = {};
+    } else {
+      data = msg;
+      console.log('Data --------------------->', data);
+      switch (data.type) {
+        case 'login':
+          console.log('Login');
+          break;
+        //when somebody wants to call us
+        case 'offer':
+          handleOffer(data.offer, data.name);
+          console.log('Offer');
+          break;
+        case 'answer':
+          handleAnswer(data.answer);
+          console.log('Answer');
+          break;
+        //when a remote peer sends an ice candidate to us
+        case 'candidate':
+          handleCandidate(data.candidate);
+          console.log('Candidate');
+          break;
+        case 'leave':
+          handleLeave();
+          console.log('Leave');
+          break;
+        default:
+          break;
+      }
+    }
+  };
 
   useEffect(() => {
     /**
      *
      * Sockets Signalling
      */
-    /* conn.onopen = () => {
-      console.log('Connected to the signaling server');
-      setSocketActive(true);
-    }; */
-    //when we got a message from a signaling server
-    /* conn.onmessage = msg => {
-      let data;
-      if (msg.data === 'Hello world') {
-        data = {};
-      } else {
-        data = JSON.parse(msg.data);
-        console.log('Data --------------------->', data);
-        switch (data.type) {
-          case 'login':
-            console.log('Login');
-            break;
-          //when somebody wants to call us
-          case 'offer':
-            handleOffer(data.offer, data.name);
-            console.log('Offer');
-            break;
-          case 'answer':
-            handleAnswer(data.answer);
-            console.log('Answer');
-            break;
-          //when a remote peer sends an ice candidate to us
-          case 'candidate':
-            handleCandidate(data.candidate);
-            console.log('Candidate');
-            break;
-          case 'leave':
-            handleLeave();
-            console.log('Leave');
-            break;
-          default:
-            break;
-        }
-      }
-    }; */
-    /* conn.onerror = function(err) {
-      console.log('Got error', err);
-    }; */
+    socket.on('mediaMessage', onmessage);
+    
     /**
      * Socjket Signalling Ends
      */
@@ -204,27 +198,30 @@ export default function CallScreen({navigation, ...props}) {
         send({
           type: 'candidate',
           candidate: event.candidate,
+          toUserId: connectedUser?connectedUser:route.params.toUserId
         });
+        console.log('candidate'+event+connectedUser);
+        //handleCandidate(event.candidate);
       }
     };
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage.data.payload));
-      const offer = remoteMessage.data.payload;
-      const name = remoteMessage.data.incomingCallerName;
-      handleOffer(offer, name);
-    });
-
-    return unsubscribe;
+    yourConn.onconnectionstatechange = event => {
+      if(yourConn.connectionState === 'connected') {
+        console.log('Successfully connected with other peer');
+      }
+    };
+    yourConn.onSignalingState = state => {
+      console.log('state changed'+state);
+    };
   }, []);
 
   const send = message => {
     //attach the other peer username to our messages
     if (connectedUser) {
-      message.name = connectedUser;
-      console.log('Connected iser in end----------', message);
+      message.name = userId;
+      //console.log('Connected iser in end----------', message);
     }
 
-    // conn.send(JSON.stringify(message));
+    socket.emit('mediaMessage', message);
   };
 
   const onCall = async () => {
@@ -264,15 +261,16 @@ export default function CallScreen({navigation, ...props}) {
           .then(
             res => {
               // create an offer
-              console.log(JSON.stringify(res))
+              //console.log(JSON.stringify(res))
               console.log('Sending Ofer');
-              console.log(offer);
-              send({
-                type: 'offer',
-                offer: offer,
-              });
+              //console.log(offer);
               // Send pc.localDescription to peer
             }).catch((err) => { alert('error :' + err) });
+            send({
+              type: 'offer',
+              offer: offer,
+              toUserId: connectedUser
+            });
       });
     });
   };
@@ -290,11 +288,11 @@ export default function CallScreen({navigation, ...props}) {
       const answer = await yourConn.createAnswer();
 
       await yourConn.setLocalDescription(answer);
-      send({
-        type: 'answer',
-        answer: answer,
-      });
-      handleAnswer(answer);
+            send({
+              type: 'answer',
+              answer: answer,
+              toUserId: connectedUser
+            });
     } catch (err) {
       console.log('Offerr Error', err);
     }
@@ -309,7 +307,9 @@ export default function CallScreen({navigation, ...props}) {
   const handleCandidate = candidate => {
     setCalling(false);
     console.log('Candidate ----------------->', candidate);
-    yourConn.addIceCandidate(new RTCIceCandidate(candidate));
+    if(yourConn.localDescription)
+      yourConn.addIceCandidate(new RTCIceCandidate(candidate))
+        .catch(error => console.log(error));
   };
 
   //hang up
@@ -392,11 +392,11 @@ export default function CallScreen({navigation, ...props}) {
 
       <View style={styles.videoContainer}>
         <View style={[styles.videos, styles.localVideos]}>
-          <Text>Your Video</Text>
+        <Text>Your Video</Text>
           <RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
         </View>
         <View style={[styles.videos, styles.remoteVideos]}>
-          <Text>Friends Video</Text>
+        <Text>Friends Video</Text>
           <RTCView
             streamURL={remoteStream.toURL()}
             style={styles.remoteVideo}
