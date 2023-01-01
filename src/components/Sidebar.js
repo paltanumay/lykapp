@@ -203,9 +203,12 @@ export default function Sidebar() {
 
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          labelStyle: {
-            color: 'red',
+          drawerLabelStyle:{
+            fontSize: 15,
+            marginLeft:-10,
+            fontFamily:'SFpro-Medium'
           },
+         
           drawerIcon: ({ focused, size }) => (
             <IonIcon
               name="home-outline"
@@ -215,15 +218,7 @@ export default function Sidebar() {
           ),
         }}
       />
-      {/* <Drawer.Screen
-       name="Chatnpost" 
-       component={Chatnpost}
-       options={{
-        drawerItemStyle:{
-          display: 'none'
-        }
-       }} 
-      /> */}
+     
 
       <Drawer.Screen
         name="Event Calendar"
@@ -232,8 +227,10 @@ export default function Sidebar() {
           title: 'Event Calendar',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          labelStyle: {
-            color: 'red',
+          drawerLabelStyle:{
+            fontSize: 15,
+            marginLeft:-10,
+            fontFamily:'SFpro-Medium'
           },
           drawerIcon: ({ focused, size }) => (
 
@@ -253,7 +250,11 @@ export default function Sidebar() {
           title: 'LYK Wallet',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-
+          drawerLabelStyle:{
+            fontSize: 15,
+            marginLeft:-10,
+            fontFamily:'SFpro-Medium'
+          },
           drawerIcon: ({ focused, size }) => (
             <Image
             resizeMode="contain"
@@ -272,7 +273,11 @@ export default function Sidebar() {
           title: 'Bussiness Page',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-
+          drawerLabelStyle:{
+            fontSize: 15,
+            marginLeft:-10,
+            fontFamily:'SFpro-Medium'
+          },
           drawerIcon: ({ focused, size }) => (
             <Image
             resizeMode="contain"
@@ -290,7 +295,11 @@ export default function Sidebar() {
           title: 'Followed Bussiness Page',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-
+          drawerLabelStyle:{
+            fontSize: 15,
+            marginLeft:-10,
+            fontFamily:'SFpro-Medium'
+          },
           drawerIcon: ({ focused, size }) => (
             <Image
             resizeMode="contain"
@@ -308,7 +317,11 @@ export default function Sidebar() {
           title: 'My Referral',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-
+          drawerLabelStyle:{
+            fontSize: 15,
+            marginLeft:-10,
+            fontFamily:'SFpro-Medium'
+          },
           drawerIcon: ({ focused, size }) => (
             <Image
             resizeMode="contain"
@@ -326,7 +339,11 @@ export default function Sidebar() {
           title: 'Promotions',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-
+          drawerLabelStyle:{
+            fontSize: 15,
+            marginLeft:-10,
+            fontFamily:'SFpro-Medium'
+          },
           drawerIcon: ({ focused, size }) => (
             <Image
             resizeMode="contain"
@@ -344,7 +361,11 @@ export default function Sidebar() {
           title: 'Settings',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-
+          drawerLabelStyle:{
+            fontSize: 15,
+            marginLeft:-10,
+            fontFamily:'SFpro-Medium'
+          },
           drawerIcon: ({ focused, size }) => (
             <IonIcon
               name="ios-settings-outline"
@@ -362,7 +383,11 @@ export default function Sidebar() {
           title: 'Sign Out',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-
+          drawerLabelStyle:{
+            fontSize: 15,
+            marginLeft:-10,
+            fontFamily:'SFpro-Medium'
+          },
           drawerIcon: ({ focused, size }) => (
             <FIcon
               name="log-out"
@@ -413,8 +438,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   searchIcon:{
-    width:20,
-    height:19
+    width:24,
+    height:24
   },
   hamIcon:{
     width:20,

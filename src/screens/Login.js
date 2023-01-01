@@ -216,6 +216,7 @@ export default function Login({ navigation }) {
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 onChangeText={handleChange('password')}
+                maxLength={20}
               />
               <TouchableOpacity style={styles.passNShow}>
                 <IonIcon name="eye-outline" size={20} color={COLORS.blue} />
@@ -323,9 +324,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf2fe',
     borderWidth: 1,
     borderColor: '#488bb4',
-    width: 300,
+    width:220,
     borderRadius: 100,
-    height: 50,
+    height: 45,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -336,9 +337,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#434343',
     borderWidth: 1,
     borderColor: '#434343',
-    width: 300,
+    width: 220,
     borderRadius: 100,
-    height: 50,
+    height: 45,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -351,12 +352,13 @@ const styles = StyleSheet.create({
     color: '#080d14',
     fontFamily: 'SFpro-Regular',
     marginLeft: 10,
-    fontSize: 16
+    fontSize: 14
   },
   aBtText: {
     color: '#fff',
     fontFamily: 'SFpro-Regular',
     marginLeft: 10,
+    fontSize: 14
   },
   orText: {
     textTransform: 'uppercase',
@@ -386,7 +388,10 @@ const styles = StyleSheet.create({
   terms: {
     color: COLORS.blue,
     fontFamily: 'SFpro-Regular',
-    fontSize: 10
+    fontSize: 10,
+    textDecorationLine: 'underline',
+    textDecorationStyle: 'solid',
+    textDecorationColor: '#000'
   },
 
   phoneInputWrap: {

@@ -436,8 +436,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconText: {
-    color: '#9c9d9f',
+    color: '#7e868f',
     marginLeft: 10,
+    fontFamily: 'SFpro-Regular',
+    fontSize:12
   },
 
   roundBase: {
