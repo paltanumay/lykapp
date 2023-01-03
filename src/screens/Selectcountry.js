@@ -220,7 +220,7 @@ export default function Selectcountry({navigation}) {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[globalStyles.gradBt, {width: '80%'}]}
+                  style={[globalStyles.gradBt, {width: '90%'}]}
                   onPress={() => setChecked(1)}>
                   <LinearGradient
                     start={{x: 0, y: 0}}

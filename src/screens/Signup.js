@@ -260,7 +260,7 @@ export default function Signup({ navigation }) {
 
             <View style={styles.phoneInputWrap}>
               <PhoneInput
-                containerStyle={{ width: '100%', height: 50, padding: 0, }}
+                containerStyle={{ width: '100%', height: 50, padding: 0, marginLeft:-30, fontSize:14 }}
                 textContainerStyle={{ paddingVertical: 0, paddingHorizontal: 0, margin: 0, backgroundColor: '#fff' }}
                 defaultCode="IN"
                 layout="second"
@@ -343,9 +343,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf2fe',
     borderWidth: 1,
     borderColor: '#488bb4',
-    width: 260,
+    width:220,
     borderRadius: 100,
-    height: 47,
+    height: 45,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -356,9 +356,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#434343',
     borderWidth: 1,
     borderColor: '#434343',
-    width: 260,
+    width: 220,
     borderRadius: 100,
-    height: 47,
+    height: 45,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -371,12 +371,13 @@ const styles = StyleSheet.create({
     color: '#080d14',
     fontFamily: 'SFpro-Regular',
     marginLeft: 10,
-    fontSize: 16
+    fontSize: 14
   },
   aBtText: {
     color: '#fff',
     fontFamily: 'SFpro-Regular',
     marginLeft: 10,
+    fontSize: 14
   },
   orText: {
     textTransform: 'uppercase',
@@ -384,6 +385,7 @@ const styles = StyleSheet.create({
     color: '#080d14',
     fontFamily: 'SFpro-Bold',
     marginVertical: 25,
+    marginBottom:10
   },
   Iagree: {
     alignItems: 'center',
@@ -413,7 +415,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
     marginBottom: 20,
-    width: '60%',
+    width: '50%',
     alignItems: 'center'
   },
   lbimg: {

@@ -196,8 +196,8 @@ export default function Login({ navigation }) {
 
             <View style={styles.phoneInputWrap}>
               <PhoneInput
-                containerStyle={{ width: '100%', height: 50, padding: 0, }}
-                textContainerStyle={{ paddingVertical: 0, paddingHorizontal: 0, margin: 0, backgroundColor: '#fff' }}
+                containerStyle={{ width: '100%', height: 50, padding: 0, marginLeft:-24, fontSize:14}}
+                textContainerStyle={{ paddingVertical: 0, paddingHorizontal: 0, margin: 0, backgroundColor:'#fff'}}
                 defaultCode="IN"
                 layout="second"
                 onChangeText={handleChange('identity')}
@@ -209,7 +209,7 @@ export default function Login({ navigation }) {
 
             <View style={styles.phoneInputWrap}>
               <TextInput
-                placeholderTextColor="#AFAFAF"
+                placeholderTextColor="#000"
                 style={styles.input}
                 placeholder="Password"
                 textContentType="username"
@@ -219,8 +219,8 @@ export default function Login({ navigation }) {
                 maxLength={20}
               />
               <TouchableOpacity style={styles.passNShow}>
-                <IonIcon name="eye-outline" size={20} color={COLORS.blue} />
-                {/* <IonIcon name="ios-eye-off-outline" size={20} color={COLORS.blue} /> */}
+                {/* <IonIcon name="eye-outline" size={20} color={COLORS.blue} /> */}
+                <IonIcon name="ios-eye-off-outline" size={20} color={COLORS.blue} />
               </TouchableOpacity>
             </View>
 
@@ -243,29 +243,29 @@ export default function Login({ navigation }) {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 colors={['#037ee5', '#15a2e0', '#28cad9']}
-                style={[globalStyles.linearGradient, {height:40}]}>
+                style={[globalStyles.linearGradient, {height:38}]}>
                 <Text style={globalStyles.buttonText}>Next</Text>
               </LinearGradient>
             </TouchableOpacity>
 
-            <TouchableOpacity><Text style={styles.forgotPassText} onPress={() => this.setModalVisible(true)}>Forgot Password</Text></TouchableOpacity>
+            <TouchableOpacity><Text style={styles.forgotPassText} onPress={() => this.setModalVisible(true)}>Forgot Password?</Text></TouchableOpacity>
 
-            <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('SignUp')}>
+            <TouchableOpacity style={[globalStyles.gradBt, {width:'47%'}]} onPress={() => navigation.push('SignUp')}>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 colors={['#037ee5', '#15a2e0', '#28cad9']}
-                style={globalStyles.linearGradient}>
+                style={[globalStyles.linearGradient, {height:42}]}>
                 <Text style={globalStyles.buttonText}>Sign Up</Text>
               </LinearGradient>
             </TouchableOpacity>
 
-            <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Country')}>
+            <TouchableOpacity style={[globalStyles.gradBt, {width:'47%'}]} onPress={() => navigation.push('Country')}>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 colors={['#037ee5', '#15a2e0', '#28cad9']}
-                style={globalStyles.linearGradient}>
+                style={[globalStyles.linearGradient, {height:42}]}>
                 <Text style={globalStyles.buttonText}>Skip Sign Up</Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -307,7 +307,8 @@ const styles = StyleSheet.create({
   scView: {
     backgroundColor: '#fff',
     width: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
+    height:'100%'
 
   },
   loginText: {
@@ -366,17 +367,19 @@ const styles = StyleSheet.create({
     color: '#080d14',
     fontFamily: 'SFpro-Bold',
     marginVertical: 25,
+    marginBottom:10
   },
   Iagree: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
    // flexWrap: 'wrap',
     width: '80%',
     marginTop: 15,
-    flexDirection:'column'
+    flexDirection:'column',
+    paddingLeft:50
   },
   IagreeText: {
-    textAlign: 'center',
+    textAlign: 'left',
     color: '#333',
     fontFamily: 'SFpro-Regular',
     fontSize: 10
@@ -391,14 +394,16 @@ const styles = StyleSheet.create({
     fontSize: 10,
     textDecorationLine: 'underline',
     textDecorationStyle: 'solid',
-    textDecorationColor: '#000'
+    textDecorationColor: '#000',
+    textAlign:'left'
+
   },
 
   phoneInputWrap: {
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
-    marginBottom: 20,
-    width: '60%',
+    marginBottom: 10,
+    width: '50%',
   },
   passNShow: {
     position: 'absolute',
@@ -407,6 +412,7 @@ const styles = StyleSheet.create({
   },
   rememberPassText: {
     color: '#333',
+    fontSize:11,
     //marginBottom: 15,
     fontFamily: 'Lato-Regular',
     marginLeft:8
@@ -414,14 +420,16 @@ const styles = StyleSheet.create({
   },
   forgotPassText: {
     color: '#333',
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'Lato-Semibold',
+    fontSize:11, 
 
     marginVertical: 15
   },
   input: {
     fontSize: 14,
     fontFamily: 'Lato-Regular',
-    color:'#333'
+    color:'#333',
+    textAlign:'left'
   },
   lbimg: {
     width: 150,
