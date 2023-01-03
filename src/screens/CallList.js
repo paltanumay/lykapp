@@ -4,6 +4,7 @@ import {
     StyleSheet,
     Image,
     FlatList,
+    TouchableOpacity,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -13,6 +14,7 @@ import moment from "moment";
 import FIcon from 'react-native-vector-icons/Feather';
 import SIcon from 'react-native-vector-icons/SimpleLineIcons';
 import COLORS from '../global/globalColors';
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -22,6 +24,7 @@ const CALL_LOG_SHORT = "gtclhtr";
 const offset = 0, limit = 25;
 
 export default function CallList() {
+    const navigation = useNavigation();
     const [logs, setLogs] = useState();
     useEffect(() => {
         async function getLogs() {
@@ -51,6 +54,7 @@ export default function CallList() {
                 data={logs}
                 renderItem={({ item }) => {
                     return (
+                        <TouchableOpacity onPress={()=>navigation.push('Callscreen', {toUserId: item.userId})}>
                         <View style={styles.listContainer}>
                             <Text style={styles.date}>
                                 <SIcon name={item.callType==="video"?"camrecorder":"phone"} size={23} color={COLORS.blue} />
@@ -73,6 +77,7 @@ export default function CallList() {
                                 </Text>
                             </View>
                         </View>
+                        </TouchableOpacity>
                     );
                 }}
             />
