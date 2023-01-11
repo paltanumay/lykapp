@@ -6,10 +6,13 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import React from 'react';
 import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
+import messaging from '@react-native-firebase/messaging';
+import DeviceInfo from 'react-native-device-info';
 
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import EnIcon from 'react-native-vector-icons/Entypo';
@@ -24,6 +27,8 @@ import Header from '../components/Header';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
+export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
+export const INSERT_PUSH_SHORT = "isrPs";
 const HOME_FEED_SHORT = "gttmln";
 const offset = 0, limit = 25, feedPosition = -1, oddOffset = 0, evenOffset = 0, isStatic = 0, isEven = 0, birthdayStartPosition = 0, size = 0;
 const pId = null, activityFriendOffsetCount = "0", nextPostId = "0", promoId = "0", nextNewsId = "0", postStatus = "0";
@@ -60,6 +65,85 @@ export default function Home({ navigation }) {
       )
     }
     getHomeFeed()
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      if(remoteMessage.data.type === 'startcall'){
+        navigation.push('Callscreen', {toUserId: remoteMessage.data.fromUserId, userName: remoteMessage.data.incomingCallerName, isCalling: true})
+      }
+    });
+
+    return unsubscribe;
+  }, [])
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  }
+  useEffect(() => {
+    async function userInfo() {
+      let userDetails = await AsyncStorage.getItem('userId');
+      userDetails = JSON.parse(userDetails);
+      if(userDetails) {
+        let token = await AsyncStorage.getItem("token") + "-" + INSERT_PUSH_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
+        if(requestUserPermission()){
+          messaging().getToken().then(FCMtoken=>{
+            console.log('token>>>>'+FCMtoken)
+            axios.post(INSERT_PUSH, {
+              "userId": getEncUserId(userDetails.userId),
+              "pushKeyString": FCMtoken,
+              "deviceType": "android",
+              "deviceId": DeviceInfo.getDeviceId(),
+            },
+            {
+              headers:{
+                token: token
+              }
+            }
+          ).then(()=>{})
+        })
+        }
+      }
+    }
+    userInfo();
+
+    // Assume a message-notification contains a "type" property in the data payload of the screen to open
+
+    messaging().onNotificationOpenedApp(async (remoteMessage) => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage.notification,
+      );
+    });
+
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then(async (remoteMessage) => {
+        if (remoteMessage) {
+          console.log(
+            'Notification caused app to open from quit state:',
+            remoteMessage.notification,
+          );
+        }
+      });
+      
+
+      // Register background handler
+      messaging().setBackgroundMessageHandler(async remoteMessage => {
+        console.log('Message handled in the background!', remoteMessage);
+      });
+
+
+      /* const unsubscribe = messaging().onMessage(async remoteMessage => {
+        Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      });
+  
+      return unsubscribe; */
   }, [])
   return (
     <>

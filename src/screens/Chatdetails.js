@@ -267,7 +267,7 @@ export default function Chatdetails() {
   };
   return (
     <View style={{flex:1}}>
-    <HeaderChat isBack = {true} title={route.params.toUser} />
+    <HeaderChat isBack = {true} title={route.params.toUser} toUserId={route.params.toUserId} />
       <Gmodal />
 <View style={{flex:10}}>
       <ScrollView
