@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prettier/prettier */
 import {
   Text,
   View,
@@ -9,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import React from 'react';
-import { globalStyles } from '../global/globalStyle';
+import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import messaging from '@react-native-firebase/messaging';
 import DeviceInfo from 'react-native-device-info';
@@ -17,69 +19,111 @@ import DeviceInfo from 'react-native-device-info';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import EnIcon from 'react-native-vector-icons/Entypo';
 import Footer from '../components/Footer';
-import { useEffect } from 'react';
+import {useEffect} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
-import { useState } from 'react';
-import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import {useState} from 'react';
+import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import moment from 'moment';
 import Header from '../components/Header';
+import Animated, {
+  Easing,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
-const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
+const API_URL =
+  process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
-export const INSERT_PUSH_SHORT = "isrPs";
-const HOME_FEED_SHORT = "gttmln";
-const offset = 0, limit = 25, feedPosition = -1, oddOffset = 0, evenOffset = 0, isStatic = 0, isEven = 0, birthdayStartPosition = 0, size = 0;
-const pId = null, activityFriendOffsetCount = "0", nextPostId = "0", promoId = "0", nextNewsId = "0", postStatus = "0";
-export default function Home({ navigation }) {
+export const INSERT_PUSH_SHORT = 'isrPs';
+const HOME_FEED_SHORT = 'gttmln';
+const offset = 0,
+  limit = 25,
+  feedPosition = -1,
+  oddOffset = 0,
+  evenOffset = 0,
+  isStatic = 0,
+  isEven = 0,
+  birthdayStartPosition = 0,
+  size = 0;
+const pId = null,
+  activityFriendOffsetCount = '0',
+  nextPostId = '0',
+  promoId = '0',
+  nextNewsId = '0',
+  postStatus = '0';
+export default function Home({navigation}) {
+  const translateY = useSharedValue(0);
+  const lastContentOffset = useSharedValue(0);
+  const isScrolling = useSharedValue(false);
   const [feeds, setFeeds] = useState([]);
+  const [isScrollDown, setScrollDown] = useState(false);
   useEffect(() => {
     async function getHomeFeed() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
-      let token = await AsyncStorage.getItem("token") + "-" + HOME_FEED_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
-      axios.post(HOME_FEED, {
-        "userId": getEncUserId(userDetails.userId),
-        "limit": limit,
-        "country": userDetails.countryName,
-        "offset": offset,
-        "nextPostId": nextPostId,
-        "pId": pId,
-        "promoId": promoId,
-        "deviceType": "android",
-        "apiVersion": 2,
-        "nextNewsId": nextNewsId,
-        "postStatus": postStatus,
-        "activityFriendOffsetCount": activityFriendOffsetCount,
-      }, {
-        headers: {
-          token: token
-        }
-      }).then(res => {
-        //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
-        setFeeds(res.data.response.feeds)
-      }, err => {
-        alert(err + userDetails.userId + token)
-      }
-      )
+      let token =
+        (await AsyncStorage.getItem('token')) +
+        '-' +
+        HOME_FEED_SHORT +
+        '-' +
+        getEncTokenAnyUserId(userDetails.userId);
+      axios
+        .post(
+          HOME_FEED,
+          {
+            userId: getEncUserId(userDetails.userId),
+            limit: limit,
+            country: userDetails.countryName,
+            offset: offset,
+            nextPostId: nextPostId,
+            pId: pId,
+            promoId: promoId,
+            deviceType: 'android',
+            apiVersion: 2,
+            nextNewsId: nextNewsId,
+            postStatus: postStatus,
+            activityFriendOffsetCount: activityFriendOffsetCount,
+          },
+          {
+            headers: {
+              token: token,
+            },
+          },
+        )
+        .then(
+          res => {
+            //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
+            setFeeds(res.data.response.feeds);
+          },
+          err => {
+            alert(err + userDetails.userId + token);
+          },
+        );
     }
-    getHomeFeed()
+    getHomeFeed();
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      if(remoteMessage.data.type === 'startcall'){
-        navigation.push('Callscreen', {toUserId: remoteMessage.data.fromUserId, userName: remoteMessage.data.incomingCallerName, isCalling: true})
+      if (remoteMessage.data.type === 'startcall') {
+        navigation.push('Callscreen', {
+          toUserId: remoteMessage.data.fromUserId,
+          userName: remoteMessage.data.incomingCallerName,
+          isCalling: true,
+        });
       }
     });
 
     return unsubscribe;
-  }, [])
+  }, []);
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-  
+
     if (enabled) {
       console.log('Authorization status:', authStatus);
     }
@@ -88,24 +132,35 @@ export default function Home({ navigation }) {
     async function userInfo() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
-      if(userDetails) {
-        let token = await AsyncStorage.getItem("token") + "-" + INSERT_PUSH_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
-        if(requestUserPermission()){
-          messaging().getToken().then(FCMtoken=>{
-            console.log('token>>>>'+FCMtoken)
-            axios.post(INSERT_PUSH, {
-              "userId": getEncUserId(userDetails.userId),
-              "pushKeyString": FCMtoken,
-              "deviceType": "android",
-              "deviceId": DeviceInfo.getDeviceId(),
-            },
-            {
-              headers:{
-                token: token
-              }
-            }
-          ).then(()=>{})
-        })
+      if (userDetails) {
+        let token =
+          (await AsyncStorage.getItem('token')) +
+          '-' +
+          INSERT_PUSH_SHORT +
+          '-' +
+          getEncTokenAnyUserId(userDetails.userId);
+        if (requestUserPermission()) {
+          messaging()
+            .getToken()
+            .then(FCMtoken => {
+              console.log('token>>>>' + FCMtoken);
+              axios
+                .post(
+                  INSERT_PUSH,
+                  {
+                    userId: getEncUserId(userDetails.userId),
+                    pushKeyString: FCMtoken,
+                    deviceType: 'android',
+                    deviceId: DeviceInfo.getDeviceId(),
+                  },
+                  {
+                    headers: {
+                      token: token,
+                    },
+                  },
+                )
+                .then(() => {});
+            });
         }
       }
     }
@@ -113,7 +168,7 @@ export default function Home({ navigation }) {
 
     // Assume a message-notification contains a "type" property in the data payload of the screen to open
 
-    messaging().onNotificationOpenedApp(async (remoteMessage) => {
+    messaging().onNotificationOpenedApp(async remoteMessage => {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage.notification,
@@ -123,7 +178,7 @@ export default function Home({ navigation }) {
     // Check whether an initial notification is available
     messaging()
       .getInitialNotification()
-      .then(async (remoteMessage) => {
+      .then(async remoteMessage => {
         if (remoteMessage) {
           console.log(
             'Notification caused app to open from quit state:',
@@ -131,28 +186,65 @@ export default function Home({ navigation }) {
           );
         }
       });
-      
 
-      // Register background handler
-      messaging().setBackgroundMessageHandler(async remoteMessage => {
-        console.log('Message handled in the background!', remoteMessage);
-      });
+    // Register background handler
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage);
+    });
 
-
-      /* const unsubscribe = messaging().onMessage(async remoteMessage => {
+    /* const unsubscribe = messaging().onMessage(async remoteMessage => {
         Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
       });
   
       return unsubscribe; */
-  }, [])
+  }, []);
+  const actionBarStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: withTiming(translateY.value, {
+            duration: 750,
+            easing: Easing.inOut(Easing.ease),
+          }),
+        },
+      ],
+    };
+  });
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: event => {
+      if (
+        lastContentOffset.value > event.contentOffset.y &&
+        isScrolling.value
+      ) {
+        translateY.value = 0;
+
+        // console.log('scrolling up');
+      } else if (
+        lastContentOffset.value < event.contentOffset.y &&
+        isScrolling.value
+      ) {
+        translateY.value = 100;
+        // console.log('scrolling down');
+      }
+      lastContentOffset.value = event.contentOffset.y;
+    },
+    onBeginDrag: e => {
+      isScrolling.value = true;
+    },
+    onEndDrag: e => {
+      isScrolling.value = false;
+    },
+  });
   return (
     <>
-    <Header />
+      <Header />
       <View style={globalStyles.innerPagesContainer}>
-        <ScrollView
+        <Animated.ScrollView
+          style={styles.scrollView}
           showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}>
-          <View style={styles.blueBar}></View>
+          showsHorizontalScrollIndicator={false}
+          onScroll={scrollHandler}>
+          <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
             <TouchableOpacity>
               <Image
@@ -161,7 +253,34 @@ export default function Home({ navigation }) {
                 style={[styles.postImg]}
               />
             </TouchableOpacity>
-
+            <TouchableOpacity>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/create-post.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/create-post.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/create-post.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/create-post.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
             {/* <TouchableOpacity>
               <Image
                 resizeMode="contain"
@@ -169,7 +288,6 @@ export default function Home({ navigation }) {
                 style={[styles.postImg]}
               />
             </TouchableOpacity> */}
-
             <TouchableOpacity>
               <Image
                 resizeMode="contain"
@@ -180,128 +298,31 @@ export default function Home({ navigation }) {
           </View>
 
           <View style={styles.newsCardsWrap}>
-            {feeds.map(({ type, details }) => type === 'news' ? (
-              <View style={styles.newsCard} key={details.newsId}>
-                <View style={styles.cardTitle}>
-                  <View style={styles.cardProImg}>
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/logo.png')}
-                      style={[styles.logoImg]}
-                    />
-                  </View>
-                  <View style={styles.newstext}>
-                    <Text style={styles.newsTitletext}>News & Stories</Text>
-                    <Text style={styles.newsSubTitletext}>{moment(new Date()).diff(moment(details.feedTime.replace(' ','T')+'Z'), 'days') < 1 ? moment(details.feedTime.replace(' ','T')+'Z').fromNow():moment(details.feedTime.replace(' ','T')+'Z').format("DD MMM YYYY, h:mm a")}</Text>
-                  </View>
-                  <TouchableOpacity style={styles.options}>
-                    <EnIcon
-                      name="dots-three-horizontal"
-                      size={25}
-                      color="#333"
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                <Text style={styles.mainDesc}>
-                  {details.newsTitle}
-                </Text>
-
-                <View style={styles.newsCoverImg}>
-                  <Image
-                    resizeMode="stretch"
-                    source={{
-                      uri: details.newsImageUrl
-                    }}
-                    style={[styles.postImg]}
-                  />
-                </View>
-                <Text style={styles.secDesc}>
-                  {details.newsDescription}
-                </Text>
-
-                <View style={styles.likeCommentShare}>
-                  <View style={styles.likeCommentShareBox}>
-                    <View style={styles.likeCommentShareIconWrap}>
-                    <Image
-                        resizeMode="contain"
-                        source={require('../assets/images/liked.png')}
-                        style={[styles.likeImg]}
-                      />
-                      {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
-                      </TouchableOpacity> */}
-
-                      <Text style={styles.iconText}>{details.likeCount} Like</Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.likeCommentShareBox}>
-                    <View style={styles.likeCommentShareIconWrap}>
-                      {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="message1" size={22} color="#c1cb99" />
-                      </TouchableOpacity> */}
-                      <Image
-                        resizeMode="contain"
-                        source={require('../assets/images/comment.png')}
-                        style={[styles.likeImg]}
-                      />
-
-                      <Text style={styles.iconText}>{details.commentCount} Comment</Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.likeCommentShareBox}>
-                    <View style={styles.likeCommentShareIconWrap}>
-                      {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="sharealt" size={22} color="#f8767a" />
-                      </TouchableOpacity> */}
-                      <Image
-                        resizeMode="contain"
-                        source={require('../assets/images/share.png')}
-                        style={[styles.likeImg]}
-                      />
-
-                      <Text style={styles.iconText}>{details.shareCount} Share</Text>
-                    </View>
-                  </View>
-                </View>
-
-                <View style={styles.addCommentWrap}>
-                  <View style={styles.addCommentImgWrap}>
-                    <Image
-                      resizeMode="stretch"
-                      source={require('../assets/images/avatar.jpg')}
-                      style={[styles.addCommentImg]}
-                    />
-                  </View>
-                  <View style={styles.addCommentField}>
-                    <TextInput
-                      placeholderTextColor="#AFAFAF"
-                      style={styles.input}
-                      placeholder="Add comment"
-                      textContentType="username"
-                      underlineColorAndroid="transparent"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                    />
-                  </View>
-                </View>
-              </View>
-            ) :
-              type === 'post' && (
-                <View style={styles.newsCard} key={details.postId}>
+            {feeds.map(({type, details}) =>
+              type === 'news' ? (
+                <View style={styles.newsCard} key={details.newsId}>
                   <View style={styles.cardTitle}>
                     <View style={styles.cardProImg}>
                       <Image
                         resizeMode="contain"
-                        source={require('../assets/images/avatar.jpg')}
+                        source={require('../assets/images/logo.png')}
                         style={[styles.logoImg]}
                       />
                     </View>
                     <View style={styles.newstext}>
-                      <Text style={styles.newsTitletext}>{details.createdBy.firstName}</Text>
-                      <Text style={styles.newsSubTitletext}>{moment(new Date()).diff(moment(details.createdOn.replace(' ','T')+'Z'), 'days') < 1 ? moment(details.createdOn.replace(' ','T')+'Z').fromNow():moment(details.createdOn.replace(' ','T')+'Z').format("DD MMM YYYY, h:mm a")}</Text>
+                      <Text style={styles.newsTitletext}>News & Stories</Text>
+                      <Text style={styles.newsSubTitletext}>
+                        {moment(new Date()).diff(
+                          moment(details.feedTime.replace(' ', 'T') + 'Z'),
+                          'days',
+                        ) < 1
+                          ? moment(
+                              details.feedTime.replace(' ', 'T') + 'Z',
+                            ).fromNow()
+                          : moment(
+                              details.feedTime.replace(' ', 'T') + 'Z',
+                            ).format('DD MMM YYYY, h:mm a')}
+                      </Text>
                     </View>
                     <TouchableOpacity style={styles.options}>
                       <EnIcon
@@ -312,67 +333,68 @@ export default function Home({ navigation }) {
                     </TouchableOpacity>
                   </View>
 
-                  {/* <Text style={styles.mainDesc}>
-                  {details.title}
-                </Text> */}
+                  <Text style={styles.mainDesc}>{details.newsTitle}</Text>
 
-                  {details.imageUrl && <View style={styles.newsCoverImg}>
+                  <View style={styles.newsCoverImg}>
                     <Image
                       resizeMode="stretch"
                       source={{
-                        uri: 'https://cdn.lykapp.com/newsImages/images/' + details.imageUrl
+                        uri: details.newsImageUrl,
                       }}
                       style={[styles.postImg]}
                     />
-                  </View>}
-                  <Text style={styles.secDesc}>
-                    {details.title}
-                  </Text>
+                  </View>
+                  <Text style={styles.secDesc}>{details.newsDescription}</Text>
 
                   <View style={styles.likeCommentShare}>
                     <View style={styles.likeCommentShareBox}>
                       <View style={styles.likeCommentShareIconWrap}>
-                      <Image
-                        resizeMode="contain"
-                        source={require('../assets/images/liked.png')}
-                        style={[styles.likeImg]}
-                      />
-
+                        <Image
+                          resizeMode="contain"
+                          source={require('../assets/images/liked.png')}
+                          style={[styles.likeImg]}
+                        />
                         {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
-                        </TouchableOpacity> */}
+                        <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
+                      </TouchableOpacity> */}
 
-                        <Text style={styles.iconText}>{details.likeCount} Like</Text>
+                        <Text style={styles.iconText}>
+                          {details.likeCount} Like
+                        </Text>
                       </View>
                     </View>
 
                     <View style={styles.likeCommentShareBox}>
                       <View style={styles.likeCommentShareIconWrap}>
                         {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name="message1" size={22} color="#c1cb99" />
-                        </TouchableOpacity> */}
+                        <AntIcon name="message1" size={22} color="#c1cb99" />
+                      </TouchableOpacity> */}
                         <Image
-                        resizeMode="contain"
-                        source={require('../assets/images/comment.png')}
-                        style={[styles.likeImg]}
-                      />
+                          resizeMode="contain"
+                          source={require('../assets/images/comment.png')}
+                          style={[styles.likeImg]}
+                        />
 
-                        <Text style={styles.iconText}>{details.commentCount} Comment</Text>
+                        <Text style={styles.iconText}>
+                          {details.commentCount} Comment
+                        </Text>
                       </View>
                     </View>
 
                     <View style={styles.likeCommentShareBox}>
                       <View style={styles.likeCommentShareIconWrap}>
                         {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name="sharealt" size={22} color="#f8767a" />
-                        </TouchableOpacity> */}
+                        <AntIcon name="sharealt" size={22} color="#f8767a" />
+                      </TouchableOpacity> */}
                         <Image
-                        resizeMode="contain"
-                        source={require('../assets/images/share.png')}
-                        style={[styles.likeImg]}
-                      />
+                          resizeMode="contain"
+                          source={require('../assets/images/share.png')}
+                          style={[styles.likeImg]}
+                        />
 
-                        <Text style={styles.iconText}>{details.shareCount} Share</Text>
+                        <Text style={styles.iconText}>
+                          {details.shareCount} Share
+                        </Text>
                       </View>
                     </View>
                   </View>
@@ -398,15 +420,147 @@ export default function Home({ navigation }) {
                     </View>
                   </View>
                 </View>
-              )
+              ) : (
+                type === 'post' && (
+                  <View style={styles.newsCard} key={details.postId}>
+                    <View style={styles.cardTitle}>
+                      <View style={styles.cardProImg}>
+                        <Image
+                          resizeMode="contain"
+                          source={require('../assets/images/avatar.jpg')}
+                          style={[styles.logoImg]}
+                        />
+                      </View>
+                      <View style={styles.newstext}>
+                        <Text style={styles.newsTitletext}>
+                          {details.createdBy.firstName}
+                        </Text>
+                        <Text style={styles.newsSubTitletext}>
+                          {moment(new Date()).diff(
+                            moment(details.createdOn.replace(' ', 'T') + 'Z'),
+                            'days',
+                          ) < 1
+                            ? moment(
+                                details.createdOn.replace(' ', 'T') + 'Z',
+                              ).fromNow()
+                            : moment(
+                                details.createdOn.replace(' ', 'T') + 'Z',
+                              ).format('DD MMM YYYY, h:mm a')}
+                        </Text>
+                      </View>
+                      <TouchableOpacity style={styles.options}>
+                        <EnIcon
+                          name="dots-three-horizontal"
+                          size={25}
+                          color="#333"
+                        />
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* <Text style={styles.mainDesc}>
+                  {details.title}
+                </Text> */}
+
+                    {details.imageUrl && (
+                      <View style={styles.newsCoverImg}>
+                        <Image
+                          resizeMode="stretch"
+                          source={{
+                            uri:
+                              'https://cdn.lykapp.com/newsImages/images/' +
+                              details.imageUrl,
+                          }}
+                          style={[styles.postImg]}
+                        />
+                      </View>
+                    )}
+                    <Text style={styles.secDesc}>{details.title}</Text>
+
+                    <View style={styles.likeCommentShare}>
+                      <View style={styles.likeCommentShareBox}>
+                        <View style={styles.likeCommentShareIconWrap}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/liked.png')}
+                            style={[styles.likeImg]}
+                          />
+
+                          {/* <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
+                        </TouchableOpacity> */}
+
+                          <Text style={styles.iconText}>
+                            {details.likeCount} Like
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View style={styles.likeCommentShareBox}>
+                        <View style={styles.likeCommentShareIconWrap}>
+                          {/* <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name="message1" size={22} color="#c1cb99" />
+                        </TouchableOpacity> */}
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/comment.png')}
+                            style={[styles.likeImg]}
+                          />
+
+                          <Text style={styles.iconText}>
+                            {details.commentCount} Comment
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View style={styles.likeCommentShareBox}>
+                        <View style={styles.likeCommentShareIconWrap}>
+                          {/* <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name="sharealt" size={22} color="#f8767a" />
+                        </TouchableOpacity> */}
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/share.png')}
+                            style={[styles.likeImg]}
+                          />
+
+                          <Text style={styles.iconText}>
+                            {details.shareCount} Share
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    <View style={styles.addCommentWrap}>
+                      <View style={styles.addCommentImgWrap}>
+                        <Image
+                          resizeMode="stretch"
+                          source={require('../assets/images/avatar.jpg')}
+                          style={[styles.addCommentImg]}
+                        />
+                      </View>
+                      <View style={styles.addCommentField}>
+                        <TextInput
+                          placeholderTextColor="#AFAFAF"
+                          style={styles.input}
+                          placeholder="Add comment"
+                          textContentType="username"
+                          underlineColorAndroid="transparent"
+                          keyboardType="email-address"
+                          autoCapitalize="none"
+                        />
+                      </View>
+                    </View>
+                  </View>
+                )
+              ),
             )}
-
-
           </View>
-        </ScrollView>
+        </Animated.ScrollView>
+        <Footer style={actionBarStyle} navigation={navigation} />
       </View>
-      <Footer navigation={navigation} />
 
+      {/* <Animated.View style={actionBarStyle}> */}
+      {/* </Animated.View> */}
     </>
   );
 }
@@ -418,13 +572,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.blue,
   },
   postInvitedNetwork: {
+    flex: 1,
+    height: '100%',
+    // backgroundColor: 'red',
     paddingHorizontal: 15,
     marginTop: -35,
   },
   postImg: {
     width: '100%',
     height: 260,
-    marginBottom:15
+    marginBottom: 15,
   },
   newsCardsWrap: {
     padding: 15,
@@ -460,22 +617,26 @@ const styles = StyleSheet.create({
     color: '#9e9c9c',
     fontSize: 12,
     fontFamily: 'SFpro-Regular',
-
-
+  },
+  scrollView: {
+    // flex: 1,
+    height: 'auto',
+    position: 'relative',
+    zIndex: 99,
   },
   options: {
     position: 'absolute',
     right: 15,
     top: 0,
   },
-  newsCardsWrap: {
-    padding: 15,
-  },
+  // newsCardsWrap: {
+  //   padding: 15,
+  // },
   newsCard: {
     backgroundColor: '#fff',
     borderRadius: 10,
     paddingVertical: 10,
-    marginBottom: 20
+    marginBottom: 20,
   },
   mainDesc: {
     color: '#333',
@@ -523,7 +684,7 @@ const styles = StyleSheet.create({
     color: '#7e868f',
     marginLeft: 10,
     fontFamily: 'SFpro-Regular',
-    fontSize:12
+    fontSize: 12,
   },
 
   roundBase: {
@@ -551,18 +712,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 15,
-
   },
   addCommentField: {
     backgroundColor: '#e7ebf6',
     borderRadius: 8,
     width: '88%',
     paddingHorizontal: 10,
-
   },
-  likeImg:{
-    width:40,
-    height:40,
- 
-  }
+  likeImg: {
+    width: 40,
+    height: 40,
+  },
 });
