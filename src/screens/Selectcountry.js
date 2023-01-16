@@ -413,7 +413,7 @@ export default function Selectcountry({navigation}) {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
     flex: 1,
   },
   linearGradient: {
@@ -495,7 +495,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red',
     // marginRight: -60,
   },
   catBoxImg: {
@@ -507,7 +506,7 @@ const styles = StyleSheet.create({
     width: '30%',
     marginTop: 20,
     position: 'relative',
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
   },
   close: {
     display: 'flex',
@@ -519,12 +518,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
-    width: '100%',
+    width: '80%',
     alignItems: 'flex-start',
-    backgroundColor: 'blue',
   },
   catText: {
     fontFamily: 'SFpro-Regular',
+    fontSize: 10,
+    letterSpacing: 0.29,
     color: '#333',
     marginTop: 8,
   },
@@ -627,8 +627,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
 
-    width: 77,
-    height: 77,
+    width: 76,
+    height: 76,
     borderRadius: 15,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     alignItems: 'center',

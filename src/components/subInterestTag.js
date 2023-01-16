@@ -6,34 +6,16 @@ import COLORS from '../global/globalColors';
 const SubInterestTag = ({
   text,
   id,
+  onSelectSubInterest,
   setSelectedSubInterest,
   selectedSubInterest,
 }) => {
   const [interest, setInterest] = useState(false);
+  let subInterest = [];
 
-  const onPressSubInterest = (selectedId, selectedtext) => {
+  const onPressSubInterest = () => {
+    onSelectSubInterest({id, text});
     setInterest(prev => !prev);
-    // let subInterest = selectedSubInterest;
-    // console.log(subInterest.some(item => selectedId === item.selectedId));
-    // subInterest.push({id: selectedId, text: selectedtext});
-    // console.log(subInterest);
-    // console.log(subInterest, 'subInterest');
-    // if (subInterest.length == 0) {
-    //   subInterest.push({id: selectedId, text: selectedtext});
-    // } else if (
-    //   subInterest.length !== 0 &&
-    //   subInterest?.indexOf(prev => prev.id === selectedId) === -1
-    // ) {
-    //   subInterest.push({id: selectedId, text: selectedtext});
-    // } else if (
-    //   subInterest.length !== 0 &&
-    //   subInterest?.indexOf({id: selectedId, text: selectedtext}) !== -1
-    // ) {
-    //   console.log('delete');
-    //   subInterest = subInterest.filter(prev => prev.id !== selectedId);
-    // }
-    // console.log('setStaet');
-    // setSelectedSubInterest(subInterest);
   };
   return (
     <TouchableOpacity
@@ -43,7 +25,7 @@ const SubInterestTag = ({
           : [styles.suBInterestTag, styles.selectedSubInterestTag]
       }
       key={id}
-      onPress={() => onPressSubInterest(id, text)}>
+      onPress={onPressSubInterest}>
       <FIcon
         style={styles.plusIcon}
         name={interest ? 'x' : 'plus'}
