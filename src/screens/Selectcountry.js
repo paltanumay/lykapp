@@ -27,30 +27,6 @@ const interests = [
   {
     text: 'Dance',
     image: require('../assets/images/dance.jpg'),
-  },
-  {
-    text: 'Music',
-    image: require('../assets/images/music.webp'),
-  },
-  {
-    text: 'Politics',
-    image: require('../assets/images/politics.png'),
-  },
-  {
-    text: 'Theatre',
-    image: require('../assets/images/theatre.jpg'),
-  },
-  {
-    text: 'Gardening',
-    image: require('../assets/images/gardening.webp'),
-  },
-  {
-    text: 'Pets',
-    image: require('../assets/images/pets.jpg'),
-  },
-  {
-    text: 'Dance',
-    image: require('../assets/images/dance.jpg'),
     subInterest: [
       {
         id: '1',
@@ -66,9 +42,9 @@ const interests = [
     text: 'Music',
     image: require('../assets/images/music.webp'),
     subInterest: [
-      {id: 'we', text: 'classical'},
-      {id: 'dffd', text: 'rock'},
-      {id: 'ds', text: 'pop'},
+      {id: '1', text: 'classical'},
+      {id: '2', text: 'rock'},
+      {id: '3', text: 'pop'},
     ],
   },
   {
@@ -144,6 +120,25 @@ export default function Selectcountry({navigation}) {
     setHasSubInterest(true);
     setSubInterestList(subInterest);
     console.log(hasSubInterest);
+  };
+
+  const onSelectSubInterest = ({id, text}) => {
+    const beasts = ['ant', 'bison', 'camel', 'duck', 'bison'];
+
+    console.log(beasts.indexOf('duck'), beasts);
+    console.log(selectedSubInterest.indexOf({id, text}));
+    if (selectedSubInterest && selectedSubInterest.indexOf({id, text}) === -1) {
+      setSelectedSubInterest(prev => [...prev, {id, text}]);
+    } else if (
+      selectedSubInterest &&
+      selectedSubInterest.indexOf(prev => prev.id === id) !== -1
+    ) {
+      const deletedSubInterest = selectedSubInterest.filter(
+        prev => prev.id !== id,
+      );
+      console.log(deletedSubInterest, 'del');
+      setSelectedSubInterest(deletedSubInterest);
+    }
   };
   return (
     <>
@@ -356,6 +351,7 @@ export default function Selectcountry({navigation}) {
                               <SubInterestTag
                                 key={id}
                                 setSelectedSubInterest={setSelectedSubInterest}
+                                onSelectSubInterest={onSelectSubInterest}
                                 text={text}
                                 id={id}
                                 selectedSubInterest={selectedSubInterest}
