@@ -272,7 +272,7 @@ export default function Selectcountry({navigation}) {
                     onChangeText={e => setSearch(e)}
                   />
                   <TouchableOpacity style={styles.search}>
-                    <FIcon name="search" size={22} color="#ccc" />
+                    <FIcon name="search" size={19} color="#ccc" />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.interestList}>
@@ -455,19 +455,22 @@ const styles = StyleSheet.create({
     // fontSize: 18,
   },
   searchBox: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     width: '70%',
     borderRadius: 100,
     borderWidth: 1,
     borderColor: COLORS.blue,
-    height: 38,
+    height: 40,
     paddingTop: 0,
     paddingHorizontal: 15,
-    paddingRight: 45,
+    // paddingRight: 45,
   },
   search: {
     position: 'absolute',
     right: 15,
-    top: 6,
+    // top: 6,
   },
   catBox: {
     width: 77,
@@ -621,8 +624,9 @@ const styles = StyleSheet.create({
   },
   input: {
     color: '#333',
-    height: 38,
-    fontSize: 12,
+    // height: 38,
+    fontSize: 12.8,
+    fontWeight: '500',
     fontFamily: 'SFpro-Regular',
     width: '100%',
   },
