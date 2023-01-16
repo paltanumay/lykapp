@@ -169,7 +169,7 @@ export default function Selectcountry({navigation}) {
           <View style={styles.welcomeWrap}>
             <TouchableOpacity
               style={styles.backIcon}
-              onPress={() => setChecked(0)}>
+              onPress={() => setChecked(prev => prev - 1)}>
               <Image
                 style={styles.aleft}
                 source={require('../assets/images/arrow-simple-left.png')}
@@ -258,7 +258,7 @@ export default function Selectcountry({navigation}) {
             ) : (
               <View style={{alignItems: 'center', width: '80%'}}>
                 <Text style={styles.welcomeSubtextNew}>
-                  Let us know what you {'\n'} are interested in
+                  Let us know what you are {'\n'} interested in
                 </Text>
 
                 <View style={styles.searchBox}>
