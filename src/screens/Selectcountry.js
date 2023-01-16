@@ -63,6 +63,22 @@ const interests = [
     text: 'Pets',
     image: require('../assets/images/pets.jpg'),
   },
+  {
+    text: 'Politics',
+    image: require('../assets/images/politics.png'),
+  },
+  {
+    text: 'Theatre',
+    image: require('../assets/images/theatre.jpg'),
+  },
+  {
+    text: 'Gardening',
+    image: require('../assets/images/gardening.webp'),
+  },
+  {
+    text: 'Pets',
+    image: require('../assets/images/pets.jpg'),
+  },
 ];
 
 export default function Selectcountry({navigation}) {
@@ -256,7 +272,7 @@ export default function Selectcountry({navigation}) {
                 </TouchableOpacity>
               </ScrollView>
             ) : (
-              <View style={{alignItems: 'center', width: '80%'}}>
+              <View style={{alignItems: 'center', width: '100%'}}>
                 <Text style={styles.welcomeSubtextNew}>
                   Let us know what you are {'\n'} interested in
                 </Text>
@@ -475,10 +491,12 @@ const styles = StyleSheet.create({
   catBox: {
     width: 77,
     height: 77,
-    borderRadius: 15,
+    borderRadius: 18,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'red',
+    // marginRight: -60,
   },
   catBoxImg: {
     width: 100,
@@ -489,6 +507,7 @@ const styles = StyleSheet.create({
     width: '30%',
     marginTop: 20,
     position: 'relative',
+    backgroundColor: 'red',
   },
   close: {
     display: 'flex',
@@ -498,10 +517,11 @@ const styles = StyleSheet.create({
   },
   chooseCategoriesWrap: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     flexWrap: 'wrap',
-    width: '80%',
+    width: '100%',
     alignItems: 'flex-start',
+    backgroundColor: 'blue',
   },
   catText: {
     fontFamily: 'SFpro-Regular',
