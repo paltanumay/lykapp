@@ -185,7 +185,7 @@ export default function Selectcountry({navigation}) {
           <View style={styles.welcomeWrap}>
             <TouchableOpacity
               style={styles.backIcon}
-              onPress={() => setChecked(prev => prev - 1)}>
+              onPress={() => setChecked(prev => (prev !== 0 ? prev - 1 : 0))}>
               <Image
                 style={styles.aleft}
                 source={require('../assets/images/arrow-simple-left.png')}
