@@ -9,16 +9,22 @@ export const globalStyles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     borderRadius: 100,
-    height:45
+    height:38,
+    justifyContent:'center',
+    alignItems:'center',
+    
   },
   buttonText: {
     fontSize: 14,
     fontFamily: 'Gill Sans',
     textAlign: 'center',
     margin: 10,
+    position:'relative',
+    top:-2,
     color: '#fff',
     backgroundColor: 'transparent',
     fontFamily: 'SFpro-Regular',
+    
 
   },
   gradBt:{

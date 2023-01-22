@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     textAlign: 'center',
-    fontFamily: 'SFpro-Regular',
+    fontFamily: 'SFpro-Bold',
     color: COLORS.blue,
     marginTop:15
   },

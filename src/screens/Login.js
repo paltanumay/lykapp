@@ -12,7 +12,6 @@ import { globalStyles } from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import Findconnectionsmodal from '../shared/Findconnectionsmodal';
 
-import FIcon from 'react-native-vector-icons/Feather';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import { Formik } from 'formik';
