@@ -15,8 +15,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import FIcon from 'react-native-vector-icons/Feather';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
+import Animated from 'react-native-reanimated';
 
-export default function Footer() {
+export default function Footer({style}) {
   const [display, setDisplay] = useState(false);
   const navigation = useNavigation();
   return (
@@ -37,7 +38,7 @@ export default function Footer() {
             <Text style={[styles.createInnerText]}>Chat</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.menuItems2}
             onPress={() => navigation.push('Creategroup')}>
             <View style={styles.iconCont}>
@@ -58,7 +59,7 @@ export default function Footer() {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.footer}>
+      <Animated.View style={[styles.footer, style]}>
         <TouchableOpacity
           style={[styles.footIconBox, {marginRight: 15}]}
           onPress={() => navigation.push('Sidenav')}>
@@ -99,8 +100,11 @@ export default function Footer() {
             end={{x: 1, y: 0}}
             colors={['#037ee5', '#15a2e0', '#28cad9']}
             style={styles.createBt}>
-            {!display?<FIcon name="plus" size={35} color="#fff" />
-            : <FIcon name="x" size={35} color="#fff" /> }
+            {!display ? (
+              <FIcon name="plus" size={35} color="#fff" />
+            ) : (
+              <FIcon name="x" size={35} color="#fff" />
+            )}
           </LinearGradient>
 
           <Text style={styles.footIconText}>Create</Text>
@@ -136,7 +140,7 @@ export default function Footer() {
 
           <Text style={styles.footIconText}>Chat & Post</Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     </>
   );
 }
@@ -149,9 +153,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#fff',
-    position: 'relative',
+    position: 'absolute',
     zIndex: 999,
-    height: 55,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
   },
   footIconBox: {
     alignItems: 'center',
@@ -231,19 +238,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
-  iconCont: {
-    backgroundColor: '#fff',
-    width: 40,
-    height: 40,
-    borderRadius: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  createInnerText: {
-    color: '#fff',
-    fontFamily: 'SFpro-Regular',
-    fontSize: 13,
-  },
+  // iconCont: {
+  //   backgroundColor: '#fff',
+  //   width: 40,
+  //   height: 40,
+  //   borderRadius: 100,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
+  // createInnerText: {
+  //   color: '#fff',
+  //   fontFamily: 'SFpro-Regular',
+  //   fontSize: 13,
+  // },
   homeIcon: {
     width: 26,
     height: 24,

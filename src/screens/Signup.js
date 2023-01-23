@@ -1,32 +1,28 @@
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
-import React, { useEffect, useState, useRef } from 'react';
-import { globalStyles } from '../global/globalStyle';
+import {Text, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import React, {useEffect, useState, useRef} from 'react';
+import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
 import LinearGradient from 'react-native-linear-gradient';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import PhoneInput from 'react-native-phone-number-input';
 import axios from 'axios';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
-import { Buffer } from 'buffer';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {appleAuthAndroid} from '@invertase/react-native-apple-authentication';
+import {Buffer} from 'buffer';
 import Acalreadyexitmodal from '../shared/Acalreadyexitmodal';
 import Findconnectionsmodal from '../shared/Findconnectionsmodal';
 import AsyncStorage from '@react-native-community/async-storage';
 import Agemodal from '../shared/Agemodal';
 
-const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
+const API_URL =
+  process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
 export const SIGNUP_URL = `https://api.lykapp.com/lykjwt/index.php?/user/newUserRegister_V2`;
 export const SOCIAL_LOGIN_URL = `https://api.lykapp.com/lykjwt/index.php?/user/socialLogin`;
-export const LOST_PASS = 'https://api.lykapp.com/lykjwt/index.php?/user/lostPassword';
+export const LOST_PASS =
+  'https://api.lykapp.com/lykjwt/index.php?/user/lostPassword';
 export const SOCIAL_SIGNUP_URL = `https://api.lykapp.com/lykjwt/index.php?/user/socialRegister`;
 
-export default function Signup({ navigation }) {
+export default function Signup({navigation}) {
   const [userInfo, setuserInfo] = useState();
   const [loggedIn, setLoggedIn] = useState();
   const [alreadyExist, setAlreadyExist] = useState();
@@ -34,9 +30,10 @@ export default function Signup({ navigation }) {
   const phone = useRef();
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: '1095347807692-ut8j0g8sqltl0srjk1h5klhb6ril5ord.apps.googleusercontent.com',
+      webClientId:
+        '1095347807692-ut8j0g8sqltl0srjk1h5klhb6ril5ord.apps.googleusercontent.com',
     });
-  }, [])
+  }, []);
   const onAppleButtonPress = async () => {
     try {
       // Generate secure, random values for state and nonce
@@ -66,49 +63,83 @@ export default function Signup({ navigation }) {
       });
 
       // Open the browser window for user sign in
-      const { user } = await appleAuthAndroid.signIn();
+      const {user} = await appleAuthAndroid.signIn();
       setLoggedIn(true);
       setuserInfo(user);
-      axios.post(SOCIAL_SIGNUP_URL, { email: user.email, displayName: user.name.firstName + ' ' + user.name.lastName, socialMedia: 'apple' }).then(res => {
-        if (res.data.response.respCode === 11) {
-          axios.post(SOCIAL_LOGIN_URL, { email: user.email, socialMedia: 'apple' }).then(res => {
-            AsyncStorage.setItem('userId', JSON.stringify(res.data.response.userDetails));
-            AsyncStorage.setItem('token', res.data.response.token);
-            navigation.push('Sidenav');
-          })
-        }
-        else navigation.push('Country');
-      }, err => {
-        let errors = {};
-        errors.message = 'Invalid username or password!';
-      }).catch(err => {
-      })
+      axios
+        .post(SOCIAL_SIGNUP_URL, {
+          email: user.email,
+          displayName: user.name.firstName + ' ' + user.name.lastName,
+          socialMedia: 'apple',
+        })
+        .then(
+          res => {
+            if (res.data.response.respCode === 11) {
+              axios
+                .post(SOCIAL_LOGIN_URL, {
+                  email: user.email,
+                  socialMedia: 'apple',
+                })
+                .then(res => {
+                  AsyncStorage.setItem(
+                    'userId',
+                    JSON.stringify(res.data.response.userDetails),
+                  );
+                  AsyncStorage.setItem('token', res.data.response.token);
+                  navigation.push('Sidenav');
+                });
+            } else navigation.push('Country');
+          },
+          err => {
+            let errors = {};
+            errors.message = 'Invalid username or password!';
+          },
+        )
+        .catch(err => {});
       // Send the authorization code to your backend for verification
-    }
-    catch (error) {
+    } catch (error) {
       navigation.push('Sidenav');
     }
-  }
+  };
   const _signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const { user } = await GoogleSignin.signIn();
+      const {user} = await GoogleSignin.signIn();
       setLoggedIn(true);
       setuserInfo(user);
-      axios.post(SOCIAL_SIGNUP_URL, { googlePlusUserId: user.id, displayName: user.name, email: user.email, identity: user.id, socialMedia: 'googleplus' }).then(res => {
-        if (res.data.response.respCode === 11) {
-          axios.post(SOCIAL_LOGIN_URL, { email: user.email, identity: user.id, socialMedia: 'googleplus' }).then(res => {
-            AsyncStorage.setItem('userId', JSON.stringify(res.data.response.userDetails));
-            AsyncStorage.setItem('token', res.data.response.token);
-            navigation.push('Sidenav');
-          })
-        }
-        else navigation.push('Country');
-      }, err => {
-        let errors = {};
-        errors.message = 'Invalid username or password!';
-      }).catch(err => {
-      })
+      axios
+        .post(SOCIAL_SIGNUP_URL, {
+          googlePlusUserId: user.id,
+          displayName: user.name,
+          email: user.email,
+          identity: user.id,
+          socialMedia: 'googleplus',
+        })
+        .then(
+          res => {
+            if (res.data.response.respCode === 11) {
+              axios
+                .post(SOCIAL_LOGIN_URL, {
+                  email: user.email,
+                  identity: user.id,
+                  socialMedia: 'googleplus',
+                })
+                .then(res => {
+                  AsyncStorage.setItem(
+                    'userId',
+                    JSON.stringify(res.data.response.userDetails),
+                  );
+                  AsyncStorage.setItem('token', res.data.response.token);
+                  navigation.push('Sidenav');
+                });
+            } else navigation.push('Country');
+          },
+          err => {
+            let errors = {};
+            errors.message = 'Invalid username or password!';
+          },
+        )
+        .catch(err => {});
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
@@ -125,7 +156,7 @@ export default function Signup({ navigation }) {
   const getCurrentUserInfo = async () => {
     try {
       const userInfo = await GoogleSignin.signInSilently();
-      this.setState({ userInfo });
+      this.setState({userInfo});
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_REQUIRED) {
         // user has not signed in yet
@@ -147,97 +178,134 @@ export default function Signup({ navigation }) {
       console.error(error);
     }
   };
-  const getEncUserId = (currentUserId) => {
-    let encUserId = "";
+  const getEncUserId = currentUserId => {
+    let encUserId = '';
     if (currentUserId != null) {
       let userId = parseInt(currentUserId);
-      let digitEnc = "";
+      let digitEnc = '';
       while (userId > 0) {
         let remainder = userId % 10;
-        let digit = (remainder > 0) ? remainder - 1 : 9;
+        let digit = remainder > 0 ? remainder - 1 : 9;
         userId = parseInt(userId / 10);
         switch (digit) {
           case 0:
-            digitEnc = "#";
+            digitEnc = '#';
             break;
           case 1:
-            digitEnc = "K";
+            digitEnc = 'K';
             break;
           case 2:
-            digitEnc = "!";
+            digitEnc = '!';
             break;
           case 3:
-            digitEnc = "A";
+            digitEnc = 'A';
             break;
           case 4:
-            digitEnc = "Z";
+            digitEnc = 'Z';
             break;
           case 5:
-            digitEnc = "%";
+            digitEnc = '%';
             break;
           case 6:
-            digitEnc = "M";
+            digitEnc = 'M';
             break;
           case 7:
-            digitEnc = "Y";
+            digitEnc = 'Y';
             break;
           case 8:
-            digitEnc = "X";
+            digitEnc = 'X';
             break;
           case 9:
-            digitEnc = "$";
+            digitEnc = '$';
             break;
         }
         encUserId = digitEnc + encUserId;
       }
     }
     return encUserId;
-  }
+  };
   const xorWithKey = (a, key) => {
     let out = new Array(a.length);
     for (let i = 0; i < a.length; i++) {
-      out[i] = (a[i] ^ key[i % key.length]);
+      out[i] = a[i] ^ key[i % key.length];
     }
     return out;
-  }
+  };
   return (
     <>
       <Formik
         initialValues={{
-          contactNo: '', countryName: "India", countryISO: 'IN', countryCode: '+91', orgISO: 'IN',
-          "forceReg": true, "did": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22)
-          , "dt": "android", "dc": 4405, "referJson": {}, "ct": "DA0CAwwDAQ0CBkxJSFJaRF5wfHlYZVtyDENcQ1NkZwEEAkM="
+          contactNo: '',
+          countryName: 'India',
+          countryISO: 'IN',
+          countryCode: '+91',
+          orgISO: 'IN',
+          forceReg: true,
+          did: Buffer.from(Math.random().toString())
+            .toString('base64')
+            .slice(1, 22),
+          dt: 'android',
+          dc: 4405,
+          referJson: {},
+          ct: 'DA0CAwwDAQ0CBkxJSFJaRF5wfHlYZVtyDENcQ1NkZwEEAkM=',
         }}
-        onSubmit={(values, { setSubmitting }) => {
-          const s = (x) => { return x.charCodeAt() };
-          let enc = Buffer.from(xorWithKey(JSON.stringify(values).split('').map(s), "x09c22f5".split('').map(s)), 'utf-8').toString('base64');
-          axios.post(SIGNUP_URL, { url: enc }).then(res => {
-            setModal(true);
-            if (res.data.response.respCode === 3 || res.data.response.respCode === 2) setAlreadyExist(true);
-            else navigation.push('Verification', { number: values.countryCode + ' ' + values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId) });
-          }, err => {
-            axios.post(LOST_PASS,
-              {
-                "identity": values.countryCode + values.contactNo, "type": "sms",
-                "did": Buffer.from(Math.random().toString()).toString("base64").slice(1, 22), "dt": "android"
-              }).then(res => {
-                setSubmitting(false);
-                navigation.push('Verification', { number: values.countryCode + ' ' + values.contactNo, token: res.data.response.token, userId: getEncUserId(res.data.response.userId) });
-              }, err => {
-              }).catch(err => {
-              })
-            let errors = {};
-            errors.message = 'Invalid username or password!';
-          }).catch(err => {
-          })
-        }}
-      >
-        {({
-          handleChange,
-          handleSubmit,
-          setFieldValue,
-          isSubmitting
-        }) => (
+        onSubmit={(values, {setSubmitting}) => {
+          const s = x => {
+            return x.charCodeAt();
+          };
+          let enc = Buffer.from(
+            xorWithKey(
+              JSON.stringify(values).split('').map(s),
+              'x09c22f5'.split('').map(s),
+            ),
+            'utf-8',
+          ).toString('base64');
+          axios
+            .post(SIGNUP_URL, {url: enc})
+            .then(
+              res => {
+                setModal(true);
+                if (
+                  res.data.response.respCode === 3 ||
+                  res.data.response.respCode === 2
+                )
+                  setAlreadyExist(true);
+                else
+                  navigation.push('Verification', {
+                    number: values.countryCode + ' ' + values.contactNo,
+                    token: res.data.response.token,
+                    userId: getEncUserId(res.data.response.userId),
+                  });
+              },
+              err => {
+                axios
+                  .post(LOST_PASS, {
+                    identity: values.countryCode + values.contactNo,
+                    type: 'sms',
+                    did: Buffer.from(Math.random().toString())
+                      .toString('base64')
+                      .slice(1, 22),
+                    dt: 'android',
+                  })
+                  .then(
+                    res => {
+                      setSubmitting(false);
+                      navigation.push('Verification', {
+                        number: values.countryCode + ' ' + values.contactNo,
+                        token: res.data.response.token,
+                        userId: getEncUserId(res.data.response.userId),
+                      });
+                    },
+                    err => {},
+                  )
+                  .catch(err => {});
+                let errors = {};
+                errors.message = 'Invalid username or password!';
+              },
+            )
+            .catch(err => {});
+        }}>
+        {({handleChange, handleSubmit, setFieldValue, isSubmitting}) => (
           <View style={styles.container}>
             <Text style={styles.loginText}>Sign Up</Text>
             <TouchableOpacity style={styles.gBt} onPress={_signIn}>
@@ -260,36 +328,58 @@ export default function Signup({ navigation }) {
 
             <View style={styles.phoneInputWrap}>
               <PhoneInput
-                containerStyle={{ width: '100%', height: 50, padding: 0, marginLeft:-30, fontSize:14 }}
-                textContainerStyle={{ paddingVertical: 0, paddingHorizontal: 0, margin: 0, backgroundColor: '#fff' }}
+                containerStyle={{
+                  width: '100%',
+                  height: 50,
+                  padding: 0,
+                  marginLeft: -30,
+                  fontSize: 14,
+                }}
+                textContainerStyle={{
+                  paddingVertical: 0,
+                  paddingHorizontal: 0,
+                  margin: 0,
+                  backgroundColor: '#fff',
+                }}
                 defaultCode="IN"
                 layout="second"
                 onChangeText={handleChange('contactNo')}
-                onChangeCountry={e => { setFieldValue('countryISO', e.cca2), setFieldValue('countryCode', e.callingCode[0]), setFieldValue('orgISO', e.cca2) }}
+                onChangeCountry={e => {
+                  setFieldValue('countryISO', e.cca2),
+                    setFieldValue('countryCode', e.callingCode[0]),
+                    setFieldValue('orgISO', e.cca2);
+                }}
                 textInputStyle={styles.input}
                 ref={phone}
                 autoFocus
               />
             </View>
 
-            <TouchableOpacity style={globalStyles.lineBt} onPress={handleSubmit} disabled={isSubmitting || !phone.current}>
+            <TouchableOpacity
+              style={globalStyles.lineBt}
+              onPress={handleSubmit}
+              disabled={isSubmitting || !phone.current}>
               <Text style={globalStyles.lineBtText}>Next</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Login')}>
+            <TouchableOpacity
+              style={globalStyles.gradBt}
+              onPress={() => navigation.push('Login')}>
               <LinearGradient
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
                 colors={['#037ee5', '#15a2e0', '#28cad9']}
                 style={globalStyles.linearGradient}>
                 <Text style={globalStyles.buttonText}>Log In</Text>
               </LinearGradient>
             </TouchableOpacity>
 
-            <TouchableOpacity style={globalStyles.gradBt} onPress={() => navigation.push('Country')}>
+            <TouchableOpacity
+              style={globalStyles.gradBt}
+              onPress={() => navigation.push('Country')}>
               <LinearGradient
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
                 colors={['#037ee5', '#15a2e0', '#28cad9']}
                 style={globalStyles.linearGradient}>
                 <Text style={globalStyles.buttonText}>Skip Sign Up</Text>
@@ -297,20 +387,24 @@ export default function Signup({ navigation }) {
             </TouchableOpacity>
 
             <View style={styles.Iagree}>
-
               <Text style={styles.IagreeText}>
-                By signing in you confirm that you are 13 years of age or above and
-                agree to our</Text>
+                By signing in you confirm that you are 13 years of age or above
+                and agree to our
+              </Text>
 
-              <TouchableOpacity style={styles.termsW}><Text style={styles.terms}>Terms of use </Text></TouchableOpacity><Text style={styles.IagreeText}> and </Text><TouchableOpacity><Text style={styles.terms}>Privacy Policy.</Text></TouchableOpacity>
-
+              <TouchableOpacity style={styles.termsW}>
+                <Text style={styles.terms}>Terms of use </Text>
+              </TouchableOpacity>
+              <Text style={styles.IagreeText}> and </Text>
+              <TouchableOpacity>
+                <Text style={styles.terms}>Privacy Policy.</Text>
+              </TouchableOpacity>
             </View>
 
             <Image
               style={styles.lbimg}
               source={require('../assets/images/login-b-img.png')}
             />
-
           </View>
         )}
       </Formik>
@@ -318,16 +412,14 @@ export default function Signup({ navigation }) {
       {alreadyExist && <Acalreadyexitmodal />}
       {modal && <Agemodal />}
     </>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-
-
   container: {
     height: '100%',
     alignItems: 'center',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
   loginText: {
     marginTop: 20,
@@ -343,7 +435,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf2fe',
     borderWidth: 1,
     borderColor: '#488bb4',
-    width:220,
+    width: 220,
     borderRadius: 100,
     height: 45,
     alignItems: 'center',
@@ -371,13 +463,13 @@ const styles = StyleSheet.create({
     color: '#080d14',
     fontFamily: 'SFpro-Regular',
     marginLeft: 10,
-    fontSize: 14
+    fontSize: 14,
   },
   aBtText: {
     color: '#fff',
     fontFamily: 'SFpro-Regular',
     marginLeft: 10,
-    fontSize: 14
+    fontSize: 14,
   },
   orText: {
     textTransform: 'uppercase',
@@ -385,7 +477,7 @@ const styles = StyleSheet.create({
     color: '#080d14',
     fontFamily: 'SFpro-Bold',
     marginVertical: 25,
-    marginBottom:10
+    marginBottom: 10,
   },
   Iagree: {
     alignItems: 'center',
@@ -393,22 +485,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     width: '80%',
-    marginTop: 15
+    marginTop: 15,
   },
   IagreeText: {
     textAlign: 'center',
     color: '#333',
     fontFamily: 'SFpro-Regular',
-    fontSize: 10
+    fontSize: 10,
   },
   termsW: {
     position: 'relative',
-    marginTop: 10
+    marginTop: 10,
   },
   terms: {
     color: COLORS.blue,
     fontFamily: 'SFpro-Regular',
-    fontSize: 10
+    fontSize: 10,
   },
 
   phoneInputWrap: {
@@ -416,11 +508,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginBottom: 20,
     width: '50%',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   lbimg: {
     width: 150,
     height: 200,
-    resizeMode: 'contain'
-  }
-})
+    resizeMode: 'contain',
+  },
+});

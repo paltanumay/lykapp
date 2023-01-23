@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {
   Text,
   View,
@@ -7,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
+  Pressable,
 } from 'react-native';
 import React, {useState} from 'react';
 import {globalStyles} from '../global/globalStyle';
@@ -19,15 +21,31 @@ import CountryPicker, {
   Flag,
 } from 'react-native-country-picker-modal';
 import axios from 'axios';
+import SubInterestTag from '../components/subInterestTag';
 
 const interests = [
   {
     text: 'Dance',
     image: require('../assets/images/dance.jpg'),
+    subInterest: [
+      {
+        id: '1',
+        text: 'salsa',
+      },
+      {
+        id: '2',
+        text: 'kathak',
+      },
+    ],
   },
   {
     text: 'Music',
     image: require('../assets/images/music.webp'),
+    subInterest: [
+      {id: '1', text: 'classical'},
+      {id: '2', text: 'rock'},
+      {id: '3', text: 'pop'},
+    ],
   },
   {
     text: 'Politics',
@@ -44,14 +62,6 @@ const interests = [
   {
     text: 'Pets',
     image: require('../assets/images/pets.jpg'),
-  },
-  {
-    text: 'Dance',
-    image: require('../assets/images/dance.jpg'),
-  },
-  {
-    text: 'Music',
-    image: require('../assets/images/music.webp'),
   },
   {
     text: 'Politics',
@@ -73,12 +83,16 @@ const interests = [
 
 export default function Selectcountry({navigation}) {
   const [search, setSearch] = useState();
+  const [hasSubInterest, setHasSubInterest] = useState(false);
+  const [selectedSubInterest, setSelectedSubInterest] = useState([]);
+  const [subInterestList, setSubInterestList] = useState([]);
   const [checked, setChecked] = useState(0);
   const [interest, setInterest] = useState([]);
   const [radioBtnsData, setradioBtnData] = useState(['', '']);
   const [countryCode, setcountryCode] = useState('IN');
   const [country, setCountry] = useState('India');
   const [modalVisible, setModalVisible] = useState(false);
+  console.log(selectedSubInterest, 'subInterest list ');
   const renderFlagButton = () => {
     const layout = 'first',
       flagSize = 24;
@@ -118,6 +132,30 @@ export default function Selectcountry({navigation}) {
       )
       .catch(err => {});
   };
+  const onPressPlusIcon = subInterest => {
+    setHasSubInterest(true);
+    setSubInterestList(subInterest);
+    console.log(hasSubInterest);
+  };
+
+  const onSelectSubInterest = ({id, text}) => {
+    const beasts = ['ant', 'bison', 'camel', 'duck', 'bison'];
+
+    console.log(beasts.indexOf('duck'), beasts);
+    console.log(selectedSubInterest.indexOf({id, text}));
+    if (selectedSubInterest && selectedSubInterest.indexOf({id, text}) === -1) {
+      setSelectedSubInterest(prev => [...prev, {id, text}]);
+    } else if (
+      selectedSubInterest &&
+      selectedSubInterest.indexOf(prev => prev.id === id) !== -1
+    ) {
+      const deletedSubInterest = selectedSubInterest.filter(
+        prev => prev.id !== id,
+      );
+      console.log(deletedSubInterest, 'del');
+      setSelectedSubInterest(deletedSubInterest);
+    }
+  };
   return (
     <>
       <LinearGradient
@@ -145,7 +183,9 @@ export default function Selectcountry({navigation}) {
           </View>
 
           <View style={styles.welcomeWrap}>
-            <TouchableOpacity style={styles.backIcon}>
+            <TouchableOpacity
+              style={styles.backIcon}
+              onPress={() => setChecked(prev => (prev !== 0 ? prev - 1 : 0))}>
               <Image
                 style={styles.aleft}
                 source={require('../assets/images/arrow-simple-left.png')}
@@ -232,9 +272,9 @@ export default function Selectcountry({navigation}) {
                 </TouchableOpacity>
               </ScrollView>
             ) : (
-              <View style={{alignItems: 'center', width: '80%'}}>
+              <View style={{alignItems: 'center', width: '100%'}}>
                 <Text style={styles.welcomeSubtextNew}>
-                  Let us know what you {'\n'} are interested in
+                  Let us know what you are {'\n'} interested in
                 </Text>
 
                 <View style={styles.searchBox}>
@@ -248,87 +288,119 @@ export default function Selectcountry({navigation}) {
                     onChangeText={e => setSearch(e)}
                   />
                   <TouchableOpacity style={styles.search}>
-                    <FIcon name="search" size={22} color="#ccc" />
+                    <FIcon name="search" size={19} color="#ccc" />
                   </TouchableOpacity>
                 </View>
-
                 <View style={styles.interestList}>
-                  <ScrollView
-                    contentContainerStyle={styles.chooseCategoriesWrap}>
-                    {interests
-                      .filter(
-                        o => !search || o.text.toLowerCase().includes(search),
-                      )
-                      .map((item, key) =>
-                        interest.indexOf(key.toString()) < 0 ? (
-                          <TouchableOpacity
-                            style={styles.catBoxCont}
-                            key={key}
-                            onPress={() =>
-                              setInterest(oldArray => [
-                                ...oldArray,
-                                key.toString(),
-                              ])
-                            }>
-                            <View style={styles.catBox}>
-                              <Image
-                                style={styles.catBoxImg}
-                                resizeMode="cover"
-                                source={item.image}
-                              />
-                              <View style={styles.plus}>
-                                <FIcon name="plus" size={15} color="#fff" />
+                  {!hasSubInterest ? (
+                    <ScrollView
+                      contentContainerStyle={styles.chooseCategoriesWrap}>
+                      {interests
+                        .filter(
+                          o => !search || o.text.toLowerCase().includes(search),
+                        )
+                        .map((item, key) =>
+                          interest.indexOf(key.toString()) < 0 ? (
+                            <TouchableOpacity
+                              style={styles.catBoxCont}
+                              key={key}
+                              onPress={() =>
+                                setInterest(oldArray => [
+                                  ...oldArray,
+                                  key.toString(),
+                                ])
+                              }>
+                              <View style={styles.catBox}>
+                                <Image
+                                  style={styles.catBoxImg}
+                                  resizeMode="cover"
+                                  source={item.image}
+                                />
+                                {item.subInterest && (
+                                  <Pressable
+                                    style={styles.plus}
+                                    onPress={() =>
+                                      onPressPlusIcon(item.subInterest)
+                                    }>
+                                    <FIcon name="plus" size={15} color="#fff" />
+                                  </Pressable>
+                                )}
                               </View>
-                            </View>
 
-                            <Text style={styles.catText}>{item.text}</Text>
-                          </TouchableOpacity>
-                        ) : (
-                          <TouchableOpacity
-                            style={styles.catBoxCont}
-                            key={key}
-                            onPress={() =>
-                              setInterest(
-                                interest.filter(o => o != key.toString()),
-                              )
-                            }>
-                            <View style={styles.catBoxActive}>
-                              <FIcon name="check" size={28} color="#fff" />
-                            </View>
+                              <Text style={styles.catText}>{item.text}</Text>
+                            </TouchableOpacity>
+                          ) : (
+                            <TouchableOpacity
+                              style={styles.catBoxCont}
+                              key={key}
+                              onPress={() =>
+                                setInterest(
+                                  interest.filter(o => o !== key.toString()),
+                                )
+                              }>
+                              <View style={styles.catBoxActive}>
+                                <FIcon name="check" size={28} color="#fff" />
+                              </View>
 
-                            <View style={styles.catBox}>
-                              <Image
-                                style={styles.catBoxImg}
-                                resizeMode="cover"
-                                source={item.image}
+                              <View style={styles.catBox}>
+                                <Image
+                                  style={styles.catBoxImg}
+                                  resizeMode="cover"
+                                  source={item.image}
+                                />
+                              </View>
+
+                              <Text style={styles.catText}>{item.text}</Text>
+                            </TouchableOpacity>
+                          ),
+                        )}
+                    </ScrollView>
+                  ) : (
+                    <View style={styles.subInterestList}>
+                      <Pressable
+                        style={styles.close}
+                        onPress={() => setHasSubInterest(false)}>
+                        <FIcon name="x" size={18} color="#011" />
+                      </Pressable>
+                      <View style={styles.subInterestTags}>
+                        {subInterestList &&
+                          subInterestList.map(({id, text}) => {
+                            return (
+                              <SubInterestTag
+                                key={id}
+                                setSelectedSubInterest={setSelectedSubInterest}
+                                onSelectSubInterest={onSelectSubInterest}
+                                text={text}
+                                id={id}
+                                selectedSubInterest={selectedSubInterest}
                               />
-                            </View>
-
-                            <Text style={styles.catText}>{item.text}</Text>
-                          </TouchableOpacity>
-                        ),
-                      )}
-                  </ScrollView>
+                            );
+                          })}
+                      </View>
+                    </View>
+                  )}
                 </View>
 
-                {interest.length < 3 ? (
+                {!hasSubInterest && interest.length < 3 ? (
                   <TouchableOpacity style={styles.pickInterest}>
                     <Text style={styles.pickInterestText}>
                       Pick atleast 3 interests
                     </Text>
                   </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity
-                    style={[globalStyles.gradBt, {width: 200}]}
-                    onPress={saveInterests}>
-                    <LinearGradient
-                      start={{x: 0, y: 0}}
-                      end={{x: 1, y: 0}}
-                      colors={['#037ee5', '#15a2e0', '#28cad9']}
-                      style={[globalStyles.linearGradient, {height: 40}]}>
-                      <Text style={globalStyles.buttonText}>Next</Text>
-                    </LinearGradient>
-                  </TouchableOpacity>
+                  !hasSubInterest && (
+                    <TouchableOpacity
+                      style={[globalStyles.gradBt, {width: 200}]}
+                      onPress={saveInterests}>
+                      <LinearGradient
+                        start={{x: 0, y: 0}}
+                        end={{x: 1, y: 0}}
+                        colors={['#037ee5', '#15a2e0', '#28cad9']}
+                        style={[globalStyles.linearGradient, {height: 40}]}>
+                        <Text style={globalStyles.buttonText}>Next</Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  )
                 )}
               </View>
             )}
@@ -341,7 +413,7 @@ export default function Selectcountry({navigation}) {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
     flex: 1,
   },
   linearGradient: {
@@ -396,30 +468,34 @@ const styles = StyleSheet.create({
     fontFamily: 'SFpro-Bold',
     fontSize: 25,
     marginTop: 25,
-    fontSize: 18,
+    // fontSize: 18,
   },
   searchBox: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     width: '70%',
     borderRadius: 100,
     borderWidth: 1,
     borderColor: COLORS.blue,
-    height: 38,
+    height: 40,
     paddingTop: 0,
     paddingHorizontal: 15,
-    paddingRight: 45,
+    // paddingRight: 45,
   },
   search: {
     position: 'absolute',
     right: 15,
-    top: 6,
+    // top: 6,
   },
   catBox: {
-    width: 77,
-    height: 77,
-    borderRadius: 15,
+    width: 76,
+    height: 76,
+    borderRadius: 18,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
+    // marginRight: -60,
   },
   catBoxImg: {
     width: 100,
@@ -430,18 +506,61 @@ const styles = StyleSheet.create({
     width: '30%',
     marginTop: 20,
     position: 'relative',
+    // backgroundColor: 'red',
+  },
+  close: {
+    display: 'flex',
+    width: 100,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
   },
   chooseCategoriesWrap: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     flexWrap: 'wrap',
     width: '80%',
-    alignItems:'flex-start'
+    alignItems: 'flex-start',
   },
   catText: {
     fontFamily: 'SFpro-Regular',
+    fontSize: 10,
+    letterSpacing: 0.29,
     color: '#333',
     marginTop: 8,
+  },
+  subInterestList: {
+    display: 'flex',
+    width: '100%',
+    height: '100%',
+    alignItems: 'flex-end',
+  },
+  plusIcon: {
+    paddingLeft: 5,
+  },
+  subInterestTags: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignSelf: 'flex-start',
+    flexWrap: 'wrap',
+    marginTop: 15,
+    // width: '100%',
+  },
+  suBInterestTag: {
+    display: 'flex',
+    flexDirection: 'row',
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: COLORS.blue,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 15,
+    marginRight: 10,
+  },
+  subInterest: {
+    color: '#AFAFAF',
+    paddingLeft: 5,
+    paddingRight: 5,
   },
   pickInterest: {
     width: '60%',
@@ -459,7 +578,7 @@ const styles = StyleSheet.create({
   pickInterestText: {
     fontFamily: 'SFpro-Regular',
     color: '#333',
-    fontSize:14
+    fontSize: 14,
   },
   img: {
     height: 25,
@@ -508,8 +627,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
 
-    width: 77,
-    height: 77,
+    width: 76,
+    height: 76,
     borderRadius: 15,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     alignItems: 'center',
@@ -525,8 +644,9 @@ const styles = StyleSheet.create({
   },
   input: {
     color: '#333',
-    height: 38,
-    fontSize: 12,
+    // height: 38,
+    fontSize: 12.8,
+    fontWeight: '500',
     fontFamily: 'SFpro-Regular',
     width: '100%',
   },
@@ -535,13 +655,13 @@ const styles = StyleSheet.create({
     right: 3,
     top: 3,
   },
-  backIcon:{
-    position:'absolute',
-    left:25,
-    top:25
+  backIcon: {
+    position: 'absolute',
+    left: 25,
+    top: 25,
   },
-  aleft:{
-    width:10,
-    height:17
-  }
+  aleft: {
+    width: 10,
+    height: 17,
+  },
 });

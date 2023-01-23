@@ -22,6 +22,8 @@ const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?
 export const CALL_LOG = `${API_URL}/LYKCallHistory/getCallHistory`;
 const CALL_LOG_SHORT = "gtclhtr";
 const offset = 0, limit = 25;
+export const SEND_AUDIO_NOTIFICATION = `https://socket.lykapp.com:8443/sndaudntfy`;
+const SEND_AUDIO_NOTIFICATION_SHORT = 'fQtL21J';
 
 export default function CallList() {
     const navigation = useNavigation();
@@ -47,14 +49,54 @@ export default function CallList() {
             )
         }
         getLogs()
-    }, [])
+    }, []);
+    const onCall = async (item)=>{
+        let userDetails = await AsyncStorage.getItem('userId');
+        userDetails = JSON.parse(userDetails);
+        let isVideo = true;
+        let token =
+          (await AsyncStorage.getItem('token')) +
+          '-' +
+          SEND_AUDIO_NOTIFICATION_SHORT +
+          '-' +
+          getEncTokenAnyUserId(userDetails.userId);
+        axios
+          .post(
+            SEND_AUDIO_NOTIFICATION,
+            {
+              toUserId: getEncUserId(item.userId),
+              type: 'startcall',
+              media: isVideo ? 'video' : 'audio',
+              payload: null,
+              fromUserId: getEncUserId(userDetails.userId),
+              incomingCallerName: userDetails.firstName,
+              incomingCallerImage: userDetails.img,
+            },
+            {
+              headers: {
+                token: token,
+              },
+            },
+          )
+          .then(res => {
+            // create an offer
+            //console.log(JSON.stringify(res))
+            console.log('Sending Ofer');
+            navigation.push('Callscreen', {toUserId: item.userId, userName: item.firstName, calling: true})
+            //console.log(offer);
+            // Send pc.localDescription to peer
+          })
+          .catch(err => {
+            alert('error :' + err);
+          });
+    };
     return (
         <>
             <FlatList
                 data={logs}
                 renderItem={({ item }) => {
                     return (
-                        <TouchableOpacity onPress={()=>navigation.push('Callscreen', {toUserId: item.userId})}>
+                        <TouchableOpacity onPress={()=>onCall(item)}>
                         <View style={styles.listContainer}>
                             <Text style={styles.date}>
                                 <SIcon name={item.callType==="video"?"camrecorder":"phone"} size={23} color={COLORS.blue} />

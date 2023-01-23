@@ -3,9 +3,55 @@ import {Text, TouchableOpacity, View, Image, StyleSheet} from 'react-native';
 import COLORS from '../global/globalColors';
 import FIcon from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
+import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import axios from 'axios';
+
+export const SEND_AUDIO_NOTIFICATION = `https://socket.lykapp.com:8443/sndaudntfy`;
+const SEND_AUDIO_NOTIFICATION_SHORT = 'fQtL21J';
 
 export default function HeaderChat(props) {
   const navigation = useNavigation();
+  const onCall = async (item)=>{
+        let userDetails = await AsyncStorage.getItem('userId');
+        userDetails = JSON.parse(userDetails);
+        let isVideo = true;
+        let token =
+          (await AsyncStorage.getItem('token')) +
+          '-' +
+          SEND_AUDIO_NOTIFICATION_SHORT +
+          '-' +
+          getEncTokenAnyUserId(userDetails.userId);
+        axios
+          .post(
+            SEND_AUDIO_NOTIFICATION,
+            {
+              toUserId: getEncUserId(item.toUserId),
+              type: 'startcall',
+              media: isVideo ? 'video' : 'audio',
+              payload: null,
+              fromUserId: getEncUserId(userDetails.userId),
+              incomingCallerName: userDetails.firstName,
+              incomingCallerImage: userDetails.img,
+            },
+            {
+              headers: {
+                token: token,
+              },
+            },
+          )
+          .then(res => {
+            // create an offer
+            //console.log(JSON.stringify(res))
+            console.log('Sending Ofer');
+            navigation.push('Callscreen', {toUserId: item.toUserId, userName: item.title, calling: true})
+            //console.log(offer);
+            // Send pc.localDescription to peer
+          })
+          .catch(err => {
+            alert('error :' + err);
+          });
+    };
   return (
     <>
       {props.isBack ? (
@@ -46,7 +92,7 @@ export default function HeaderChat(props) {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.vcd}>
+            <TouchableOpacity style={styles.vcd} onPress={()=>onCall(props)}>
               <Image
                 resizeMode="stretch"
                 source={require('../assets/images/video-new.png')}

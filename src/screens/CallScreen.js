@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState, useCallback, useRef} from 'react';
 import {View, StyleSheet, Alert, TextInput, Button, Text, Image} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
@@ -27,6 +27,7 @@ import {
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import axios from 'axios';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import Audiocall from './Audiocall';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const SEND_AUDIO_NOTIFICATION = `${API_URL}/sndaudntfy`;
@@ -41,7 +42,8 @@ export default function CallScreen() {
   let connectedUser;
   const [userId, setUserId] = useState('');
   const [socketActive, setSocketActive] = useState(false);
-  const [calling, setCalling] = useState(false);
+  const [calling, setCalling] = useState(route.params.calling);
+  const [isCalling, setIsCalling] = useState(route.params.isCalling);
   // Video Scrs
   const [localStream, setLocalStream] = useState({toURL: () => null});
   const [remoteStream, setRemoteStream] = useState({toURL: () => null});
@@ -60,6 +62,11 @@ export default function CallScreen() {
   const [offer, setOffer] = useState(null);
 
   const [callToUsername, setCallToUsername] = useState(route.params.toUserId);
+  const [isVideo, setIsVideo] = useState(true);
+  const [isAudio, setIsAudio] = useState(true);
+  const [isFront, setIsFront] = useState(true);
+  const [timer, setTimer] = useState(0)
+  const increment = useRef(null)
 
   useFocusEffect(
     useCallback(() => {
@@ -124,7 +131,7 @@ export default function CallScreen() {
       data = {};
     } else {
       data = msg;
-      console.log('Data --------------------->', data);
+      //console.log('Data --------------------->', data);
       switch (data.type) {
         case 'login':
           console.log('Login');
@@ -153,18 +160,7 @@ export default function CallScreen() {
     }
   };
 
-  useEffect(() => {
-    /**
-     *
-     * Sockets Signalling
-     */
-    socket.on('mediaMessage', onmessage);
-
-    /**
-     * Socjket Signalling Ends
-     */
-
-    let isFront = false;
+  useEffect(()=>{
     mediaDevices.enumerateDevices().then(sourceInfos => {
       let videoSourceId;
       for (let i = 0; i < sourceInfos.length; i++) {
@@ -200,6 +196,19 @@ export default function CallScreen() {
           // Log error
         });
     });
+  },[isFront]);
+
+  useEffect(() => {
+    /**
+     *
+     * Sockets Signalling
+     */
+    socket.on('mediaMessage', onmessage);
+
+    /**
+     * Socjket Signalling Ends
+     */
+    
 
     yourConn.onaddstream = event => {
       console.log('On Add Stream', event);
@@ -221,10 +230,15 @@ export default function CallScreen() {
     yourConn.onconnectionstatechange = event => {
       if (yourConn.connectionState === 'connected') {
         console.log('Successfully connected with other peer');
+        handleStart();
       }
     };
     yourConn.onSignalingState = state => {
       console.log('state changed' + state);
+    };
+    yourConn.oniceconnectionstatechange = 
+    state => {
+      console.log('state changed' + JSON.stringify(yourConn.connectionState));
     };
   }, []);
 
@@ -239,49 +253,12 @@ export default function CallScreen() {
   };
 
   const onCall = async () => {
-    setCalling(true);
+    setCalling(false);
 
     connectedUser = callToUsername;
     console.log('Caling to', callToUsername);
-    let userDetails = await AsyncStorage.getItem('userId');
-    userDetails = JSON.parse(userDetails);
-    let isVideo = true;
-    let token =
-      (await AsyncStorage.getItem('token')) +
-      '-' +
-      SEND_AUDIO_NOTIFICATION_SHORT +
-      '-' +
-      getEncTokenAnyUserId(userDetails.userId);
     yourConn.createOffer().then(offer => {
       yourConn.setLocalDescription(offer).then(() => {
-        axios
-          .post(
-            SEND_AUDIO_NOTIFICATION,
-            {
-              toUserId: getEncUserId(callToUsername),
-              type: 'startcall',
-              media: isVideo ? 'video' : 'audio',
-              payload: offer,
-              fromUserId: getEncUserId(userDetails.userId),
-              incomingCallerName: userDetails.firstName,
-              incomingCallerImage: userDetails.img,
-            },
-            {
-              headers: {
-                token: token,
-              },
-            },
-          )
-          .then(res => {
-            // create an offer
-            //console.log(JSON.stringify(res))
-            console.log('Sending Ofer');
-            //console.log(offer);
-            // Send pc.localDescription to peer
-          })
-          .catch(err => {
-            alert('error :' + err);
-          });
         send({
           type: 'offer',
           offer: offer,
@@ -293,6 +270,7 @@ export default function CallScreen() {
 
   //when somebody sends us an offer
   const handleOffer = async (offer, name) => {
+    setCalling(false);
     console.log(name + ' is calling you.');
 
     console.log('Accepting Call===========>', offer);
@@ -316,6 +294,7 @@ export default function CallScreen() {
 
   //when we got an answer from a remote user
   const handleAnswer = answer => {
+    setIsCalling(false);
     yourConn.setRemoteDescription(new RTCSessionDescription(answer));
   };
 
@@ -330,19 +309,22 @@ export default function CallScreen() {
   };
 
   //hang up
-  const hangUp = () => {
-    send({
+  const hangUp = async () => {
+    await send({
       type: 'leave',
+      toUserId: connectedUser ? connectedUser : route.params.toUserId,
     });
 
     handleLeave();
   };
 
-  const handleLeave = () => {
+  const handleLeave = async () => {
     connectedUser = null;
     setRemoteStream({toURL: () => null});
+    handleReset();
 
-    yourConn.close();
+    await yourConn.close();
+    await navigation.goBack();
     // yourConn.onicecandidate = null;
     // yourConn.onaddstream = null;
   };
@@ -384,10 +366,32 @@ export default function CallScreen() {
     handleLeave();
   };
 
+  const handleStart = () => {
+    increment.current = setInterval(() => {
+      setTimer((timer) => timer + 1)
+    }, 1000)
+  };
+
+  const handleReset = () => {
+    clearInterval(increment.current)
+    setTimer(0)
+  };
+
+  const formatTime = () => {
+    const getSeconds = `0${(timer % 60)}`.slice(-2)
+    const minutes = `${Math.floor(timer / 60)}`
+    const getMinutes = `0${minutes % 60}`.slice(-2)
+    const getHours = `0${Math.floor(timer / 3600)}`.slice(-2)
+
+    return `${getHours} : ${getMinutes} : ${getSeconds}`
+  };
+
   /**
    * Calling Stuff Ends
    */
 
+  if(calling) return (<Audiocall />)
+  else
   return (
     <View style={styles.root}>
       <View style={styles.topTitle}>
@@ -398,17 +402,33 @@ export default function CallScreen() {
           />
         </View>
         <View style={styles.topTitleInfo}>
-          <Text style={styles.topTitleInfoText}>Srijan roy</Text>
-          <Text style={styles.topTitleInfoText}>0:13</Text>
+          <Text style={styles.topTitleInfoText}>{route.params.userName}</Text>
+          <Text style={styles.topTitleInfoText}>{formatTime()}</Text>
         </View>
       </View>
       <View style={styles.floatTools}>
+
+        {isCalling?<TouchableOpacity style={styles.bluetools}>
+          <MIcon name="call" size={22} color="#fff" onPress={onCall}/>
+        </TouchableOpacity>:<>
         <TouchableOpacity style={styles.tools}>
-          <MIcon name="videocam" size={22} color={COLORS.blue} />
+          <MIcon name={isVideo?"videocam":"videocam-off"} size={22} color={COLORS.blue} onPress={()=>{
+            if(isVideo)
+              localStream.getVideoTracks()[0].enabled = false;
+            else
+              localStream.getVideoTracks()[0].enabled = true;
+            setIsVideo(!isVideo);
+          }} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tools}>
-          <FIcon name="microphone" size={22} color={COLORS.blue} />
+          <FIcon name={isAudio?"microphone":"microphone-slash"} size={22} color={COLORS.blue} onPress={()=>{
+            if(isAudio)
+              localStream.getAudioTracks()[0].enabled = false;
+            else
+              localStream.getAudioTracks()[0].enabled = true;
+            setIsAudio(!isAudio);
+          }} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tools}>
@@ -416,11 +436,12 @@ export default function CallScreen() {
             name="camera-reverse-outline"
             size={22}
             color={COLORS.blue}
+            onPress={()=>{setIsFront(!isFront)}}
           />
-        </TouchableOpacity>
+        </TouchableOpacity></>}
 
         <TouchableOpacity style={styles.redtools}>
-          <IonIcon name="call" size={22} color="#fff" />
+          <IonIcon name="call" size={22} color="#fff" onPress={hangUp}/>
         </TouchableOpacity>
       </View>
 
@@ -470,12 +491,17 @@ export default function CallScreen() {
         </View>
       </View> */}
 
-      <View style={styles.videoContainer}>
+      {!isCalling && <View style={styles.videoContainer}>
 
       
         <View style={[styles.smallVideowrap]}>
           {/* <Text>Your Video</Text> */}
           <RTCView streamURL={localStream.toURL()} style={styles.smallVideo} />
+        </View>
+
+        <View style={[styles.largeVideowrap]}>
+          {/* <Text>Your Video</Text> */}
+          <RTCView streamURL={remoteStream.toURL()} style={styles.largeVideo} />
         </View>
 
 
@@ -488,7 +514,7 @@ export default function CallScreen() {
           </TouchableOpacity>
           {/* <Text>Friends Video</Text> */}
         </View>
-      </View>
+      </View>}
     </View>
   );
 }
@@ -526,16 +552,29 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 127,
     height: 165,
-    bottom:200,
+    top: 25,
     right: 25,
   },
   smallVideo: {
-    backgroundColor: 'red',
+    //backgroundColor: 'red',
     position: 'absolute',
     width: 127,
     height: 165,
    
     zIndex: 9999,
+  },
+  largeVideowrap:{
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  largeVideo: {
+    //backgroundColor: 'red',
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+   
+    zIndex: 999,
   },
   remoteVideos: {
     height: '100%',
@@ -564,7 +603,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 100,
-    zIndex: 999,
+    zIndex: 6999,
   },
   tools: {
     width: 40,
@@ -578,6 +617,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     backgroundColor: COLORS.red,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 100,
+  },
+  bluetools: {
+    width: 40,
+    height: 40,
+    backgroundColor: COLORS.blue,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
