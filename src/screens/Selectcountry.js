@@ -288,7 +288,12 @@ export default function Selectcountry({navigation}) {
                     onChangeText={e => setSearch(e)}
                   />
                   <TouchableOpacity style={styles.search}>
-                    <FIcon name="search" size={19} color="#ccc" />
+                    {/* <FIcon name="search" size={19} color="#ccc" /> */}
+                    <Image
+                          resizeMode="stretch"
+                          style={styles.searchimg}
+                          source={require('../assets/images/icon-search-grey.png')}
+                        />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.interestList}>
@@ -491,7 +496,7 @@ const styles = StyleSheet.create({
   catBox: {
     width: 76,
     height: 76,
-    borderRadius: 18,
+    borderRadius: 17,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
@@ -664,4 +669,8 @@ const styles = StyleSheet.create({
     width: 10,
     height: 17,
   },
+  searchimg:{
+    width:18,
+    height:19
+  }
 });
