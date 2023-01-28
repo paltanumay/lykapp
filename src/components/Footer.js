@@ -28,11 +28,15 @@ export default function Footer({style}) {
           <TouchableOpacity style={styles.menuItems}>
             {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
             <View style={styles.iconCont}>
-              <IonIcon
+            <Image
+            resizeMode="stretch"
+            source={require('../assets/images/chat-n.png')}
+            style={[styles.createIcon]}/>
+              {/* <IonIcon
                 name="chatbubble-outline"
                 size={25}
                 color={COLORS.blue}
-              />
+              /> */}
             </View>
 
             <Text style={[styles.createInnerText]}>Chat</Text>
@@ -42,8 +46,12 @@ export default function Footer({style}) {
             style={styles.menuItems2}
             onPress={() => navigation.push('Creategroup')}>
             <View style={styles.iconCont}>
+            <Image
+            resizeMode="stretch"
+            source={require('../assets/images/group.png')}
+            style={[styles.createIcon]}/>
               {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
-              <IonIcon name="people-outline" size={25} color={COLORS.blue} />
+              {/* <IonIcon name="people-outline" size={25} color={COLORS.blue} /> */}
             </View>
             <Text style={[styles.createInnerText]}>Group</Text>
           </TouchableOpacity>
@@ -53,7 +61,11 @@ export default function Footer({style}) {
             onPress={() => navigation.push('Createpost')}>
             {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
             <View style={styles.iconCont}>
-              <IonIcon name="md-card-outline" size={25} color={COLORS.blue} />
+            <Image
+            resizeMode="stretch"
+            source={require('../assets/images/post.png')}
+            style={[styles.createIcon]}/>
+              {/* <IonIcon name="md-card-outline" size={25} color={COLORS.blue} /> */}
             </View>
             <Text style={[styles.createInnerText]}>Post</Text>
           </TouchableOpacity>
@@ -191,7 +203,7 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     left: 0,
     top: 0,
-    zIndex: 9,
+    zIndex: 999,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     width: '100%',
     height: '100%',
@@ -207,35 +219,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    left: -80,
+    left: -100,
     top: 28,
   },
   menuItems2: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    left: -15,
-    top: 0,
+    left: -30,
+    top: -15,
   },
   menuItems3: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    right: -90,
+    right: -100,
     top: 28,
   },
   iconCont: {
-    backgroundColor: '#fff',
-    width: 40,
-    height: 40,
-    borderRadius: 100,
+    
     alignItems: 'center',
     justifyContent: 'center',
   },
   createInnerText: {
     color: '#fff',
     fontFamily: 'SFpro-Regular',
-    fontSize: 14,
+    fontSize: 13,
+    position:'relative',
+    top:-8
   },
 
   // iconCont: {
@@ -267,4 +278,8 @@ const styles = StyleSheet.create({
     width: 26,
     height: 24,
   },
+  createIcon:{
+    width:56,
+    height:56
+  }
 });
