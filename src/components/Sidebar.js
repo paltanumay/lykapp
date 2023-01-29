@@ -128,7 +128,7 @@ const CustomDrawer = props => {
             style={[styles.avatarImg]}
           />
         </View>
-        <Text style={styles.avatarText}>{user && user.firstName} Dhgdsdjkah  sajkfhakfjh afajkahfjk a</Text>
+        <Text style={styles.avatarText}>{user && user.firstName}</Text>
       </TouchableOpacity>
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
@@ -427,6 +427,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 20,
+    paddingTop:80
   },
   avatarImg: {
     width: '100%',

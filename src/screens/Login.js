@@ -201,6 +201,7 @@ export default function Login({ navigation }) {
                 layout="second"
                 onChangeText={handleChange('identity')}
                 onChangeCountry={e => { setFieldValue('countryCode', '+' + e.callingCode[0]), setFieldValue('countryISO', e.cca2) }}
+
                 textInputStyle={styles.input}
                 autoFocus
               />
@@ -274,14 +275,16 @@ export default function Login({ navigation }) {
                 By signing in you confirm that you are 13 {'\n'} years of age or above and
                 agree to our
               </Text>
-
+              <View style={{alignItems:'center', flexDirection:'row'}}>
               <TouchableOpacity style={styles.termsW}>
-                <Text style={styles.terms}>Terms of use and Privacy Policy</Text>
+                <Text style={styles.terms}>Terms of use </Text>
               </TouchableOpacity>
-              {/* <Text style={styles.IagreeText}> and </Text>
+              <Text style={styles.IagreeText}> and </Text>
               <TouchableOpacity>
                 <Text style={styles.terms}>Privacy Policy.</Text>
-              </TouchableOpacity> */}
+              </TouchableOpacity>
+              </View>
+
             </View>
 
             <Image
