@@ -388,9 +388,10 @@ export default function Signup({navigation}) {
 
             <View style={styles.Iagree}>
               <Text style={styles.IagreeText}>
-                By signing in you confirm that you are 13 years of age or above
+                By signing in you confirm that you are 13 {'\n'}  years of age or above
                 and agree to our
               </Text>
+              <View style={{flexDirection:'row', alignItems:'center'}}>
 
               <TouchableOpacity style={styles.termsW}>
                 <Text style={styles.terms}>Terms of use </Text>
@@ -399,6 +400,7 @@ export default function Signup({navigation}) {
               <TouchableOpacity>
                 <Text style={styles.terms}>Privacy Policy.</Text>
               </TouchableOpacity>
+              </View>
             </View>
 
             <Image
@@ -482,8 +484,7 @@ const styles = StyleSheet.create({
   Iagree: {
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
     width: '80%',
     marginTop: 15,
   },
@@ -495,12 +496,13 @@ const styles = StyleSheet.create({
   },
   termsW: {
     position: 'relative',
-    marginTop: 10,
+    marginTop: 0,
   },
   terms: {
     color: COLORS.blue,
     fontFamily: 'SFpro-Regular',
     fontSize: 10,
+    textDecorationLine:'underline'
   },
 
   phoneInputWrap: {
