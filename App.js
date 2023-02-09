@@ -44,6 +44,7 @@ import Audiocall from './src/screens/Audiocall';
 import Videocall from './src/screens/Videocall';
 import CallScreen from './src/screens/CallScreen';
 
+
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
 export const INSERT_PUSH_SHORT = "isrPs";
@@ -145,6 +146,8 @@ const App = () => {
       <NavigationContainer>
         <Stack.Navigator initialRouteName={route}>
           <Stack.Screen options={{ headerShown: false }} name="Login" component={Login} />
+        
+
           <Stack.Screen options={{ headerShown: false }} name="Intro" component={Intro} />
           <Stack.Screen options={{ headerShown: false }} name="Verification" component={Verification} />
           <Stack.Screen options={{ headerShown: false }} name="Country" component={Selectcountry} />
