@@ -22,6 +22,7 @@ import {useEffect} from 'react';
 import {useState} from 'react';
 import Chatnpost from '../screens/Chatnpost';
 import Events from '../screens/Events';
+import SettingsScreen from '../screens/SettingsScreen';
 import Logoutmodal from '../shared/Logoutmodal';
 
 function NotificationsScreen({navigation}) {
@@ -95,9 +96,7 @@ function Promotions({navigation}) {
 function Settings({navigation}) {
   return (
     <>
-      <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
-        <Text>Work in progress..</Text>
-      </View>
+      <SettingsScreen />
     </>
   );
 }

@@ -166,6 +166,7 @@ const App = () => {
             name="Login"
             component={Login}
           />
+
           <Stack.Screen
             options={{headerShown: false}}
             name="Intro"

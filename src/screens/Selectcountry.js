@@ -604,7 +604,7 @@ const styles = StyleSheet.create({
     // borderRadius:100,
     // borderWidth:1,
     // borderColor:COLORS.blue,
-    // width:150,
+    width: 270,
     // alignItems:'center',
     // height:40,
     // justifyContent:'center',
