@@ -290,10 +290,10 @@ export default function Selectcountry({navigation}) {
                   <TouchableOpacity style={styles.search}>
                     {/* <FIcon name="search" size={19} color="#ccc" /> */}
                     <Image
-                          resizeMode="stretch"
-                          style={styles.searchimg}
-                          source={require('../assets/images/icon-search-grey.png')}
-                        />
+                      resizeMode="stretch"
+                      style={styles.searchimg}
+                      source={require('../assets/images/icon-search-grey.png')}
+                    />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.interestList}>
@@ -669,8 +669,8 @@ const styles = StyleSheet.create({
     width: 10,
     height: 17,
   },
-  searchimg:{
-    width:18,
-    height:19
-  }
+  searchimg: {
+    width: 18,
+    height: 19,
+  },
 });

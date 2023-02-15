@@ -1,34 +1,65 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Text, TouchableOpacity, View, Image, StyleSheet} from 'react-native';
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  StyleSheet,
+  Pressable,
+} from 'react-native';
 import COLORS from '../global/globalColors';
 import FIcon from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
+import {useEffect} from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
+import {useState} from 'react';
+import AuthButtons from './buttons/AuthButtons';
 
 export default function Header(props) {
   const navigation = useNavigation();
+  const [userInfo, setUserInfo] = useState('');
+  console.log(userInfo);
+  useEffect(() => {
+    (async () => {
+      let userDetails = await AsyncStorage.getItem('userId');
+      userDetails = JSON.parse(userDetails);
+      setUserInfo(userDetails);
+    })();
+  }, []);
   return (
     <>
       {props.isBack ? (
         <View
           style={[
             styles.headerBack,
-            {backgroundColor: props.isTransparent ? '#fff' : '#2A90CB', height:40},
+            {
+              backgroundColor: props.isTransparent ? '#fff' : '#2A90CB',
+              height: 60,
+            },
           ]}>
-          <TouchableOpacity style={[styles.backIconWrap]} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={[styles.backIconWrap]}
+            onPress={() => navigation.goBack()}>
             <Image
               resizeMode="stretch"
               source={require('../assets/images/back.png')}
               style={[styles.backIcon]}
             />
           </TouchableOpacity>
-          <View>
-            <Image
-              resizeMode="contain"
-              source={require('../assets/images/logo.png')}
-              style={[styles.logoSmall]}
-            />
-          </View>
-
+          {props.type === 'comment' ? (
+            <View>
+              <Text style={styles.headerTitle}>{'comments'}</Text>
+            </View>
+          ) : (
+            <TouchableOpacity onPress={() => props.onSetRefresh(true)}>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/logo.png')}
+                style={[styles.logoSmall]}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       ) : (
         <View style={styles.header}>
@@ -49,27 +80,33 @@ export default function Header(props) {
               style={[styles.hamIcon]}
             />
           </TouchableOpacity>
-          <View>
+          <TouchableOpacity onPress={() => props.onSetRefresh(true)}>
             <Image
               resizeMode="contain"
               source={require('../assets/images/logo.png')}
               style={[styles.logoSmall]}
             />
-          </View>
+          </TouchableOpacity>
           {/* <Text style={styles.headerTitle}>Baby Care</Text> */}
           {/* <TouchableOpacity style={styles.cart}>
         <FIcon name="shopping-cart" size={25} color={COLORS.green} />
         
         </TouchableOpacity> */}
 
-          <TouchableOpacity style={styles.user}>
-          <Image
-            resizeMode="contain"
-            source={require('../assets/images/search.png')}
-            style={[styles.searchIcon]}
-          />
-            {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
-          </TouchableOpacity>
+          {userInfo === null ? (
+            <TouchableOpacity style={styles.user}>
+              <AuthButtons />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.user}>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/search.png')}
+                style={[styles.searchIcon]}
+              />
+              {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </>
@@ -79,8 +116,8 @@ const styles = StyleSheet.create({
   backIconWrap: {
     position: 'absolute',
     left: 15,
-    top: 17,
-    //  backgroundColor:'red'
+    // top: 10,
+    // backgroundColor: 'red',
   },
   hamIconWrap: {
     position: 'absolute',
@@ -97,18 +134,21 @@ const styles = StyleSheet.create({
     height: 20,
   },
   headerTitle: {
-    color: '#333',
+    textTransform: 'capitalize',
+    color: '#fff',
     fontSize: 20,
+    fontWeight: '600',
     fontFamily: 'Montserrat-SemiBold',
   },
   header: {
     backgroundColor: COLORS.blue,
     flex: 0.7,
+    height: 50,
     alignItems: 'center',
     color: '#fff',
     justifyContent: 'center',
   },
-  headerBack:{
+  headerBack: {
     backgroundColor: COLORS.blue,
     flex: 0.078,
     alignItems: 'center',
@@ -133,8 +173,8 @@ const styles = StyleSheet.create({
     right: 15,
     top: 20,
   },
-  searchIcon:{
-    width:19,
-    height:20
-  }
+  searchIcon: {
+    width: 19,
+    height: 20,
+  },
 });

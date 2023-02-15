@@ -6,21 +6,19 @@
  * @flow strict-local
  */
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   StyleSheet,
   Text,
   useColorScheme,
   View,
-  StatusBar
+  StatusBar,
 } from 'react-native';
 
-import {
-  Colors
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 import AsyncStorage from '@react-native-community/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import Sidebar from './src/components/Sidebar';
@@ -38,15 +36,30 @@ import Events from './src/screens/Events';
 import EventsDetails from './src/screens/EventsDetails';
 import SocketProvider from './src/shared/socketContext';
 import axios from 'axios';
-import { getEncTokenAnyUserId, getEncUserId } from './src/shared/encryption';
+import {getEncTokenAnyUserId, getEncUserId} from './src/shared/encryption';
 import DeviceInfo from 'react-native-device-info';
 import Audiocall from './src/screens/Audiocall';
 import Videocall from './src/screens/Videocall';
 import CallScreen from './src/screens/CallScreen';
+import CommentsDetails from './src/screens/CommentsDetails';
+import {addPlugin} from 'react-native-flipper';
 
-const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
+const API_URL =
+  process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
-export const INSERT_PUSH_SHORT = "isrPs";
+export const INSERT_PUSH_SHORT = 'isrPs';
+
+if (__DEV__) {
+  addPlugin({
+    getId() {
+      return 'sea-mammals';
+    },
+    onConnect(connection) {
+      console.log('flipper connected');
+    },
+    onDisconnect() {},
+  });
+}
 
 const App = () => {
   const [route, setRoute] = useState();
@@ -65,7 +78,7 @@ const App = () => {
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-  
+
     if (enabled) {
       console.log('Authorization status:', authStatus);
     }
@@ -75,35 +88,44 @@ const App = () => {
     async function userInfo() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
-      if(userDetails) {
+      if (userDetails) {
         setRoute('Sidenav');
-        let token = await AsyncStorage.getItem("token") + "-" + INSERT_PUSH_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
-        if(requestUserPermission()){
-          messaging().getToken().then(FCMtoken=>{
-            console.log('token>>>>'+FCMtoken)
-            axios.post(INSERT_PUSH, {
-              "userId": getEncUserId(userDetails.userId),
-              "pushKeyString": FCMtoken,
-              "deviceType": "android",
-              "deviceId": DeviceInfo.getDeviceId(),
-            },
-            {
-              headers:{
-                token: token
-              }
-            }
-          ).then(()=>{})
-        })
+        let token =
+          (await AsyncStorage.getItem('token')) +
+          '-' +
+          INSERT_PUSH_SHORT +
+          '-' +
+          getEncTokenAnyUserId(userDetails.userId);
+        if (requestUserPermission()) {
+          messaging()
+            .getToken()
+            .then(FCMtoken => {
+              console.log('token>>>>' + FCMtoken);
+              axios
+                .post(
+                  INSERT_PUSH,
+                  {
+                    userId: getEncUserId(userDetails.userId),
+                    pushKeyString: FCMtoken,
+                    deviceType: 'android',
+                    deviceId: DeviceInfo.getDeviceId(),
+                  },
+                  {
+                    headers: {
+                      token: token,
+                    },
+                  },
+                )
+                .then(() => {});
+            });
         }
-      }
-      else setRoute('Intro');
-
+      } else setRoute('Intro');
     }
     userInfo();
 
     // Assume a message-notification contains a "type" property in the data payload of the screen to open
 
-    messaging().onNotificationOpenedApp(async (remoteMessage) => {
+    messaging().onNotificationOpenedApp(async remoteMessage => {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage.notification,
@@ -113,7 +135,7 @@ const App = () => {
     // Check whether an initial notification is available
     messaging()
       .getInitialNotification()
-      .then(async (remoteMessage) => {
+      .then(async remoteMessage => {
         if (remoteMessage) {
           console.log(
             'Notification caused app to open from quit state:',
@@ -121,84 +143,135 @@ const App = () => {
           );
         }
       });
-      
 
-      // Register background handler
-      messaging().setBackgroundMessageHandler(async remoteMessage => {
-        console.log('Message handled in the background!', remoteMessage);
-      });
+    // Register background handler
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage);
+    });
 
-
-      /* const unsubscribe = messaging().onMessage(async remoteMessage => {
+    /* const unsubscribe = messaging().onMessage(async remoteMessage => {
         Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
       });
   
       return unsubscribe; */
-  }, [])
+  }, []);
 
   return route ? (
     <>
-      <StatusBar
-        animated={true}
-        backgroundColor="#0a89e2"
- />
+      <StatusBar animated={true} backgroundColor="#0a89e2" />
       <NavigationContainer>
         <Stack.Navigator initialRouteName={route}>
-          <Stack.Screen options={{ headerShown: false }} name="Login" component={Login} />
-          <Stack.Screen options={{ headerShown: false }} name="Intro" component={Intro} />
-          <Stack.Screen options={{ headerShown: false }} name="Verification" component={Verification} />
-          <Stack.Screen options={{ headerShown: false }} name="Country" component={Selectcountry} />
-          <Stack.Screen options={{ headerShown: false }} name="SignUp" component={Signup} />
-          <Stack.Screen options={{ headerShown: false }} name="Audiocall" component={Audiocall} />
-          <Stack.Screen options={{ headerShown: false }} name="Videocall" component={Videocall} />
-          <Stack.Screen options={{ headerShown: false }} name="Callscreen">
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Login"
+            component={Login}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Intro"
+            component={Intro}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Verification"
+            component={Verification}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Country"
+            component={Selectcountry}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="SignUp"
+            component={Signup}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Audiocall"
+            component={Audiocall}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Videocall"
+            component={Videocall}
+          />
+          <Stack.Screen options={{headerShown: false}} name="Callscreen">
             {() => {
-                return (
-                  <SocketProvider>
-                    <CallScreen />
-                  </SocketProvider>)
-              }}
+              return (
+                <SocketProvider>
+                  <CallScreen />
+                </SocketProvider>
+              );
+            }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: false }} name="Sidenav">
+          <Stack.Screen options={{headerShown: false}} name="Sidenav">
             {() => {
               return (
                 <SocketProvider>
                   <Sidebar />
-                </SocketProvider>)
+                </SocketProvider>
+              );
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: false }} name="Creategroup" component={Creategroup} />
-          <Stack.Screen options={{ headerShown: false }} name="Chatnpost">
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Creategroup"
+            component={Creategroup}
+          />
+          <Stack.Screen options={{headerShown: false}} name="Chatnpost">
             {() => {
               return (
                 <SocketProvider>
                   <Chatnpost />
-                </SocketProvider>)
+                </SocketProvider>
+              );
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: false }} name="Createpost">
-          {() => {
+          <Stack.Screen options={{headerShown: false}} name="Createpost">
+            {() => {
               return (
                 <SocketProvider>
                   <Createpost />
-                </SocketProvider>)
+                </SocketProvider>
+              );
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: false }} name="Chatdetails">
+          <Stack.Screen options={{headerShown: false}} name="Chatdetails">
             {() => {
               return (
                 <SocketProvider>
                   <Chatdetails />
-                </SocketProvider>)
+                </SocketProvider>
+              );
             }}
           </Stack.Screen>
-          <Stack.Screen options={{ headerShown: false }} name="Addevent" component={Addevent} />
-          <Stack.Screen options={{ headerShown: false }} name="Events" component={Events} />
-          <Stack.Screen options={{ headerShown: false }} name="EventsDetails" component={EventsDetails} />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Addevent"
+            component={Addevent}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Events"
+            component={Events}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="EventsDetails"
+            component={EventsDetails}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="comments"
+            component={CommentsDetails}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </>
-  ):(<></>);
+  ) : (
+    <></>
+  );
 };
 
 const styles = StyleSheet.create({

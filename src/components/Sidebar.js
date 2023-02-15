@@ -18,17 +18,17 @@ import COLORS from '../global/globalColors';
 import FIcon from 'react-native-vector-icons/Feather';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-community/async-storage';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import {useEffect} from 'react';
+import {useState} from 'react';
 import Chatnpost from '../screens/Chatnpost';
 import Events from '../screens/Events';
 import Logoutmodal from '../shared/Logoutmodal';
 
-function NotificationsScreen({ navigation }) {
+function NotificationsScreen({navigation}) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Button
-        style={{ color: '#fff' }}
+        style={{color: '#fff'}}
         onPress={() => navigation.goBack()}
         title="Go back home"
       />
@@ -36,7 +36,7 @@ function NotificationsScreen({ navigation }) {
   );
 }
 
-function EventCalendarScreen({ navigation }) {
+function EventCalendarScreen({navigation}) {
   return (
     <>
       <Events />
@@ -44,64 +44,64 @@ function EventCalendarScreen({ navigation }) {
   );
 }
 
-function LykWalletScreen({ navigation }) {
+function LykWalletScreen({navigation}) {
   return (
     <>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+      <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
 
-function BussinessScreen({ navigation }) {
+function BussinessScreen({navigation}) {
   return (
     <>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+      <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
 
-function FbussinessScreen({ navigation }) {
+function FbussinessScreen({navigation}) {
   return (
     <>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+      <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
 
-function MyReferarral({ navigation }) {
+function MyReferarral({navigation}) {
   return (
     <>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+      <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
-function Promotions({ navigation }) {
+function Promotions({navigation}) {
   return (
     <>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+      <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
-function Settings({ navigation }) {
+function Settings({navigation}) {
   return (
     <>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+      <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
         <Text>Work in progress..</Text>
       </View>
     </>
   );
 }
-function Logout({ navigation }) {
+function Logout({navigation}) {
   return (
     <>
       <Logoutmodal />
@@ -114,9 +114,10 @@ const Drawer = createDrawerNavigator();
 const CustomDrawer = props => {
   const [user, setUser] = useState();
   useEffect(() => {
-    const getUserDetails = async () => setUser(JSON.parse(await AsyncStorage.getItem('userId')));
+    const getUserDetails = async () =>
+      setUser(JSON.parse(await AsyncStorage.getItem('userId')));
     getUserDetails();
-  }, [])
+  }, []);
 
   return (
     <DrawerContentScrollView>
@@ -138,14 +139,12 @@ const CustomDrawer = props => {
 export default function Sidebar() {
   return (
     <Drawer.Navigator
-    
       drawerContent={props => <CustomDrawer {...props} />}
       /* drawerContentOptions={{
         activeBackgroundColor: '#5cbbff',
         activeTintColor: '#ffffff',
       }} */
 
-     
       screenOptions={{
         headerShown: false,
         drawerStyle: {
@@ -153,14 +152,14 @@ export default function Sidebar() {
           width: 290,
         },
         navigationOptions: {
-        drawerIcon: (
-          <Image
-            style={{ width: 24, height: 24 }}
-            source={require("../assets/images/logo.png")}
-          />
-        ),
-      },
-        headerStyle: { backgroundColor: COLORS.blue},
+          drawerIcon: (
+            <Image
+              style={{width: 24, height: 24}}
+              source={require('../assets/images/logo.png')}
+            />
+          ),
+        },
+        headerStyle: {backgroundColor: COLORS.blue},
         headerTitleAlign: 'center',
         headerTintColor: '#fff',
         headerTitle: () => (
@@ -177,22 +176,21 @@ export default function Sidebar() {
         //     source={require('../assets/images/ham.png')}
         //     style={[styles.hamIcon]}
         //   />
-            
+
         //   </TouchableOpacity>
         // ),
         headerRight: () => (
           <TouchableOpacity style={styles.user}>
-           <Image
-            resizeMode="contain"
-            source={require('../assets/images/search.png')}
-            style={[styles.searchIcon]}
-          />
-            {/* <FIcon name="search" size={25} color="#fff" /> */}
+            {/* <Image
+              resizeMode="contain"
+              source={require('../assets/images/search.png')}
+              style={[styles.searchIcon]}
+            />
+            <FIcon name="search" size={25} color="#fff" /> */}
             {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
           </TouchableOpacity>
         ),
       }}
-      
       useLegacyImplementation
       initialRouteName="Home">
       <Drawer.Screen
@@ -203,13 +201,13 @@ export default function Sidebar() {
 
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          drawerLabelStyle:{
+          drawerLabelStyle: {
             fontSize: 15,
-            marginLeft:-10,
-            fontFamily:'SFpro-Medium'
+            marginLeft: -10,
+            fontFamily: 'SFpro-Medium',
           },
-         
-          drawerIcon: ({ focused, size }) => (
+
+          drawerIcon: ({focused, size}) => (
             <IonIcon
               name="home-outline"
               size={size}
@@ -218,7 +216,6 @@ export default function Sidebar() {
           ),
         }}
       />
-     
 
       <Drawer.Screen
         name="Event Calendar"
@@ -227,19 +224,17 @@ export default function Sidebar() {
           title: 'Event Calendar',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          drawerLabelStyle:{
+          drawerLabelStyle: {
             fontSize: 15,
-            marginLeft:-10,
-            fontFamily:'SFpro-Medium'
+            marginLeft: -10,
+            fontFamily: 'SFpro-Medium',
           },
-          drawerIcon: ({ focused, size }) => (
-
+          drawerIcon: ({focused, size}) => (
             <Image
-            resizeMode="contain"
-            source={require('../assets/images/calendar-m.png')}
-            style={[styles.searchIcon]}
-          />
-           
+              resizeMode="contain"
+              source={require('../assets/images/calendar-m.png')}
+              style={[styles.searchIcon]}
+            />
           ),
         }}
       />
@@ -250,18 +245,17 @@ export default function Sidebar() {
           title: 'LYK Wallet',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          drawerLabelStyle:{
+          drawerLabelStyle: {
             fontSize: 15,
-            marginLeft:-10,
-            fontFamily:'SFpro-Medium'
+            marginLeft: -10,
+            fontFamily: 'SFpro-Medium',
           },
-          drawerIcon: ({ focused, size }) => (
+          drawerIcon: ({focused, size}) => (
             <Image
-            resizeMode="contain"
-            source={require('../assets/images/wallet.png')}
-            style={[styles.searchIcon]}
-          />
-           
+              resizeMode="contain"
+              source={require('../assets/images/wallet.png')}
+              style={[styles.searchIcon]}
+            />
           ),
         }}
       />
@@ -273,17 +267,17 @@ export default function Sidebar() {
           title: 'Bussiness Page',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          drawerLabelStyle:{
+          drawerLabelStyle: {
             fontSize: 15,
-            marginLeft:-10,
-            fontFamily:'SFpro-Medium'
+            marginLeft: -10,
+            fontFamily: 'SFpro-Medium',
           },
-          drawerIcon: ({ focused, size }) => (
+          drawerIcon: ({focused, size}) => (
             <Image
-            resizeMode="contain"
-            source={require('../assets/images/businessPage.png')}
-            style={[styles.searchIcon]}
-          />
+              resizeMode="contain"
+              source={require('../assets/images/businessPage.png')}
+              style={[styles.searchIcon]}
+            />
           ),
         }}
       />
@@ -295,17 +289,17 @@ export default function Sidebar() {
           title: 'Followed Bussiness Page',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          drawerLabelStyle:{
+          drawerLabelStyle: {
             fontSize: 15,
-            marginLeft:-10,
-            fontFamily:'SFpro-Medium'
+            marginLeft: -10,
+            fontFamily: 'SFpro-Medium',
           },
-          drawerIcon: ({ focused, size }) => (
+          drawerIcon: ({focused, size}) => (
             <Image
-            resizeMode="contain"
-            source={require('../assets/images/businessPage.png')}
-            style={[styles.searchIcon]}
-          />
+              resizeMode="contain"
+              source={require('../assets/images/businessPage.png')}
+              style={[styles.searchIcon]}
+            />
           ),
         }}
       />
@@ -317,17 +311,17 @@ export default function Sidebar() {
           title: 'My Referral',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          drawerLabelStyle:{
+          drawerLabelStyle: {
             fontSize: 15,
-            marginLeft:-10,
-            fontFamily:'SFpro-Medium'
+            marginLeft: -10,
+            fontFamily: 'SFpro-Medium',
           },
-          drawerIcon: ({ focused, size }) => (
+          drawerIcon: ({focused, size}) => (
             <Image
-            resizeMode="contain"
-            source={require('../assets/images/referral.png')}
-            style={[styles.searchIcon]}
-          />
+              resizeMode="contain"
+              source={require('../assets/images/referral.png')}
+              style={[styles.searchIcon]}
+            />
           ),
         }}
       />
@@ -339,17 +333,17 @@ export default function Sidebar() {
           title: 'Promotions',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          drawerLabelStyle:{
+          drawerLabelStyle: {
             fontSize: 15,
-            marginLeft:-10,
-            fontFamily:'SFpro-Medium'
+            marginLeft: -10,
+            fontFamily: 'SFpro-Medium',
           },
-          drawerIcon: ({ focused, size }) => (
+          drawerIcon: ({focused, size}) => (
             <Image
-            resizeMode="contain"
-            source={require('../assets/images/contests.png')}
-            style={[styles.searchIcon]}
-          />
+              resizeMode="contain"
+              source={require('../assets/images/contests.png')}
+              style={[styles.searchIcon]}
+            />
           ),
         }}
       />
@@ -361,12 +355,12 @@ export default function Sidebar() {
           title: 'Settings',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          drawerLabelStyle:{
+          drawerLabelStyle: {
             fontSize: 15,
-            marginLeft:-10,
-            fontFamily:'SFpro-Medium'
+            marginLeft: -10,
+            fontFamily: 'SFpro-Medium',
           },
-          drawerIcon: ({ focused, size }) => (
+          drawerIcon: ({focused, size}) => (
             <IonIcon
               name="ios-settings-outline"
               size={size}
@@ -383,12 +377,12 @@ export default function Sidebar() {
           title: 'Sign Out',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
-          drawerLabelStyle:{
+          drawerLabelStyle: {
             fontSize: 15,
-            marginLeft:-10,
-            fontFamily:'SFpro-Medium'
+            marginLeft: -10,
+            fontFamily: 'SFpro-Medium',
           },
-          drawerIcon: ({ focused, size }) => (
+          drawerIcon: ({focused, size}) => (
             <FIcon
               name="log-out"
               size={size}
@@ -427,7 +421,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 20,
-    paddingTop:80
+    paddingTop: 80,
   },
   avatarImg: {
     width: '100%',
@@ -438,12 +432,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato-Regular',
     fontSize: 16,
   },
-  searchIcon:{
-    width:24,
-    height:24
+  searchIcon: {
+    width: 24,
+    height: 24,
   },
-  hamIcon:{
-    width:20,
-    height:25
-  }
+  hamIcon: {
+    width: 20,
+    height: 25,
+  },
 });
