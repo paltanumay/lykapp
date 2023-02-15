@@ -318,4 +318,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
 
     },
+    postImg: {
+        width:150,
+        height: 150
+    }
 })

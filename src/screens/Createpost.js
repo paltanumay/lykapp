@@ -11,6 +11,9 @@ import {
 import React, {useState, useEffect} from 'react';
 import COLORS from '../global/globalColors';
 import * as Progress from 'react-native-progress';
+import ChatList from './Chatlist';
+import CallList from './CallList';
+import Postlist from './Postlist';
 
 import FIcon from 'react-native-vector-icons/Feather';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -19,6 +22,7 @@ import axios from 'axios';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useNavigation} from '@react-navigation/native';
+import HeaderWithTitle from '../components/HeaderWithTitle';
 
 const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -28,6 +32,7 @@ export const NEW_POST = `${API_URL}/Postchat/createNewPost`;
 export const CREATE_NEW_POST_SHORT = 'cetNwot';
 
 export default function Createpost() {
+  const [activeTab, setActiveTab] = useState('b');
   const navigation = useNavigation();
   const [user, setUser] = useState();
   const [post, setPost] = useState();
@@ -86,7 +91,7 @@ export default function Createpost() {
       )
       .then(res => {
         console.log(JSON.stringify(res.data));
-        navigation.push('Sidenav')
+        navigation.push('Sidenav');
       });
   };
   const uploadVideo = file => {
@@ -214,158 +219,230 @@ export default function Createpost() {
   };
   return (
     <>
-      <View style={styles.postBox}>
-        <View style={styles.postBoxHead}>
-          <View style={styles.postBoxImgWrap}>
-            <Image
-              resizeMode="cover"
-              source={require('../assets/images/avatar.jpg')}
-              style={[styles.postBoxImg]}
-            />
-          </View>
+    <HeaderWithTitle isBack= {true}/>
+    <View style={styles.chatPostContainer}>
+      <View style={styles.tabWrap}>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'a' ? styles.tabActive : '']}
+          onPress={() => setActiveTab('a')}>
+          <Text
+            style={
+              activeTab === 'a' ? [styles.tabActiveText] : [styles.tabText]
+            }>
+            My Chats
+          </Text>
+        </TouchableOpacity>
 
-          <Text style={styles.listInfoTitle}>{user && user.firstName}</Text>
-        </View>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'b' ? styles.tabActive : '']}
+          onPress={() => setActiveTab('b')}>
+          <Text
+            style={
+              activeTab === 'b' ? [styles.tabActiveText] : [styles.tabText]
+            }>
+            My Posts
+          </Text>
+        </TouchableOpacity>
 
-        {progress > 0 && !post?.imageUrl && (
-          <Modal animationType="slide" transparent={true} visible={true}>
-            <View style={styles.centeredViewInner}>
-              <View style={styles.modalView}>
-                <Progress.Pie progress={progress} size={50} color="grey" />
-              </View>
-            </View>
-          </Modal>
-        )}
-
-        {post && post.imageUrl && (
-          <View style={styles.addPhotoWrap}>
-            <Image
-              style={styles.eventImg}
-              source={{
-                uri:
-                  'https://cdn.lykapp.com/newsImages/images/' + post.imageUrl,
-              }}
-            />
-          </View>
-        )}
-
-        <View style={styles.postBody}>
-          <TextInput
-            placeholderTextColor="#AFAFAF"
-            style={styles.input}
-            placeholder="Type your update here"
-            textContentType="username"
-            underlineColorAndroid="transparent"
-            multiline={true}
-            numberOfLines={10}
-            onChangeText={e =>
-              setPost(post => {
-                return {...post, title: e};
-              })
-            }
-          />
-        </View>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'c' ? styles.tabActive : '']}
+          onPress={() => setActiveTab('c')}>
+          <Text
+            style={
+              activeTab === 'c' ? [styles.tabActiveText] : [styles.tabText]
+            }>
+            My Calls
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.postBoxOptions}>
-        <View style={styles.postBoxShareOptions}>
-          <TouchableOpacity style={styles.shareOptions}>
-            <IonIcon name="ios-earth-outline" size={25} color={COLORS.blue} />
-            <Text style={[styles.shareOptionsText, styles.active]}>Public</Text>
-          </TouchableOpacity>
+      <View style={styles.tabContentWrap}>
+        {activeTab === 'a' ? (
+          <View style={styles.myChatsWrap}>
+            <ChatList />
+          </View>
+        ) : activeTab === 'b' ? (
+          <View style={styles.myPostsWrap}>
+            <View style={styles.postBox}>
+              <View style={styles.postBoxHead}>
+                <View style={styles.postBoxImgWrap}>
+                  <Image
+                    resizeMode="cover"
+                    source={require('../assets/images/avatar.jpg')}
+                    style={[styles.postBoxImg]}
+                  />
+                </View>
 
-          <TouchableOpacity style={styles.shareOptions}>
-            <Image
-              resizeMode="cover"
-              source={require('../assets/images/connections.png')}
-              style={styles.connectionIcon}
-            />
-            <Text style={styles.shareOptionsText}>My Connection</Text>
-          </TouchableOpacity>
+                <Text style={styles.listInfoTitle}>
+                  {user && user.firstName}
+                </Text>
+              </View>
 
-          <TouchableOpacity style={styles.shareOptions}>
-          <Image
-              resizeMode="cover"
-              source={require('../assets/images/family.png')}
-              style={styles.familyIcon}
-            />
-            <Text style={styles.shareOptionsText}>Family</Text>
-          </TouchableOpacity>
-        </View>
+              {progress > 0 && !post?.imageUrl && (
+                <Modal animationType="slide" transparent={true} visible={true}>
+                  <View style={styles.centeredViewInner}>
+                    <View style={styles.modalView}>
+                      <Progress.Pie
+                        progress={progress}
+                        size={50}
+                        color="grey"
+                      />
+                    </View>
+                  </View>
+                </Modal>
+              )}
 
-        <View style={styles.morePostTools}>
-          <TouchableOpacity
-            style={styles.morePostToolsItem}
-            onPress={() => handlePress('image')}>
-            <Image
-              resizeMode="cover"
-              source={require('../assets/images/image.png')}
-              style={styles.imageIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.morePostToolsItem}
-            onPress={handleCameraRoll}>
-             <Image
-              resizeMode="cover"
-              source={require('../assets/images/camera.png')}
-              style={styles.cameraIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.morePostToolsItem}
-            onPress={() => handlePress('video')}>
-            <Image
-              resizeMode="cover"
-              source={require('../assets/images/video.png')}
-              style={styles.videoIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.morePostToolsItem}>
-          <Image
-              resizeMode="cover"
-              source={require('../assets/images/maps.png')}
-              style={styles.mapsIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.morePostToolsItem}
-            onPress={() => navigation.push('Addevent')}>
-             <Image
-              resizeMode="cover"
-              source={require('../assets/images/calendar.png')}
-              style={styles.calIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.morePostToolsItem}>
-          <Image
-              resizeMode="cover"
-              source={require('../assets/images/smile.png')}
-              style={styles.smileIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.morePostToolsItem}>
-            <Text style={styles.goLiveText}>Go Live</Text>
-          </TouchableOpacity>
-          {(post?.imageUrl?.length > 0 ||
-            post?.videoUrl?.length > 0 ||
-            post?.title?.length > 0) && (
-            <TouchableOpacity onPress={createNewPost}>
-            <Image
-              resizeMode="cover"
-              source={require('../assets/images/send.png')}
-              style={styles.sendIcon}
-            />
-              {/* <IonIcon name="send" size={24} color="#fff" /> */}
-            </TouchableOpacity>
-          )}
-        </View>
+              {post && post.imageUrl && (
+                <View style={styles.addPhotoWrap}>
+                  <Image
+                    style={styles.eventImg}
+                    source={{
+                      uri:
+                        'https://cdn.lykapp.com/newsImages/images/' +
+                        post.imageUrl,
+                    }}
+                  />
+                </View>
+              )}
+
+              <View style={styles.postBody}>
+                <TextInput
+                  placeholderTextColor="#AFAFAF"
+                  style={styles.input}
+                  placeholder="Type your update here"
+                  textContentType="username"
+                  underlineColorAndroid="transparent"
+                  multiline={true}
+                  numberOfLines={10}
+                  onChangeText={e =>
+                    setPost(post => {
+                      return {...post, title: e};
+                    })
+                  }
+                />
+              </View>
+            </View>
+
+            <View style={styles.postBoxOptions}>
+              <View style={styles.postBoxShareOptions}>
+                <TouchableOpacity style={styles.shareOptions}>
+                  <IonIcon
+                    name="ios-earth-outline"
+                    size={25}
+                    color={COLORS.blue}
+                  />
+                  <Text style={[styles.shareOptionsText, styles.active]}>
+                    Public
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.shareOptions}>
+                  <Image
+                    resizeMode="cover"
+                    source={require('../assets/images/connections.png')}
+                    style={styles.connectionIcon}
+                  />
+                  <Text style={styles.shareOptionsText}>My Connection</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.shareOptions}>
+                  <Image
+                    resizeMode="cover"
+                    source={require('../assets/images/family.png')}
+                    style={styles.familyIcon}
+                  />
+                  <Text style={styles.shareOptionsText}>Family</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.morePostTools}>
+                <TouchableOpacity
+                  style={styles.morePostToolsItem}
+                  onPress={() => handlePress('image')}>
+                  <Image
+                    resizeMode="cover"
+                    source={require('../assets/images/image.png')}
+                    style={styles.imageIcon}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.morePostToolsItem}
+                  onPress={handleCameraRoll}>
+                  <Image
+                    resizeMode="cover"
+                    source={require('../assets/images/camera.png')}
+                    style={styles.cameraIcon}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.morePostToolsItem}
+                  onPress={() => handlePress('video')}>
+                  <Image
+                    resizeMode="cover"
+                    source={require('../assets/images/video.png')}
+                    style={styles.videoIcon}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.morePostToolsItem}>
+                  <Image
+                    resizeMode="cover"
+                    source={require('../assets/images/maps.png')}
+                    style={styles.mapsIcon}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.morePostToolsItem}
+                  onPress={() => navigation.push('Addevent')}>
+                  <Image
+                    resizeMode="cover"
+                    source={require('../assets/images/calendar.png')}
+                    style={styles.calIcon}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.morePostToolsItem}>
+                  <Image
+                    resizeMode="cover"
+                    source={require('../assets/images/smile.png')}
+                    style={styles.smileIcon}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.morePostToolsItem}>
+                  <Text style={styles.goLiveText}>Go Live</Text>
+                </TouchableOpacity>
+                {(post?.imageUrl?.length > 0 ||
+                  post?.videoUrl?.length > 0 ||
+                  post?.title?.length > 0) && (
+                  <TouchableOpacity onPress={createNewPost}>
+                    <Image
+                      resizeMode="cover"
+                      source={require('../assets/images/send.png')}
+                      style={styles.sendIcon}
+                    />
+                    {/* <IonIcon name="send" size={24} color="#fff" /> */}
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          </View>
+        ) : activeTab === 'c' ? (
+          <View style={styles.myPostsWrap}>
+            <CallList />
+          </View>
+        ) : (
+          <></>
+        )}
+      </View>
       </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  chatPostContainer: {
+    // backgroundColor: '#e7ebf6',
+    backgroundColor: '#fff',
+    flex: 10
+  },
   addPhotoWrap: {
     backgroundColor: '#dbe0e6',
     height: 150,
@@ -427,8 +504,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f6f7f9',
     height: 44,
     borderRadius: 100,
-    paddingHorizontal:15,
-  
+    paddingHorizontal: 15,
   },
   shareOptionsText: {
     color: '#7f8289',
@@ -493,41 +569,75 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 25,
   },
-  connectionIcon:{
-    width:21,
-    height:22
+  connectionIcon: {
+    width: 21,
+    height: 22,
   },
-  familyIcon:{
-    width:21,
-    height:17
+  familyIcon: {
+    width: 21,
+    height: 17,
   },
-  imageIcon:{
-    width:25,
-    height:20
+  imageIcon: {
+    width: 25,
+    height: 20,
   },
-  cameraIcon:{
-    width:25,
-    height:21
+  cameraIcon: {
+    width: 25,
+    height: 21,
   },
-  videoIcon:{
-    width:24,
-    height:16
+  videoIcon: {
+    width: 24,
+    height: 16,
   },
-  mapsIcon:{
-    width:17,
-    height:22
+  mapsIcon: {
+    width: 17,
+    height: 22,
   },
-  calIcon:{
-    width:21,
-    height:20
+  calIcon: {
+    width: 21,
+    height: 20,
   },
-  smileIcon:{
-    width:22,
-    height:22
+  smileIcon: {
+    width: 22,
+    height: 22,
   },
-  sendIcon:{
-    width:50,
-    height:50
+  sendIcon: {
+    width: 50,
+    height: 50,
   },
+  tabWrap: {
+    backgroundColor: '#f6f7fb',
+    borderRadius: 100,
+    marginHorizontal: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 20,
+  },
+  tab: {
+    height: 47,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    width: '31%',
+    borderRadius: 100,
+  },
+  tabActive: {
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
 
+    elevation: 5,
+  },
+  tabText: {
+    fontFamily: 'SFpro-Regular',
+    color: '#333',
+  },
+  tabActiveText: {
+    color: COLORS.blue,
+  },
 });

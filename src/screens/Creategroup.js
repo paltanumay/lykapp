@@ -15,6 +15,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import FIcon from 'react-native-vector-icons/Feather';
+import HeaderWithTitle from '../components/HeaderWithTitle';
 
 export default class Creategroup extends Component {
   constructor(props) {
@@ -27,6 +28,7 @@ export default class Creategroup extends Component {
   render() {
     return (
         <>
+         <HeaderWithTitle isBack= {true}/>
       <View style={globalStyles.innerPagesContainerWhite}>
         <View style={styles.addGroupNamewrap}>
           <View style={styles.addGroupImage}>

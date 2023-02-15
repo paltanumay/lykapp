@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'SFpro-Regular',
         textAlign: 'center',
-        marginBottom:25
+        marginBottom:25,
+        color:'#333'
       }
 })

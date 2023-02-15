@@ -266,6 +266,7 @@ const styles = StyleSheet.create({
   pEvent: {
     fontSize: 15,
     fontFamily: 'SFpro-Bold',
+    color:'#333'
 
   }
 });

@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 import ChatList from './Chatlist';
 import CallList from './CallList';
 import Postlist from './Postlist';
+import Header from '../components/Header';
 
 const DATA = [
   {
@@ -42,22 +43,23 @@ export default function Chatnpost() {
   const [activeTab, setActiveTab] = useState('a');
   return (
     <>
+    <Header isBack={true} />
       <View style={styles.chatPostContainer}>
         <View style={styles.tabWrap}>
           <TouchableOpacity style={[styles.tab, activeTab === 'a' ? styles.tabActive : '']} onPress={() => setActiveTab('a')}>
-            <Text style={activeTab === 'a' ? [styles.tabText, styles.tabActiveText] : []}>
+            <Text style={activeTab === 'a' ? [styles.tabActiveText] : [styles.tabText]}>
               My Chats
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.tab, activeTab === 'b' ? styles.tabActive : '']} onPress={() => setActiveTab('b')}>
-            <Text style={activeTab === 'b' ? [styles.tabText, styles.tabActiveText] : []}>
+            <Text style={activeTab === 'b' ? [styles.tabActiveText] : [styles.tabText]}>
               My Posts
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.tab, activeTab === 'c' ? styles.tabActive : '']} onPress={() => setActiveTab('c')}>
-            <Text style={activeTab === 'c' ? [styles.tabText, styles.tabActiveText] : []}>
+            <Text style={activeTab === 'c' ? [styles.tabActiveText] : [styles.tabText]}>
               My Calls
             </Text>
           </TouchableOpacity>
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
   chatPostContainer: {
     // backgroundColor: '#e7ebf6',
     backgroundColor: '#fff',
-    flex: 10
+    flex: 1
   },
   tabWrap: {
     backgroundColor: '#f6f7fb',
@@ -119,10 +121,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   tabText: {
-    fontFamily: 'SFpro-Regular',
+    fontFamily: 'SFpro-Bold',
+    color:'#333'
   },
   tabActiveText: {
     color: COLORS.blue,
+    fontFamily: 'SFpro-Bold',
   },
   listImgWrap: {
     width: 50,

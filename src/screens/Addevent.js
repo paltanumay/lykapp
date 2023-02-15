@@ -183,6 +183,8 @@ export default function Addevent() {
   };
   return (
     <>
+      <Header isBack= {true}/>
+      <View style={{flex:1}}>
       <View style={styles.centeredView}>
         <Modal
           animationType="slide"
@@ -221,283 +223,288 @@ export default function Addevent() {
           <Text style={styles.textStyle}>Show Modal</Text>
         </Pressable> */}
       </View>
+      
+      <View style={{flex:10}}>
+        <Formik
+          initialValues={{
+            eventSubject: '',
+            eventLocation: '',
+            eventContent: '',
+          }}
+          validate={values => {
+            let error = {};
+            if (!values.eventSubject) {
+              error.sub = 'Enter Event Name';
+              return error;
+            } else if (!eventStartDate) {
+              error.sd = 'Please enter start date';
+              return error;
+            } else if (!eventEndDate) {
+              error.ed = 'Please enter end date';
+              return error;
+            } else if (
+              moment(eventStartDate).diff(moment(eventEndDate), 'seconds') > 0
+            ) {
+              showToast('End Date must be greater than Start Date');
+              return error;
+            } else if (!startTime) {
+              error.st = 'Please select Start time';
+              return error;
+            } else if (!endTime) {
+              error.et = 'Please select End time';
+              return error;
+            } else if (
+              moment(eventStartDate + 'T' + startTime + 'Z').diff(
+                moment(eventEndDate + 'T' + endTime + 'Z'),
+                'seconds',
+              ) > 0
+            ) {
+              showToast('End Time must be greater than Start Time');
+              return error;
+            } else if (!values.eventLocation) {
+              error.loc = 'Please select location';
+              return error;
+            }
+          }}
+          validateOnBlur={false}
+          validateOnChange={false}
+          validateOnMount={false}
+          onSubmit={async (values, {setSubmitting}) => {
+            let userDetails = await AsyncStorage.getItem('userId');
+            userDetails = JSON.parse(userDetails);
+            let token =
+              (await AsyncStorage.getItem('token')) +
+              '-' +
+              CREATE_EVENT_SHORT +
+              '-' +
+              getEncTokenAnyUserId(userDetails.userId);
+            axios
+              .post(
+                CREATE_EVENT,
+                {
+                  ...values,
+                  ...{
+                    userId: getEncUserId(userDetails.userId),
+                    myName: userDetails.firstName,
+                    eventStartDate: eventStartDate,
+                    startTime: startTime,
+                    eventEndDate: eventEndDate,
+                    endTime: endTime,
+                    ticketsURL: '',
+                    deviceType: 'android',
+                    imageUrl: imgUrl,
+                    deviceId: Buffer.from(Math.random().toString())
+                      .toString('base64')
+                      .slice(1, 22),
 
-      <Formik
-        initialValues={{
-          eventSubject: '',
-          eventLocation: '',
-          eventContent: '',
-        }}
-        validate={values => {
-          let error = {};
-          if (!values.eventSubject) {
-            error.sub = 'Enter Event Name';
-            return error;
-          } else if (!eventStartDate) {
-            error.sd = 'Please enter start date';
-            return error;
-          } else if (!eventEndDate) {
-            error.ed = 'Please enter end date';
-            return error;
-          } else if (
-            moment(eventStartDate).diff(moment(eventEndDate), 'seconds') > 0
-          ) {
-            showToast('End Date must be greater than Start Date');
-            return error;
-          } else if (!startTime) {
-            error.st = 'Please select Start time';
-            return error;
-          } else if (!endTime) {
-            error.et = 'Please select End time';
-            return error;
-          } else if (
-            moment(eventStartDate + 'T' + startTime + 'Z').diff(
-              moment(eventEndDate + 'T' + endTime + 'Z'),
-              'seconds',
-            ) > 0
-          ) {
-            showToast('End Time must be greater than Start Time');
-            return error;
-          } else if (!values.eventLocation) {
-            error.loc = 'Please select location';
-            return error;
-          }
-        }}
-        validateOnBlur={false}
-        validateOnChange={false}
-        validateOnMount={false}
-        onSubmit={async (values, {setSubmitting}) => {
-          let userDetails = await AsyncStorage.getItem('userId');
-          userDetails = JSON.parse(userDetails);
-          let token =
-            (await AsyncStorage.getItem('token')) +
-            '-' +
-            CREATE_EVENT_SHORT +
-            '-' +
-            getEncTokenAnyUserId(userDetails.userId);
-          axios
-            .post(
-              CREATE_EVENT,
-              {
-                ...values,
-                ...{
-                  userId: getEncUserId(userDetails.userId),
-                  myName: userDetails.firstName,
-                  eventStartDate: eventStartDate,
-                  startTime: startTime,
-                  eventEndDate: eventEndDate,
-                  endTime: endTime,
-                  ticketsURL: '',
-                  deviceType: 'android',
-                  imageUrl: imgUrl,
-                  deviceId: Buffer.from(Math.random().toString())
-                    .toString('base64')
-                    .slice(1, 22),
+                    // public--1, my family--2, invite all-3
+                    selectedType: '1',
+                    userList: [],
+                  },
+                },
+                {
+                  headers: {
+                    token: token,
+                  },
+                },
+              )
+              .then(
+                res => {
+                  setSubmitting(false);
+                  navigation.push('EventsDetails', {
+                    id: res.data.response.eventId,
+                    route: 'addevent',
+                  });
+                },
+                err => {
+                  let errors = {};
+                  errors.message = 'Invalid username or password!';
+                  console.log(err);
+                },
+              )
+              .catch(err => {});
+          }}>
+          
+          {({handleChange, handleSubmit, errors, isSubmitting, values}) => (
+            
+            <View>
+              {imgUrl ? (
+                <View style={styles.addPhotoWrap}>
+                  <Image
+                    style={styles.eventImg}
+                    source={{
+                      uri: 'https://cdn.lykapp.com/newsImages/images/' + imgUrl,
+                    }}
+                  />
+                </View>
+              ) : (
+                <View style={styles.addPhotoWrap}>
+                  <TouchableOpacity
+                    style={styles.addPhotoBt}
+                    // onPress={handlePress}
+                    onPress={() => setModalVisible(true)}>
+                    <FIcon name="plus" size={22} color={COLORS.blue} />
 
-                  // public--1, my family--2, invite all-3
-                  selectedType: '1',
-                  userList: [],
-                },
-              },
-              {
-                headers: {
-                  token: token,
-                },
-              },
-            )
-            .then(
-              res => {
-                setSubmitting(false);
-                navigation.push('EventsDetails', {
-                  id: res.data.response.eventId,
-                  route: 'addevent',
-                });
-              },
-              err => {
-                let errors = {};
-                errors.message = 'Invalid username or password!';
-                console.log(err);
-              },
-            )
-            .catch(err => {});
-        }}>
-        {({handleChange, handleSubmit, errors, isSubmitting, values}) => (
-          <View style={globalStyles.innerPagesContainerWhite}>
-            {imgUrl ? (
-              <View style={styles.addPhotoWrap}>
-                <Image
-                  style={styles.eventImg}
-                  source={{
-                    uri: 'https://cdn.lykapp.com/newsImages/images/' + imgUrl,
-                  }}
+                    <Text style={styles.addPhotoBtText}>Add photo</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {show && (
+                <RNDateTimePicker
+                  value={mydate}
+                  onChange={setDate}
+                  display={'default'}
+                  mode={mode}
                 />
-              </View>
-            ) : (
-              <View style={styles.addPhotoWrap}>
-                <TouchableOpacity
-                  style={styles.addPhotoBt}
-                  // onPress={handlePress}
-                  onPress={() => setModalVisible(true)}>
-                  <FIcon name="plus" size={22} color={COLORS.blue} />
+              )}
 
-                  <Text style={styles.addPhotoBtText}>Add photo</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+              <View style={styles.addEventFormWRap}>
+                <View style={{marginBottom: 15}}>
+                  <View style={styles.formBox}>
+                    <TextInput
+                      placeholderTextColor="#AFAFAF"
+                      style={styles.input}
+                      placeholder="Event Name*"
+                      textContentType="username"
+                      underlineColorAndroid="transparent"
+                      onChangeText={handleChange('eventSubject')}
+                    />
+                  </View>
+                  {!values.eventSubject && errors.sub && (
+                    <Text style={styles.error}>{errors.sub}</Text>
+                  )}
+                </View>
 
-            {show && (
-              <RNDateTimePicker
-                value={mydate}
-                onChange={setDate}
-                display={'default'}
-                mode={mode}
-              />
-            )}
+                <View style={styles.startDate}>
+                  <View style={[styles.formBoxinner, {marginBottom: 15}]}>
+                    <View style={[styles.formBox]}>
+                      <TextInput
+                        placeholderTextColor="#AFAFAF"
+                        style={styles.input}
+                        placeholder="Start date*"
+                        textContentType="username"
+                        underlineColorAndroid="transparent"
+                        onTouchStart={() => {
+                          showMode('date'), setDiplay('eventStartDate');
+                        }}
+                        value={eventStartDate}
+                      />
+                    </View>
+                    {!eventStartDate && errors.sd && (
+                      <Text style={styles.error}>{errors.sd}</Text>
+                    )}
+                  </View>
 
-            <View style={styles.addEventFormWRap}>
-              <View style={{marginBottom: 15}}>
+                  <View style={[styles.formBoxinner, {marginBottom: 15}]}>
+                    <View style={[styles.formBox]}>
+                      <TextInput
+                        placeholderTextColor="#AFAFAF"
+                        style={styles.input}
+                        placeholder="End date"
+                        textContentType="username"
+                        underlineColorAndroid="transparent"
+                        onTouchStart={() => {
+                          showMode('date'), setDiplay('eventEndDate');
+                        }}
+                        value={eventEndDate}
+                      />
+                    </View>
+                    {!eventEndDate && errors.ed && (
+                      <Text style={styles.error}>{errors.ed}</Text>
+                    )}
+                  </View>
+                </View>
+
+                <View style={styles.startDate}>
+                  <View style={[styles.formBoxinner, {marginBottom: 15}]}>
+                    <View style={[styles.formBox]}>
+                      <TextInput
+                        placeholderTextColor="#AFAFAF"
+                        style={styles.input}
+                        placeholder="Start time*"
+                        textContentType="username"
+                        underlineColorAndroid="transparent"
+                        onTouchStart={() => {
+                          showMode('time'), setDiplay('startTime');
+                        }}
+                        value={startTime}
+                      />
+                    </View>
+                    {!startTime && errors.st && (
+                      <Text style={styles.error}>{errors.st}</Text>
+                    )}
+                  </View>
+
+                  <View style={[styles.formBoxinner, {marginBottom: 15}]}>
+                    <View style={[styles.formBox]}>
+                      <TextInput
+                        placeholderTextColor="#AFAFAF"
+                        style={styles.input}
+                        placeholder="End time"
+                        textContentType="username"
+                        underlineColorAndroid="transparent"
+                        onTouchStart={() => {
+                          showMode('time'), setDiplay('endTime');
+                        }}
+                        value={endTime}
+                      />
+                    </View>
+                    {!endTime && errors.et && (
+                      <Text style={styles.error}>{errors.et}</Text>
+                    )}
+                  </View>
+                </View>
+
+                <View style={{marginBottom: 15}}>
+
                 <View style={styles.formBox}>
                   <TextInput
                     placeholderTextColor="#AFAFAF"
                     style={styles.input}
-                    placeholder="Event Name*"
+                    placeholder="Location*"
                     textContentType="username"
                     underlineColorAndroid="transparent"
-                    onChangeText={handleChange('eventSubject')}
+                    onChangeText={handleChange('eventLocation')}
                   />
                 </View>
-                {!values.eventSubject && errors.sub && (
-                  <Text style={styles.error}>{errors.sub}</Text>
-                )}
-              </View>
-
-              <View style={styles.startDate}>
-                <View style={[styles.formBoxinner, {marginBottom: 15}]}>
-                  <View style={[styles.formBox]}>
-                    <TextInput
-                      placeholderTextColor="#AFAFAF"
-                      style={styles.input}
-                      placeholder="Start date*"
-                      textContentType="username"
-                      underlineColorAndroid="transparent"
-                      onTouchStart={() => {
-                        showMode('date'), setDiplay('eventStartDate');
-                      }}
-                      value={eventStartDate}
-                    />
-                  </View>
-                  {!eventStartDate && errors.sd && (
-                    <Text style={styles.error}>{errors.sd}</Text>
-                  )}
+                {errors.loc && <Text style={styles.error}>{errors.loc}</Text>}
                 </View>
 
-                <View style={[styles.formBoxinner, {marginBottom: 15}]}>
-                  <View style={[styles.formBox]}>
-                    <TextInput
-                      placeholderTextColor="#AFAFAF"
-                      style={styles.input}
-                      placeholder="End date"
-                      textContentType="username"
-                      underlineColorAndroid="transparent"
-                      onTouchStart={() => {
-                        showMode('date'), setDiplay('eventEndDate');
-                      }}
-                      value={eventEndDate}
-                    />
-                  </View>
-                  {!eventEndDate && errors.ed && (
-                    <Text style={styles.error}>{errors.ed}</Text>
-                  )}
-                </View>
-              </View>
-
-              <View style={styles.startDate}>
-                <View style={[styles.formBoxinner, {marginBottom: 15}]}>
-                  <View style={[styles.formBox]}>
-                    <TextInput
-                      placeholderTextColor="#AFAFAF"
-                      style={styles.input}
-                      placeholder="Start time*"
-                      textContentType="username"
-                      underlineColorAndroid="transparent"
-                      onTouchStart={() => {
-                        showMode('time'), setDiplay('startTime');
-                      }}
-                      value={startTime}
-                    />
-                  </View>
-                  {!startTime && errors.st && (
-                    <Text style={styles.error}>{errors.st}</Text>
-                  )}
+                <View style={styles.formBox}>
+                  <TextInput
+                    placeholderTextColor="#AFAFAF"
+                    style={[
+                      styles.input,
+                      {textAlignVertical: 'top', width: '100%'},
+                    ]}
+                    placeholder="More info"
+                    textContentType="username"
+                    underlineColorAndroid="transparent"
+                    multiline={true}
+                    numberOfLines={7}
+                    onChangeText={handleChange('eventContent')}
+                  />
                 </View>
 
-                <View style={[styles.formBoxinner, {marginBottom: 15}]}>
-                  <View style={[styles.formBox]}>
-                    <TextInput
-                      placeholderTextColor="#AFAFAF"
-                      style={styles.input}
-                      placeholder="End time"
-                      textContentType="username"
-                      underlineColorAndroid="transparent"
-                      onTouchStart={() => {
-                        showMode('time'), setDiplay('endTime');
-                      }}
-                      value={endTime}
-                    />
-                  </View>
-                  {!endTime && errors.et && (
-                    <Text style={styles.error}>{errors.et}</Text>
-                  )}
-                </View>
+                <TouchableOpacity
+                  style={[globalStyles.gradBt, {width: '100%'}]}
+                  disabled={isSubmitting}
+                  onPress={handleSubmit}>
+                  <LinearGradient
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={['#037ee5', '#15a2e0', '#28cad9']}
+                    style={globalStyles.linearGradient}>
+                    <Text style={globalStyles.buttonText}>Continue</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
               </View>
-
-              <View style={{marginBottom: 15}}>
-
-              <View style={styles.formBox}>
-                <TextInput
-                  placeholderTextColor="#AFAFAF"
-                  style={styles.input}
-                  placeholder="Location*"
-                  textContentType="username"
-                  underlineColorAndroid="transparent"
-                  onChangeText={handleChange('eventLocation')}
-                />
-              </View>
-              {errors.loc && <Text style={styles.error}>{errors.loc}</Text>}
-              </View>
-
-              <View style={styles.formBox}>
-                <TextInput
-                  placeholderTextColor="#AFAFAF"
-                  style={[
-                    styles.input,
-                    {textAlignVertical: 'top', width: '100%'},
-                  ]}
-                  placeholder="More info"
-                  textContentType="username"
-                  underlineColorAndroid="transparent"
-                  multiline={true}
-                  numberOfLines={7}
-                  onChangeText={handleChange('eventContent')}
-                />
-              </View>
-
-              <TouchableOpacity
-                style={[globalStyles.gradBt, {width: '100%'}]}
-                disabled={isSubmitting}
-                onPress={handleSubmit}>
-                <LinearGradient
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
-                  colors={['#037ee5', '#15a2e0', '#28cad9']}
-                  style={globalStyles.linearGradient}>
-                  <Text style={globalStyles.buttonText}>Continue</Text>
-                </LinearGradient>
-              </TouchableOpacity>
             </View>
-          </View>
-        )}
-      </Formik>
+          )}
+        </Formik>
+        </View>
+      </View>
     </>
   );
 }
@@ -530,6 +537,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 14,
     fontFamily: 'Lato-Regular',
+    color:'#333'
   },
   addEventFormWRap: {
     paddingHorizontal: 25,
