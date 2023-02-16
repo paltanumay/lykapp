@@ -24,6 +24,7 @@ import Chatnpost from '../screens/Chatnpost';
 import Events from '../screens/Events';
 import SettingsScreen from '../screens/SettingsScreen';
 import Logoutmodal from '../shared/Logoutmodal';
+import BusinessScreen from '../screens/SIdeBarScreens/BusinessScreen';
 
 function NotificationsScreen({navigation}) {
   return (
@@ -261,7 +262,7 @@ export default function Sidebar() {
 
       <Drawer.Screen
         name="Bussiness Page"
-        component={BussinessScreen}
+        component={BusinessScreen}
         options={{
           title: 'Bussiness Page',
           drawerActiveTintColor: '#fff',

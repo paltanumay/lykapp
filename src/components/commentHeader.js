@@ -7,13 +7,15 @@ import {StyleSheet, View} from 'react-native';
 import COLORS from '../global/globalColors';
 import {Text} from 'react-native';
 
-const CommentHeader = () => {
+const CommentHeader = ({name, isCreateBusiness, setCreateBusiness}) => {
   const navigation = useNavigation();
   return (
     <View style={styles.header}>
       <TouchableOpacity
         style={[styles.backIconWrap]}
-        onPress={() => navigation.goBack()}>
+        onPress={() =>
+          isCreateBusiness ? setCreateBusiness(false) : navigation.goBack()
+        }>
         <Image
           resizeMode="stretch"
           source={require('../assets/images/back.png')}
@@ -21,7 +23,7 @@ const CommentHeader = () => {
         />
       </TouchableOpacity>
       <View>
-        <Text style={styles.headerTitle}>{'comments'}</Text>
+        <Text style={styles.headerTitle}>{name}</Text>
       </View>
     </View>
   );

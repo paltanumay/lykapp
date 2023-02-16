@@ -54,7 +54,10 @@ const CommentsDetails = () => {
         COMMENT_URL,
         {
           userId: getEncUserId(userDetails.userId),
-          feedId: type === 'news' ? details.newsId : details.postId,
+          feedId:
+            type === 'news'
+              ? parseInt(details.newsId)
+              : parseInt(details.postId),
           feedType: type,
           start: 0,
           limit: 25,
@@ -124,7 +127,7 @@ const CommentsDetails = () => {
   // console.log(details.allComments);
   return (
     <>
-      <CommentHeader />
+      <CommentHeader name={'Comments'} />
       {threeDot && <ThreeDotComponent onClose={() => setThreeDot(false)} />}
       <View>
         {type === 'news' ? (
