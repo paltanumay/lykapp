@@ -30,6 +30,13 @@ export default function ProfileEdit() {
       <View style={globalStyles.innerPagesContainerWhite}>
         <ScrollView>
           <View style={styles.bannerSection}>
+          <TouchableOpacity style={{position:'absolute', zIndex:99, bottom:0, left:0}}>
+            <Image
+                  resizeMode="stretch"
+                  source={require('../assets/images/cam.png')}
+                  style={[styles.camImg]}
+                />
+                </TouchableOpacity>
             <Image
               resizeMode="stretch"
               source={require('../assets/images/editProfileBanner.png')}
@@ -38,6 +45,24 @@ export default function ProfileEdit() {
           </View>
           <View style={styles.profileInfoWrapper}>
             <View style={styles.profilePicContainer}>
+
+            <TouchableOpacity style={styles.saveWrap}>
+                    <Image
+                        resizeMode="stretch"
+                        source={require('../assets/images/floppyDisk.png')}
+                        style={[styles.privacyIcon]}
+                      />
+
+                      <Text>Save</Text>
+                     
+                    </TouchableOpacity>
+            <TouchableOpacity style={{position:'absolute', zIndex:11, top:-55, left:'50%'}}>
+            <Image
+                  resizeMode="stretch"
+                  source={require('../assets/images/cam.png')}
+                  style={[styles.camImg]}
+                />
+                </TouchableOpacity>
               <View style={styles.profilePic}>
                 <Image
                   resizeMode="stretch"
@@ -765,6 +790,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     marginTop: -15,
+    position:'relative'
   },
   profileInfoWrapper: {
     backgroundColor: '#fff',
@@ -898,7 +924,10 @@ const styles = StyleSheet.create({
     // marginTop: 8,
     color: COLORS.blue,
   },
-
+  camImg:{
+    width:38,
+    height:38
+  },
   radioMainWrap: {
     flexDirection: 'column',
 
@@ -993,5 +1022,27 @@ const styles = StyleSheet.create({
     fontFamily: 'SFpro-Medium',
     fontSize: 14,
     marginLeft:10
+  },
+  saveWrap:{
+    position:'absolute',
+    right:25,
+    top:40,
+    flexDirection:'row',
+   backgroundColor: '#fff',
+   width: 75,
+   height: 36,
+   alignItems: 'center',
+   justifyContent: 'space-around',
+   borderRadius: 100,
+   marginLeft: 15,
+   shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   }
 });
