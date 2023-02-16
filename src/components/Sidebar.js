@@ -23,7 +23,10 @@ import { useState } from 'react';
 import Chatnpost from '../screens/Chatnpost';
 import Events from '../screens/Events';
 import SettingsScreen from '../screens/SettingsScreen';
-import Logoutmodal from '../shared/Logoutmodal';
+import ChangePassword from '../screens/ChangePassword';
+import ProfileEdit from '../screens/ProfileEdit';
+import Logoutmodal from '../shared/Logoutmodal'; 
+
 
 function NotificationsScreen({ navigation }) {
   return (
@@ -354,8 +357,8 @@ export default function Sidebar() {
       />
 
       <Drawer.Screen
-        name="Settings"
-        component={Settings}
+        name="ProfileEdit"
+        component={ProfileEdit}
         options={{
           title: 'Settings',
           drawerActiveTintColor: '#fff',
