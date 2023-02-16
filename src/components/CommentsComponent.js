@@ -1,11 +1,10 @@
 import moment from 'moment';
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {StyleSheet} from 'react-native';
-import {View, Image, Text, Pressable} from 'react-native';
+import {View, Image, Text} from 'react-native';
 import avatarImg from '../assets/images/avatar.jpg';
 
-const CommentComponents = ({commentDetails, replyCall = () => {}}) => {
-  console.log('Comment count----------', commentDetails.commentCount);
+const CommentComponents = ({commentDetails}) => {
   return (
     <View style={styles.addCommentWrap}>
       <View style={styles.addCommentImgWrap}>
@@ -48,17 +47,6 @@ const CommentComponents = ({commentDetails, replyCall = () => {}}) => {
             <Text style={styles.reply}>{'Reply'}</Text>
           </View>
         </View>
-        {commentDetails.commentCount > 0 ? (
-          <Pressable
-            onPress={() => {
-              replyCall(commentDetails?.commentId);
-            }}
-            style={styles.moreReplies}>
-            <Text style={styles.replyText}>
-              View {commentDetails.commentCount} more replies
-            </Text>
-          </Pressable>
-        ) : null}
       </View>
     </View>
   );
@@ -132,18 +120,6 @@ const styles = StyleSheet.create({
   likeImg: {
     width: 40,
     height: 40,
-  },
-  moreReplies: {
-    width: '100%',
-    height: 25,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
-  replyText: {
-    fontSize: 12,
-    fontWeight: '700',
   },
 });
 export default CommentComponents;

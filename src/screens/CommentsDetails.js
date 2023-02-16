@@ -24,7 +24,6 @@ import ThreeDotComponent from '../components/threeDot';
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const COMMENT_URL = `${API_URL}/gtfdcmts`;
 export const POST_COMMENT_URL = `${API_URL}/svcmt`;
-export const COMMENT_REPLIES_URL = `${API_URL}/gtfdcmtrpls`;
 
 const CommentsDetails = () => {
   const route = useRoute();
@@ -34,11 +33,9 @@ const CommentsDetails = () => {
   const type = route.params.type;
   const COMMENT_FEED_SHORT = 'bH3m8q';
   const POST_COMMENT_SHORT = 'g4QyL';
-  // console.log('Details------', details);
-  // console.log('Type---------', type);
+  // console.log(details, type);
   const [comments, setComments] = useState('');
-  const [commentReplies, setCommentReplies] = useState([]);
-  // console.log('comments-----------', comments);
+  // console.log(comments);
 
   const inputRef = useRef();
   useEffect(() => {
@@ -57,10 +54,7 @@ const CommentsDetails = () => {
         COMMENT_URL,
         {
           userId: getEncUserId(userDetails.userId),
-          feedId:
-            type === 'news'
-              ? parseInt(details.newsId)
-              : paarseInt(details.postId),
+          feedId: type === 'news' ? details.newsId : details.postId,
           feedType: type,
           start: 0,
           limit: 25,
@@ -78,8 +72,7 @@ const CommentsDetails = () => {
           },
         },
       );
-      setComments(response.data.response.comments);
-      console.log('res-------------', response.data.response.comments);
+      console.log(response.data, 'res');
       console.log({
         userId: getEncUserId(userDetails.userId),
         feedId: type === 'news' ? details.newsId : details.postId,
@@ -90,35 +83,6 @@ const CommentsDetails = () => {
     };
     getAllComments();
   }, []);
-
-  const getFeedCommentReplies = async commentId => {
-    let userDetails = await AsyncStorage.getItem('userId');
-    userDetails = JSON.parse(userDetails);
-    let token =
-      (await AsyncStorage.getItem('token')) +
-      '-' +
-      COMMENT_FEED_SHORT +
-      '-' +
-      getEncTokenAnyUserId(userDetails.userId);
-
-    const response = await axios.post(
-      COMMENT_REPLIES_URL,
-      {
-        userId: getEncUserId(userDetails.userId),
-        feedId:
-          type === 'news'
-            ? parseInt(details.newsId)
-            : paarseInt(details.postId),
-        feedType: type,
-        commentId: commentId,
-      },
-      {
-        headers: {
-          token: token,
-        },
-      },
-    );
-  };
 
   const onSubmitComment = async () => {
     let userDetails = await AsyncStorage.getItem('userId');
@@ -162,231 +126,116 @@ const CommentsDetails = () => {
     <>
       <CommentHeader />
       {threeDot && <ThreeDotComponent onClose={() => setThreeDot(false)} />}
-
-      {type === 'news' ? (
-        <>
-          <ScrollView
-            style={mainStyles.postFeed}
-            scrollEnabled={true}
-            showsVerticalScrollIndicator={true}>
-            <View
-              style={[styles.newsCard, {marginBottom: 0}]}
-              key={details.newsId}>
-              <View style={styles.cardTitle}>
-                <View style={styles.cardProImg}>
-                  <Image
-                    resizeMode="contain"
-                    source={require('../assets/images/logo.png')}
-                    style={[styles.logoImg]}
-                  />
-                </View>
-                <View style={styles.newstext}>
-                  <Text style={styles.newsTitletext}>News & Stories</Text>
-                  <Text style={styles.newsSubTitletext}>
-                    {moment(new Date()).diff(
-                      moment(details.feedTime.replace(' ', 'T') + 'Z'),
-                      'days',
-                    ) < 1
-                      ? moment(
-                          details.feedTime.replace(' ', 'T') + 'Z',
-                        ).fromNow()
-                      : moment(details.feedTime.replace(' ', 'T') + 'Z').format(
-                          'DD MMM YYYY, h:mm a',
-                        )}
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.options}
-                  onPress={() => setThreeDot(prev => !prev)}>
-                  <EnIcon name="dots-three-horizontal" size={25} color="#333" />
-                </TouchableOpacity>
-              </View>
-
-              <Text style={styles.mainDesc}>{details.newsTitle}</Text>
-
-              <View style={styles.newsCoverImg}>
-                <Image
-                  resizeMode="stretch"
-                  source={{
-                    uri: details.newsImageUrl,
-                  }}
-                  style={[styles.postImg]}
-                />
-              </View>
-              <Text style={styles.secDesc}>{details.newsDescription}</Text>
-
-              <View style={mainStyles.likeCommentShare}>
-                <View style={styles.likeCommentShareBox}>
-                  <View style={styles.likeCommentShareIconWrap}>
+      <View>
+        {type === 'news' ? (
+          <>
+            <ScrollView
+              style={mainStyles.postFeed}
+              scrollEnabled={true}
+              showsVerticalScrollIndicator={true}>
+              <View
+                style={[styles.newsCard, {marginBottom: 0}]}
+                key={details.newsId}>
+                <View style={styles.cardTitle}>
+                  <View style={styles.cardProImg}>
                     <Image
                       resizeMode="contain"
-                      source={require('../assets/images/liked.png')}
-                      style={[styles.likeImg]}
+                      source={require('../assets/images/logo.png')}
+                      style={[styles.logoImg]}
                     />
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
-                      </TouchableOpacity> */}
-
-                    <Text style={styles.iconText}>
-                      {details.likeCount} Like
+                  </View>
+                  <View style={styles.newstext}>
+                    <Text style={styles.newsTitletext}>News & Stories</Text>
+                    <Text style={styles.newsSubTitletext}>
+                      {moment(new Date()).diff(
+                        moment(details.feedTime.replace(' ', 'T') + 'Z'),
+                        'days',
+                      ) < 1
+                        ? moment(
+                            details.feedTime.replace(' ', 'T') + 'Z',
+                          ).fromNow()
+                        : moment(
+                            details.feedTime.replace(' ', 'T') + 'Z',
+                          ).format('DD MMM YYYY, h:mm a')}
                     </Text>
                   </View>
-                </View>
-
-                <View style={styles.likeCommentShareBox}>
-                  <View
-                    style={styles.likeCommentShareIconWrap}
-                    // onPress={() => navigation.push('comments')}
-                  >
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="message1" size={22} color="#c1cb99" />
-                      </TouchableOpacity> */}
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/comment.png')}
-                      style={[styles.likeImg]}
+                  <TouchableOpacity
+                    style={styles.options}
+                    onPress={() => setThreeDot(prev => !prev)}>
+                    <EnIcon
+                      name="dots-three-horizontal"
+                      size={25}
+                      color="#333"
                     />
-
-                    <Text style={styles.iconText}>
-                      {details.commentCount} Comment
-                    </Text>
-                  </View>
+                  </TouchableOpacity>
                 </View>
 
-                <View style={styles.likeCommentShareBox}>
-                  <View style={styles.likeCommentShareIconWrap}>
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="sharealt" size={22} color="#f8767a" />
-                      </TouchableOpacity> */}
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/share.png')}
-                      style={[styles.likeImg]}
-                    />
+                <Text style={styles.mainDesc}>{details.newsTitle}</Text>
 
-                    <Text style={styles.iconText}>
-                      {details.shareCount} Share
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-            {comments > '0' &&
-              comments?.map((comment, ind) => {
-                return (
-                  <CommentComponents
-                    commentDetails={comment}
-                    replyCall={getFeedCommentReplies}
-                    key={ind}
-                  />
-                );
-              })}
-          </ScrollView>
-        </>
-      ) : (
-        type === 'post' && (
-          <ScrollView>
-            <View
-              style={[styles.newsCard, {marginBottom: 0}]}
-              key={details.postId}>
-              <View style={styles.cardTitle}>
-                <View style={styles.cardProImg}>
-                  <Image
-                    resizeMode="contain"
-                    source={require('../assets/images/avatar.jpg')}
-                    style={[styles.logoImg]}
-                  />
-                </View>
-                <View style={styles.newstext}>
-                  <Text style={styles.newsTitletext}>
-                    {details.createdBy.firstName}
-                  </Text>
-                  <Text style={styles.newsSubTitletext}>
-                    {moment(new Date()).diff(
-                      moment(details.createdOn.replace(' ', 'T') + 'Z'),
-                      'days',
-                    ) < 1
-                      ? moment(
-                          details.createdOn.replace(' ', 'T') + 'Z',
-                        ).fromNow()
-                      : moment(
-                          details.createdOn.replace(' ', 'T') + 'Z',
-                        ).format('DD MMM YYYY, h:mm a')}
-                  </Text>
-                </View>
-                <TouchableOpacity style={styles.options}>
-                  <EnIcon name="dots-three-horizontal" size={25} color="#333" />
-                </TouchableOpacity>
-              </View>
-
-              {/* <Text style={styles.mainDesc}>
-                  {details.title}
-                </Text> */}
-
-              {details.imageUrl && (
                 <View style={styles.newsCoverImg}>
                   <Image
                     resizeMode="stretch"
                     source={{
-                      uri:
-                        'https://cdn.lykapp.com/newsImages/images/' +
-                        details.imageUrl,
+                      uri: details.newsImageUrl,
                     }}
                     style={[styles.postImg]}
                   />
                 </View>
-              )}
-              <Text style={styles.secDesc}>{details.title}</Text>
+                <Text style={styles.secDesc}>{details.newsDescription}</Text>
 
-              <View style={[mainStyles.likeCommentShare]}>
-                <View style={styles.likeCommentShareBox}>
-                  <View style={styles.likeCommentShareIconWrap}>
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/liked.png')}
-                      style={[styles.likeImg]}
-                    />
+                <View style={mainStyles.likeCommentShare}>
+                  <View style={styles.likeCommentShareBox}>
+                    <View style={styles.likeCommentShareIconWrap}>
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/liked.png')}
+                        style={[styles.likeImg]}
+                      />
+                      {/* <TouchableOpacity style={styles.roundBase}>
+                        <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
+                      </TouchableOpacity> */}
 
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
-                        </TouchableOpacity> */}
-
-                    <Text style={styles.iconText}>
-                      {details.likeCount} Like
-                    </Text>
+                      <Text style={styles.iconText}>
+                        {details.likeCount} Like
+                      </Text>
+                    </View>
                   </View>
-                </View>
 
-                <View style={styles.likeCommentShareBox}>
-                  <View style={styles.likeCommentShareIconWrap}>
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name="message1" size={22} color="#c1cb99" />
-                        </TouchableOpacity> */}
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/comment.png')}
-                      style={[styles.likeImg]}
-                    />
+                  <View style={styles.likeCommentShareBox}>
+                    <View
+                      style={styles.likeCommentShareIconWrap}
+                      // onPress={() => navigation.push('comments')}
+                    >
+                      {/* <TouchableOpacity style={styles.roundBase}>
+                        <AntIcon name="message1" size={22} color="#c1cb99" />
+                      </TouchableOpacity> */}
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/comment.png')}
+                        style={[styles.likeImg]}
+                      />
 
-                    <Text style={styles.iconText}>
-                      {details.commentCount} Comment
-                    </Text>
+                      <Text style={styles.iconText}>
+                        {details.commentCount} Comment
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                <View style={styles.likeCommentShareBox}>
-                  <View style={styles.likeCommentShareIconWrap}>
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name="sharealt" size={22} color="#f8767a" />
-                        </TouchableOpacity> */}
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/share.png')}
-                      style={[styles.likeImg]}
-                    />
 
-                    <Text style={styles.iconText}>
-                      {details.shareCount} Share
-                    </Text>
+                  <View style={styles.likeCommentShareBox}>
+                    <View style={styles.likeCommentShareIconWrap}>
+                      {/* <TouchableOpacity style={styles.roundBase}>
+                        <AntIcon name="sharealt" size={22} color="#f8767a" />
+                      </TouchableOpacity> */}
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/share.png')}
+                        style={[styles.likeImg]}
+                      />
+
+                      <Text style={styles.iconText}>
+                        {details.shareCount} Share
+                      </Text>
+                    </View>
                   </View>
                 </View>
               </View>
@@ -394,16 +243,133 @@ const CommentsDetails = () => {
                 details.allComments?.map((comment, ind) => (
                   <CommentComponents commentDetails={comment} key={ind} />
                 ))}
-            </View>
-            {details.commentCount === '0' && (
-              <View style={styles.messageWrapper}>
-                <Text style={mainStyles.message}>Still no Comments!</Text>
+            </ScrollView>
+          </>
+        ) : (
+          type === 'post' && (
+            <ScrollView>
+              <View
+                style={[styles.newsCard, {marginBottom: 0}]}
+                key={details.postId}>
+                <View style={styles.cardTitle}>
+                  <View style={styles.cardProImg}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/images/avatar.jpg')}
+                      style={[styles.logoImg]}
+                    />
+                  </View>
+                  <View style={styles.newstext}>
+                    <Text style={styles.newsTitletext}>
+                      {details.createdBy.firstName}
+                    </Text>
+                    <Text style={styles.newsSubTitletext}>
+                      {moment(new Date()).diff(
+                        moment(details.createdOn.replace(' ', 'T') + 'Z'),
+                        'days',
+                      ) < 1
+                        ? moment(
+                            details.createdOn.replace(' ', 'T') + 'Z',
+                          ).fromNow()
+                        : moment(
+                            details.createdOn.replace(' ', 'T') + 'Z',
+                          ).format('DD MMM YYYY, h:mm a')}
+                    </Text>
+                  </View>
+                  <TouchableOpacity style={styles.options}>
+                    <EnIcon
+                      name="dots-three-horizontal"
+                      size={25}
+                      color="#333"
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {/* <Text style={styles.mainDesc}>
+                  {details.title}
+                </Text> */}
+
+                {details.imageUrl && (
+                  <View style={styles.newsCoverImg}>
+                    <Image
+                      resizeMode="stretch"
+                      source={{
+                        uri:
+                          'https://cdn.lykapp.com/newsImages/images/' +
+                          details.imageUrl,
+                      }}
+                      style={[styles.postImg]}
+                    />
+                  </View>
+                )}
+                <Text style={styles.secDesc}>{details.title}</Text>
+
+                <View style={[mainStyles.likeCommentShare]}>
+                  <View style={styles.likeCommentShareBox}>
+                    <View style={styles.likeCommentShareIconWrap}>
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/liked.png')}
+                        style={[styles.likeImg]}
+                      />
+
+                      {/* <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
+                        </TouchableOpacity> */}
+
+                      <Text style={styles.iconText}>
+                        {details.likeCount} Like
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.likeCommentShareBox}>
+                    <View style={styles.likeCommentShareIconWrap}>
+                      {/* <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name="message1" size={22} color="#c1cb99" />
+                        </TouchableOpacity> */}
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/comment.png')}
+                        style={[styles.likeImg]}
+                      />
+
+                      <Text style={styles.iconText}>
+                        {details.commentCount} Comment
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.likeCommentShareBox}>
+                    <View style={styles.likeCommentShareIconWrap}>
+                      {/* <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name="sharealt" size={22} color="#f8767a" />
+                        </TouchableOpacity> */}
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/share.png')}
+                        style={[styles.likeImg]}
+                      />
+
+                      <Text style={styles.iconText}>
+                        {details.shareCount} Share
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                {details.commentCount > '0' &&
+                  details.allComments?.map((comment, ind) => (
+                    <CommentComponents commentDetails={comment} key={ind} />
+                  ))}
               </View>
-            )}
-          </ScrollView>
-        )
-      )}
-      <View style={mainStyles.gap}></View>
+              {details.commentCount === '0' && (
+                <View style={styles.messageWrapper}>
+                  <Text style={mainStyles.message}>Still no Comments!</Text>
+                </View>
+              )}
+            </ScrollView>
+          )
+        )}
+      </View>
       <View style={mainStyles.commentInputBox}>
         <TouchableOpacity onPress={() => inputRef.current.focus}>
           <Image source={smileImg} style={mainStyles.smile} />
@@ -467,10 +433,6 @@ const mainStyles = StyleSheet.create({
     marginTop: 25,
     paddingTop: 2,
     paddingBottom: 2,
-  },
-  gap: {
-    width: '100%',
-    height: 60,
   },
 });
 export default CommentsDetails;

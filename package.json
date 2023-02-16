@@ -21,7 +21,6 @@
     "@react-navigation/drawer": "^6.4.4",
     "@react-navigation/native": "^6.0.12",
     "@react-navigation/native-stack": "^6.8.0",
-    "accordion-collapse-react-native": "^1.1.1",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "formik": "^2.2.9",
