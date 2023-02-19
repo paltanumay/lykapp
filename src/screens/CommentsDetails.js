@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import moment from 'moment';
 import React, {useEffect, useRef} from 'react';
-import {ScrollView, TextInput, TouchableOpacity} from 'react-native';
+import {ScrollView, TextInput, TouchableOpacity, Pressable} from 'react-native';
 import {Text} from 'react-native';
 import {Image} from 'react-native';
 import {StyleSheet, View} from 'react-native';
@@ -20,6 +20,7 @@ import {useState} from 'react';
 import {saveCommentFeed} from '../services/homeFeedComment.service';
 import CommentHeader from '../components/commentHeader';
 import ThreeDotComponent from '../components/threeDot';
+import {getCommentFeedReplies} from '../services/homeFeedComment.service';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const COMMENT_URL = `${API_URL}/gtfdcmts`;
@@ -34,6 +35,7 @@ const CommentsDetails = () => {
   const type = route.params.type;
   const COMMENT_FEED_SHORT = 'bH3m8q';
   const POST_COMMENT_SHORT = 'g4QyL';
+  const COMMENT_REPLY_SHORT = 'mS72Lc';
   // console.log('Details------', details);
   // console.log('Type---------', type);
   const [comments, setComments] = useState('');
@@ -79,7 +81,7 @@ const CommentsDetails = () => {
         },
       );
       setComments(response.data.response.comments);
-      console.log('res-------------', response.data.response.comments);
+      // console.log('res-------------', response.data.response.comments);
       console.log({
         userId: getEncUserId(userDetails.userId),
         feedId: type === 'news' ? details.newsId : details.postId,
@@ -97,25 +99,44 @@ const CommentsDetails = () => {
     let token =
       (await AsyncStorage.getItem('token')) +
       '-' +
-      COMMENT_FEED_SHORT +
+      COMMENT_REPLY_SHORT +
       '-' +
       getEncTokenAnyUserId(userDetails.userId);
 
-    const response = await axios.post(
-      COMMENT_REPLIES_URL,
-      {
+    getCommentFeedReplies({
+      URL: COMMENT_REPLIES_URL,
+      data: {
         userId: getEncUserId(userDetails.userId),
         feedId:
           type === 'news' ? parseInt(details.newsId) : parseInt(details.postId),
         feedType: type,
         commentId: commentId,
       },
-      {
-        headers: {
-          token: token,
-        },
-      },
-    );
+      token: token,
+    })
+      .then(response => {
+        console.log('Res---------------', response.data.response.comments);
+        setCommentReplies(response.data.response.comments);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+    // const response = await axios.post(
+    //   COMMENT_REPLIES_URL,
+    //   {
+    //     userId: getEncUserId(userDetails.userId),
+    //     feedId:
+    //       type === 'news' ? parseInt(details.newsId) : parseInt(details.postId),
+    //     feedType: type,
+    //     commentId: commentId,
+    //   },
+    //   {
+    //     headers: {
+    //       token: token,
+    //     },
+    //   },
+    // );
   };
 
   const onSubmitComment = async () => {
@@ -272,11 +293,36 @@ const CommentsDetails = () => {
             {comments > '0' &&
               comments?.map((comment, ind) => {
                 return (
-                  <CommentComponents
-                    commentDetails={comment}
-                    replyCall={getFeedCommentReplies}
-                    key={ind}
-                  />
+                  <>
+                    <CommentComponents
+                      commentDetails={comment}
+                      replyCall={getFeedCommentReplies}
+                      key={ind}
+                    />
+                    {comment.commentCount > 0 ? (
+                      <Pressable
+                        onPress={() => {
+                          getFeedCommentReplies(comment?.commentId);
+                        }}
+                        key={comment.commentId}
+                        style={mainStyles.moreReplies}>
+                        <Text style={mainStyles.replyText}>
+                          View {comment.commentCount} more replies
+                        </Text>
+                      </Pressable>
+                    ) : null}
+                    {commentReplies.map((replies, inx) => {
+                      if (replies.parentId === comment.commentId) {
+                        return (
+                          <CommentComponents
+                            commentDetails={replies}
+                            replyCall={getFeedCommentReplies}
+                            key={inx}
+                          />
+                        );
+                      }
+                    })}
+                  </>
                 );
               })}
           </ScrollView>
@@ -469,6 +515,20 @@ const mainStyles = StyleSheet.create({
   gap: {
     width: '100%',
     height: 60,
+  },
+  moreReplies: {
+    width: '100%',
+    height: 25,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    paddingLeft: 65,
+  },
+  replyText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
 });
 export default CommentsDetails;

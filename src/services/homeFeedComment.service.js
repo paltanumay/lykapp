@@ -9,3 +9,14 @@ export const saveCommentFeed = async ({URL, data, token}) => {
   console.log(response.data, 'api');
   return response;
 };
+
+export const getCommentFeedReplies = async ({URL, data, token}) => {
+  console.log('Working');
+  const response = await axios.post(URL, data, {
+    headers: {
+      token: token,
+    },
+  });
+  console.log('API response---------', response.data);
+  return response;
+};
