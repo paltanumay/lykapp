@@ -25,6 +25,7 @@ import Events from '../screens/Events';
 import SettingsScreen from '../screens/SettingsScreen';
 import ChangePassword from '../screens/ChangePassword';
 import ProfileEdit from '../screens/ProfileEdit';
+import BlockedUser from '../screens/BlockedUser';
 import Logoutmodal from '../shared/Logoutmodal'; 
 
 
@@ -357,8 +358,8 @@ export default function Sidebar() {
       />
 
       <Drawer.Screen
-        name="ProfileEdit"
-        component={ProfileEdit}
+        name="BlockedUser"
+        component={BlockedUser}
         options={{
           title: 'Settings',
           drawerActiveTintColor: '#fff',

@@ -30,7 +30,7 @@ export default function ProfileEdit() {
       <View style={globalStyles.innerPagesContainerWhite}>
         <ScrollView>
           <View style={styles.bannerSection}>
-          <TouchableOpacity style={{position:'absolute', zIndex:99, bottom:0, left:0}}>
+          <TouchableOpacity style={{position:'absolute', zIndex:99, bottom:0, right:0}}>
             <Image
                   resizeMode="stretch"
                   source={require('../assets/images/cam.png')}
