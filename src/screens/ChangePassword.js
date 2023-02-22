@@ -9,7 +9,7 @@ import Header from '../components/Header';
 export default function ChangePassword() {
   return (
     <>
-       <Header isBack={true} />
+       <Header />
   <View style={globalStyles.innerPagesContainerWhite}>
     <View style={styles.changePassWrap}>
       <View style={styles.formBox}>

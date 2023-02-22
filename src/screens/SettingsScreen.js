@@ -43,6 +43,7 @@ import {
 // ];
 
 export default function SettingsScreen() {
+  const navigation = useNavigation();
   return (
     <>
       <Header />
@@ -67,11 +68,11 @@ export default function SettingsScreen() {
           </CollapseHeader>
           <CollapseBody>
             <View style={styles.collapseContent}>
-              <TouchableOpacity style={styles.collapseItems}>
+              <TouchableOpacity style={styles.collapseItems} onPress={()=>navigation.navigate('ProfileEdit')}>
                 <Text>Edit Profile</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.collapseItems}>
+              <TouchableOpacity style={styles.collapseItems} onPress={()=>navigation.navigate('ChangePassword')}>
                 <Text>Change Password</Text>
               </TouchableOpacity>
 
@@ -123,6 +124,7 @@ export default function SettingsScreen() {
 
         <Collapse>
           <CollapseHeader>
+          <TouchableOpacity onPress={()=>navigation.navigate('BlockedUser')}>
             <View style={styles.titleWrap}>
               <Image
                 resizeMode="cover"
@@ -138,6 +140,7 @@ export default function SettingsScreen() {
                 />
               </TouchableOpacity>
             </View>
+            </TouchableOpacity>
           </CollapseHeader>
           <CollapseBody></CollapseBody>
         </Collapse>
