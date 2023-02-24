@@ -146,7 +146,7 @@ export default function Login({ navigation }) {
   return (
 
 
-    <View>
+    <View style={{backgroundColor:'#fff', flex:1}}>
       <Formik
         initialValues={{ identity: '', password: '', countryCode: '+91', countryISO: 'in' }}
         onSubmit={(values, { setSubmitting }) => {
@@ -195,7 +195,7 @@ export default function Login({ navigation }) {
 
             <View style={styles.phoneInputWrap}>
               <PhoneInput
-                containerStyle={{ width: '100%', height: 50, padding: 0, marginLeft:-24, fontSize:14}}
+                containerStyle={{ width: '100%', height: 50, padding: 0, marginLeft:0, fontSize:14}}
                 textContainerStyle={{ paddingVertical: 0, paddingHorizontal: 0, margin: 0, backgroundColor:'#fff'}}
                 defaultCode="IN"
                 layout="second"
@@ -274,6 +274,8 @@ export default function Login({ navigation }) {
               <Text style={styles.IagreeText}>
                 By signing in you confirm that you are 13 {'\n'} years of age or above and
                 agree to our
+
+               
               </Text>
               <View style={{alignItems:'center', flexDirection:'row'}}>
               <TouchableOpacity style={styles.termsW}>
@@ -302,7 +304,7 @@ export default function Login({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
+    // height: '100%',
     width: '100%',
     alignItems: 'center'
   },
@@ -310,7 +312,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: '100%',
     alignItems: 'center',
-    height:'100%'
+    // height:'100%'
 
   },
   loginText: {
@@ -372,16 +374,16 @@ const styles = StyleSheet.create({
     marginBottom:10
   },
   Iagree: {
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
    // flexWrap: 'wrap',
     width: '80%',
     marginTop: 15,
     flexDirection:'column',
-    paddingLeft:50
+    // paddingLeft:50
   },
   IagreeText: {
-    textAlign: 'left',
+    textAlign: 'center',
     color: '#333',
     fontFamily: 'SFpro-Regular',
     fontSize: 10
@@ -416,20 +418,20 @@ const styles = StyleSheet.create({
     color: '#333',
     fontSize:11,
     //marginBottom: 15,
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     marginLeft:8
 
   },
   forgotPassText: {
     color: '#333',
-    fontFamily: 'Lato-Semibold',
+    fontFamily: 'SFpro-Semibold',
     fontSize:11, 
 
     marginVertical: 15
   },
   input: {
     fontSize: 14,
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     color:'#333',
     textAlign:'left'
   },

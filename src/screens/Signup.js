@@ -517,4 +517,7 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: 'contain',
   },
+  input:{
+    fontSize:14
+  }
 });

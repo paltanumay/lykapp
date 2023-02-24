@@ -61,23 +61,23 @@ const interests = [
   },
   {
     text: 'Pets',
-    image: require('../assets/images/pets.jpg'),
+    image: require('../assets/images/pets.png'),
   },
   {
-    text: 'Politics',
-    image: require('../assets/images/politics.png'),
+    text: 'Military',
+    image: require('../assets/images/military.png'),
   },
   {
-    text: 'Theatre',
-    image: require('../assets/images/theatre.png'),
+    text: 'Parenting',
+    image: require('../assets/images/parenting.png'),
   },
   {
-    text: 'Gardening',
-    image: require('../assets/images/gardening.png'),
+    text: 'Family',
+    image: require('../assets/images/family.png'),
   },
   {
-    text: 'Pets',
-    image: require('../assets/images/pets.jpg'),
+    text: 'Comics',
+    image: require('../assets/images/comics.png'),
   },
 ];
 
@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 40,
     padding: 15,
     alignItems: 'center',
-    flex: 6,
+    flex: 8,
     paddingTop: 20,
   },
   welcomeTitle: {
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '70%',
+    width: 232,
     borderRadius: 100,
     borderWidth: 1,
     borderColor: COLORS.blue,
@@ -516,8 +516,8 @@ const styles = StyleSheet.create({
   },
   catBoxCont: {
     alignItems: 'center',
-    width: '30%',
-    marginTop: 20,
+    width: '33%',
+    marginTop:8,
     position: 'relative',
     // backgroundColor: 'red',
   },
@@ -532,14 +532,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexWrap: 'wrap',
     width: '80%',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    
   },
   catText: {
     fontFamily: 'SFpro-Regular',
     fontSize: 10,
     letterSpacing: 0.29,
     color: '#333',
-    marginTop: 8,
+    marginTop: 2,
   },
   subInterestList: {
     display: 'flex',
@@ -649,7 +650,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   interestList: {
-    width: '100%',
+    width: '90%',
     alignItems: 'center',
     height: 270,
     marginTop: 15,
