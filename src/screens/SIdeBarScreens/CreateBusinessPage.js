@@ -24,14 +24,14 @@ const CreateBusinessPage = () => {
             <View style={styles.radioButtonView}>
               <RadioButton
                 onRadioButtonPress={() => setIsChecked(prev => !prev)}
-                checked={checked}
+                checked={ischecked}
                 size={25}
               />
 
               <View style={styles.textWrap}>
                 <Text
                   style={
-                    checked
+                    ischecked
                       ? [styles.buttonText, {color: COLORS.blue}]
                       : styles.buttonText
                   }>
