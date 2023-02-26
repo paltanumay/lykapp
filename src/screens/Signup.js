@@ -13,6 +13,7 @@ import Acalreadyexitmodal from '../shared/Acalreadyexitmodal';
 import Findconnectionsmodal from '../shared/Findconnectionsmodal';
 import AsyncStorage from '@react-native-community/async-storage';
 import Agemodal from '../shared/Agemodal';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
@@ -232,7 +233,7 @@ export default function Signup({navigation}) {
     return out;
   };
   return (
-    <>
+    <View style={{backgroundColor:'#fff', flex:1}}>
       <Formik
         initialValues={{
           contactNo: '',
@@ -307,6 +308,9 @@ export default function Signup({navigation}) {
         }}>
         {({handleChange, handleSubmit, setFieldValue, isSubmitting}) => (
           <View style={styles.container}>
+<ScrollView contentContainerStyle={styles.scView}>
+
+
             <Text style={styles.loginText}>Sign Up</Text>
             <TouchableOpacity style={styles.gBt} onPress={_signIn}>
               <Image
@@ -356,14 +360,14 @@ export default function Signup({navigation}) {
             </View>
 
             <TouchableOpacity
-              style={globalStyles.lineBt}
+              style={[globalStyles.lineBt, {height:31, width:131, marginBottom:15}]}
               onPress={handleSubmit}
               disabled={isSubmitting || !phone.current}>
               <Text style={globalStyles.lineBtText}>Next</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={globalStyles.gradBt}
+              style={[globalStyles.gradBt, {width:197}]}
               onPress={() => navigation.push('Login')}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -375,7 +379,7 @@ export default function Signup({navigation}) {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={globalStyles.gradBt}
+              style={[globalStyles.gradBt, {width:197}]}
               onPress={() => navigation.push('Country')}>
               <LinearGradient
                 start={{x: 0, y: 0}}
@@ -388,7 +392,7 @@ export default function Signup({navigation}) {
 
             <View style={styles.Iagree}>
               <Text style={styles.IagreeText}>
-                By signing in you confirm that you are 13 {'\n'}  years of age or above
+                By signing in you confirm that you are 13 {'\n'} years of age or above
                 and agree to our
               </Text>
               <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -407,21 +411,30 @@ export default function Signup({navigation}) {
               style={styles.lbimg}
               source={require('../assets/images/login-b-img.png')}
             />
+          
+          
+          </ScrollView>
           </View>
         )}
       </Formik>
       <Findconnectionsmodal />
       {alreadyExist && <Acalreadyexitmodal />}
       {modal && <Agemodal />}
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
+   
     alignItems: 'center',
     backgroundColor: '#fff',
+  },
+  scView: {
+width:'100%',
+    alignItems: 'center',
+    // height:'100%'
+
   },
   loginText: {
     marginTop: 20,
