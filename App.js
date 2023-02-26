@@ -46,6 +46,9 @@ import {addPlugin} from 'react-native-flipper';
 import BusinessScreen from './src/screens/SIdeBarScreens/BusinessScreen';
 import CreateBusinessPage from './src/screens/SIdeBarScreens/CreateBusinessPage';
 import Network from './src/screens/Network';
+import ProfileEdit from './src/screens/ProfileEdit';
+import ChangePassword from './src/screens/ChangePassword';
+import BlockedUser from './src/screens/BlockedUser';
 
 const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -250,6 +253,17 @@ const App = () => {
               );
             }}
           </Stack.Screen>
+
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="comments"
+            component={CommentsDetails}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="CreateBusinessPage"
+            component={CreateBusinessPage}
+          />
           <Stack.Screen
             options={{headerShown: false}}
             name="Addevent"
@@ -267,13 +281,18 @@ const App = () => {
           />
           <Stack.Screen
             options={{headerShown: false}}
-            name="comments"
-            component={CommentsDetails}
+            name="ProfileEdit"
+            component={ProfileEdit}
           />
           <Stack.Screen
             options={{headerShown: false}}
-            name="CreateBusinessPage"
-            component={CreateBusinessPage}
+            name="ChangePassword"
+            component={ChangePassword}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="BlockedUser"
+            component={BlockedUser}
           />
           <Stack.Screen
             options={{headerShown: false}}
