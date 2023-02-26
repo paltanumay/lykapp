@@ -21,11 +21,13 @@ const BusinessScreen = () => {
         isCreateBusiness={isCreateBusiness}
         setCreateBusiness={setCreateBusiness}
       />
-      {!isCreateBusiness ? (
-        <CreateBusinessButton onRedirect={onRedirect} />
-      ) : (
-        <CreateBusinessPage />
-      )}
+      <View>
+        {!isCreateBusiness ? (
+          <CreateBusinessButton onRedirect={onRedirect} />
+        ) : (
+          <CreateBusinessPage />
+        )}
+      </View>
     </>
   );
 };
