@@ -30,20 +30,7 @@ const BusinessDetailsForm = ({extraFieldName}) => {
           }}
         />
       </View>
-      {extraFieldName && (
-        <View style={styles.inputWrap}>
-          <TextInput
-            placeholder={extraFieldName}
-            placeholderTextColor={'#cac8c3'}
-            style={{
-              padding: 10,
-              backgroundColor: '#fff',
-              borderRadius: 10,
-              height: 49,
-            }}
-          />
-        </View>
-      )}
+
       <View style={styles.inputTextWrap}>
         <Text style={styles.inputText}>Business Phone</Text>
       </View>
@@ -79,6 +66,20 @@ const BusinessDetailsForm = ({extraFieldName}) => {
           />
         </View>
       </View>
+      {extraFieldName && (
+        <View style={styles.inputWrap}>
+          <TextInput
+            placeholder={extraFieldName}
+            placeholderTextColor={'#cac8c3'}
+            style={{
+              padding: 10,
+              backgroundColor: '#fff',
+              borderRadius: 10,
+              height: 49,
+            }}
+          />
+        </View>
+      )}
     </View>
   );
 };

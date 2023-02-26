@@ -23,39 +23,6 @@ const CreateBusinessPage = () => {
           <View style={styles.radioButtonWrap}>
             <View style={styles.radioButtonView}>
               <RadioButton
-                onRadioButtonPress={() => setChecked(prev => !prev)}
-                checked={checked}
-                size={25}
-              />
-
-              <View style={styles.textWrap}>
-                <Text
-                  style={
-                    checked
-                      ? [styles.buttonText, {color: COLORS.blue}]
-                      : styles.buttonText
-                  }>
-                  Yes,I am an authorized representative of this business
-                </Text>
-              </View>
-            </View>
-
-            {checked && (
-              <View style={styles.fromContainer}>
-                <BusinessDetailsForm extraFieldName={'Business Owner Name'} />
-              </View>
-            )}
-          </View>
-        </View>
-        <View style={styles.headingWrap}>
-          <Text style={styles.mainHeading}>
-            Are you an authorized representative of this business ?
-          </Text>
-        </View>
-        <View style={styles.container}>
-          <View style={styles.radioButtonWrap}>
-            <View style={styles.radioButtonView}>
-              <RadioButton
                 onRadioButtonPress={() => setIsChecked(prev => !prev)}
                 checked={checked}
                 size={25}
@@ -75,11 +42,40 @@ const CreateBusinessPage = () => {
 
             {ischecked && (
               <View style={styles.fromContainer}>
+                <BusinessDetailsForm />
+              </View>
+            )}
+          </View>
+        </View>
+        <View style={styles.container}>
+          <View style={styles.radioButtonWrap}>
+            <View style={styles.radioButtonView}>
+              <RadioButton
+                onRadioButtonPress={() => setChecked(prev => !prev)}
+                checked={checked}
+                size={25}
+              />
+
+              <View style={styles.textWrap}>
+                <Text
+                  style={
+                    checked
+                      ? [styles.buttonText, {color: COLORS.blue}]
+                      : styles.buttonText
+                  }>
+                  No i am helping to create Business page
+                </Text>
+              </View>
+            </View>
+
+            {checked && (
+              <View style={styles.fromContainer}>
                 <BusinessDetailsForm extraFieldName={'Business Owner Name'} />
               </View>
             )}
           </View>
         </View>
+
         <View style={styles.buttons}>
           <TouchableOpacity
             style={[globalStyles.gradBt, {width: '47%'}]}
@@ -125,6 +121,7 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     width: '100%',
+    paddingVertical: 10,
   },
   headingWrap: {
     width: '75%',
