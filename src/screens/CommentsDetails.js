@@ -20,12 +20,13 @@ import {useState} from 'react';
 import {saveCommentFeed} from '../services/homeFeedComment.service';
 import CommentHeader from '../components/commentHeader';
 import ThreeDotComponent from '../components/threeDot';
-import {getCommentFeedReplies} from '../services/homeFeedComment.service';
+import {generalApiCallPost} from '../services/homeFeedComment.service';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const COMMENT_URL = `${API_URL}/gtfdcmts`;
 export const POST_COMMENT_URL = `${API_URL}/svcmt`;
 export const COMMENT_REPLIES_URL = `${API_URL}/gtfdcmtrpls`;
+export const COMMENT_LIKE_URL = `${API_URL}/HomeFeed/likeFeedComment`;
 
 const CommentsDetails = () => {
   const route = useRoute();
@@ -38,8 +39,10 @@ const CommentsDetails = () => {
   const COMMENT_REPLY_SHORT = 'mS72Lc';
   // console.log('Details------', details);
   // console.log('Type---------', type);
-  const [comments, setComments] = useState('');
-  const [commentReplies, setCommentReplies] = useState([]);
+  const [commentText, setCommentText] = useState('');
+  const [comments, setComments] = useState([]);
+  const [likeresponse, setLikeResponse] = useState({});
+  // const [commentReplies, setCommentReplies] = useState([]);
   // console.log('comments-----------', comments);
 
   const inputRef = useRef();
@@ -67,13 +70,6 @@ const CommentsDetails = () => {
           start: 0,
           limit: 25,
         },
-        // {
-        //   userId: getEncUserId(userDetails.userId),
-        //   feedId: 360246,
-        //   feedType: 'post',
-        //   start: 0,
-        //   limit: 25,
-        // },
         {
           headers: {
             token: token,
@@ -81,7 +77,7 @@ const CommentsDetails = () => {
         },
       );
       setComments(response.data.response.comments);
-      // console.log('res-------------', response.data.response.comments);
+      console.log('res-------------', userDetails);
       console.log({
         userId: getEncUserId(userDetails.userId),
         feedId: type === 'news' ? details.newsId : details.postId,
@@ -93,7 +89,7 @@ const CommentsDetails = () => {
     getAllComments();
   }, []);
 
-  const getFeedCommentReplies = async commentId => {
+  const onLikeComment = async (commentId, commentUserId) => {
     let userDetails = await AsyncStorage.getItem('userId');
     userDetails = JSON.parse(userDetails);
     let token =
@@ -103,43 +99,29 @@ const CommentsDetails = () => {
       '-' +
       getEncTokenAnyUserId(userDetails.userId);
 
-    getCommentFeedReplies({
-      URL: COMMENT_REPLIES_URL,
+    generalApiCallPost({
+      URL: COMMENT_LIKE_URL,
       data: {
         userId: getEncUserId(userDetails.userId),
+        likerName: userDetails.firstName,
+        commentId: commentId,
+        commentUserId: getEncUserId(commentUserId),
         feedId:
           type === 'news' ? parseInt(details.newsId) : parseInt(details.postId),
         feedType: type,
-        commentId: commentId,
       },
       token: token,
     })
       .then(response => {
-        console.log('Res---------------', response.data.response.comments);
-        setCommentReplies(response.data.response.comments);
+        console.log('Res---------------', response.data);
+        setLikeResponse(response.data);
       })
       .catch(err => {
         console.log(err);
       });
-
-    // const response = await axios.post(
-    //   COMMENT_REPLIES_URL,
-    //   {
-    //     userId: getEncUserId(userDetails.userId),
-    //     feedId:
-    //       type === 'news' ? parseInt(details.newsId) : parseInt(details.postId),
-    //     feedType: type,
-    //     commentId: commentId,
-    //   },
-    //   {
-    //     headers: {
-    //       token: token,
-    //     },
-    //   },
-    // );
   };
 
-  const onSubmitComment = async () => {
+  const onSubmitComment = async (replyTo, replyToName) => {
     let userDetails = await AsyncStorage.getItem('userId');
     userDetails = JSON.parse(userDetails);
     let token =
@@ -155,11 +137,14 @@ const CommentsDetails = () => {
       data: {
         feedId:
           type === 'news' ? parseInt(details.newsId) : parseInt(details.postId),
-        commentText: comments,
+        commentText: commentText,
         itemType: type,
         isReply: false,
         isPrivate: false,
-        toUserId: '',
+        toUserId: getEncUserId(userDetails.userId),
+        // type === 'news'
+        //   ? getEncUserId(details.newsId)
+        //   : getEncUserId(details.postId),
         commentor: {
           userId: getEncUserId(userDetails.userId),
           firstName: userDetails.firstName,
@@ -168,15 +153,15 @@ const CommentsDetails = () => {
         ownerName: userDetails.firstName,
         myName: userDetails.firstName,
         creatorId: getEncUserId(userDetails.userId),
-        replyTo: '',
-        replyToName: '',
+        replyTo: replyTo,
+        replyToName: replyToName,
       },
       token: token,
     });
 
     // console.log(res, 'responsdf');
   };
-  // console.log(details.allComments);
+  // console.log('Comments------------------', commentReplies);
   return (
     <>
       <CommentHeader name={'Comments'} />
@@ -296,32 +281,13 @@ const CommentsDetails = () => {
                   <>
                     <CommentComponents
                       commentDetails={comment}
-                      replyCall={getFeedCommentReplies}
+                      // replyCall={getFeedCommentReplies}
+                      type={type}
+                      details={details}
+                      isChield={false}
+                      setLike={onLikeComment}
                       key={ind}
                     />
-                    {comment.commentCount > 0 ? (
-                      <Pressable
-                        onPress={() => {
-                          getFeedCommentReplies(comment?.commentId);
-                        }}
-                        key={comment.commentId}
-                        style={mainStyles.moreReplies}>
-                        <Text style={mainStyles.replyText}>
-                          View {comment.commentCount} more replies
-                        </Text>
-                      </Pressable>
-                    ) : null}
-                    {commentReplies.map((replies, inx) => {
-                      if (replies.parentId === comment.commentId) {
-                        return (
-                          <CommentComponents
-                            commentDetails={replies}
-                            replyCall={getFeedCommentReplies}
-                            key={inx}
-                          />
-                        );
-                      }
-                    })}
                   </>
                 );
               })}
@@ -439,6 +405,21 @@ const CommentsDetails = () => {
                   <CommentComponents commentDetails={comment} key={ind} />
                 ))}
             </View>
+            {comments > '0' &&
+              comments?.map((comment, ind) => {
+                return (
+                  <>
+                    <CommentComponents
+                      commentDetails={comment}
+                      // replyCall={getFeedCommentReplies}
+                      type={type}
+                      details={details}
+                      isChield={false}
+                      key={ind}
+                    />
+                  </>
+                );
+              })}
             {details.commentCount === '0' && (
               <View style={styles.messageWrapper}>
                 <Text style={mainStyles.message}>Still no Comments!</Text>
@@ -454,12 +435,15 @@ const CommentsDetails = () => {
         </TouchableOpacity>
         <TextInput
           ref={inputRef}
-          onChangeText={text => setComments(text)}
+          onChangeText={text => setCommentText(text)}
           style={mainStyles.commentInput}
           placeholder="Type your comment here"
           placeholderTextColor="#9e9c9c"
         />
-        <TouchableOpacity onPress={onSubmitComment}>
+        <TouchableOpacity
+          onPress={() => {
+            onSubmitComment('', '');
+          }}>
           <Image source={sendImg} />
         </TouchableOpacity>
       </View>

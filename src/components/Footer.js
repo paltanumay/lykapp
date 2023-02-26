@@ -94,7 +94,11 @@ export default function Footer({style}) {
           <Text style={[styles.footIconText, styles.active]}>Home</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.footIconBox, {marginRight: 15}]}>
+        <TouchableOpacity
+          style={[styles.footIconBox, {marginRight: 15}]}
+          onPress={() => {
+            navigation.push('network');
+          }}>
           {/* <IonIcon name="ios-people" size={20} color={COLORS.blue} /> */}
           {/* <IonIcon name="ios-people-outline" size={30} color={COLORS.blue} /> */}
           <Image

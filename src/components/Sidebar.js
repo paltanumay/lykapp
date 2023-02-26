@@ -25,6 +25,7 @@ import Events from '../screens/Events';
 import SettingsScreen from '../screens/SettingsScreen';
 import Logoutmodal from '../shared/Logoutmodal';
 import BusinessScreen from '../screens/SIdeBarScreens/BusinessScreen';
+import MyReferral from '../screens/SIdeBarScreens/MyReferral';
 
 function NotificationsScreen({navigation}) {
   return (
@@ -306,7 +307,7 @@ export default function Sidebar() {
 
       <Drawer.Screen
         name="My Referral"
-        component={MyReferarral}
+        component={MyReferral}
         options={{
           title: 'My Referral',
           drawerActiveTintColor: '#fff',
