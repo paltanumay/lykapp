@@ -112,6 +112,7 @@ export default function Verification({ navigation, route }) {
       })
   };
   return (
+    <View style={{backgroundColor:'#fff'}}>
     <Formik
       initialValues={{ otp: '', userId: route.params.userId, type: 'phone' }}
       onSubmit={(values, { setSubmitting }) => {
@@ -135,10 +136,20 @@ export default function Verification({ navigation, route }) {
         setFieldValue,
         isSubmitting
       }) => (
-        <View style={styles.container}>
         <ScrollView contentContainerStyle={{alignItems:"center"}}>
-          <Text style={styles.loginText}>Sign Up</Text>
+        <View style={styles.container}>
+     
+        
 
+          <Text style={styles.loginText}>Sign Up</Text>
+          <TouchableOpacity  style={styles.backBtWrap}><Text>
+           <Image
+          resizeMode='contain'
+              style={styles.backBt}
+              source={require('../assets/images/arrow-simple-left.png')}
+            />
+        </Text>
+        </TouchableOpacity>
           <View style={styles.phoneInputWrap}>
             <TextInput
               placeholderTextColor="#AFAFAF"
@@ -165,10 +176,18 @@ export default function Verification({ navigation, route }) {
             <Text style={styles.resendCodetext}>Resend the code</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity style={[styles.resendCode, {marginTop:4}]}>
+            <Text style={styles.resendCodetext}>Call with Verification Code</Text>
+          </TouchableOpacity>
+
           <Text style={styles.probWithVcode}>Problem with {"\n"} your verification code?</Text>
 
           <Text style={styles.youCanText}>You can use one of the sign up{"\n"}
-            options below instead</Text>
+            options below instead
+            
+           </Text>
+
+
 
 
           <TouchableOpacity style={styles.gBt} onPress={_signIn}>
@@ -191,7 +210,7 @@ export default function Verification({ navigation, route }) {
 
 
 
-          <TouchableOpacity style={[globalStyles.gradBt, {width:'45%', marginTop:30}]} onPress={() => navigation.push('Login')}>
+          <TouchableOpacity style={[globalStyles.gradBt, {width:197, height:38, marginTop:30}]} onPress={() => navigation.push('Login')}>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -201,7 +220,7 @@ export default function Verification({ navigation, route }) {
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[globalStyles.gradBt, {width:'45%'}]} onPress={() => navigation.push('Country')}>
+          <TouchableOpacity style={[globalStyles.gradBt, {width:197, height:38,}]} onPress={() => navigation.push('Country')}>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -215,6 +234,16 @@ export default function Verification({ navigation, route }) {
             <Text style={styles.IagreeText}>
               By signing in you confirm that you are 13 years of age or above and
               agree to our
+
+
+
+              Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Vivamus suscipit tortor eget felis porttitor volutpat. Nulla porttitor accumsan tincidunt. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem.
+
+Nulla porttitor accumsan tincidunt. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Curabitur aliquet quam id dui posuere blandit.
+
+Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Nulla quis lorem ut libero malesuada feugiat.
+
+Cras ultricies ligula sed magna dictum porta. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Pellentesque in ipsum id orci porta dapibus. Pellentesque in ipsum id orci porta dapibus. Vivamus suscipit tortor eget felis porttitor volutpat.
             </Text>
 
             <TouchableOpacity style={styles.termsW}>
@@ -231,10 +260,12 @@ export default function Verification({ navigation, route }) {
             source={require('../assets/images/login-b-img.png')}
           />
 
-</ScrollView>
+
         </View>
+        </ScrollView>
       )}
     </Formik>
+    </View> 
   );
 }
 
@@ -355,5 +386,15 @@ const styles = StyleSheet.create({
   },
   input:{
     color:'#333'
+  },
+  backBtWrap:{
+    position:'absolute',
+    left:25,
+    top:22,
+    zIndex:9999
+  },
+  backBt:{
+    width:10,
+    height:25
   }
 });
