@@ -61,23 +61,23 @@ const interests = [
   },
   {
     text: 'Pets',
-    image: require('../assets/images/pets.png'),
+    image: require('../assets/images/pets.jpg'),
   },
   {
-    text: 'Military',
-    image: require('../assets/images/military.png'),
+    text: 'Politics',
+    image: require('../assets/images/politics.png'),
   },
   {
-    text: 'Parenting',
-    image: require('../assets/images/parenting.png'),
+    text: 'Theatre',
+    image: require('../assets/images/theatre.png'),
   },
   {
-    text: 'Family',
-    image: require('../assets/images/family.png'),
+    text: 'Gardening',
+    image: require('../assets/images/gardening.png'),
   },
   {
-    text: 'Comics',
-    image: require('../assets/images/comics.png'),
+    text: 'Pets',
+    image: require('../assets/images/pets.jpg'),
   },
 ];
 
@@ -274,7 +274,10 @@ export default function Selectcountry({navigation}) {
                     start={{x: 0, y: 0}}
                     end={{x: 1, y: 0}}
                     colors={['#037ee5', '#15a2e0', '#28cad9']}
-                    style={[globalStyles.linearGradient, {height: 40, width:170, padding:0}]}>
+                    style={[
+                      globalStyles.linearGradient,
+                      {height: 40, width: 170, padding: 0},
+                    ]}>
                     <Text style={globalStyles.buttonText}>Next</Text>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -453,7 +456,7 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 40,
     padding: 15,
     alignItems: 'center',
-    flex: 8,
+    flex: 6,
     paddingTop: 20,
   },
   welcomeTitle: {
@@ -487,7 +490,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 232,
+    width: '70%',
     borderRadius: 100,
     borderWidth: 1,
     borderColor: COLORS.blue,
@@ -516,8 +519,8 @@ const styles = StyleSheet.create({
   },
   catBoxCont: {
     alignItems: 'center',
-    width: '33%',
-    marginTop:8,
+    width: '30%',
+    marginTop: 20,
     position: 'relative',
     // backgroundColor: 'red',
   },
@@ -532,15 +535,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexWrap: 'wrap',
     width: '80%',
-    alignItems: 'center',
-    
+    alignItems: 'flex-start',
   },
   catText: {
     fontFamily: 'SFpro-Regular',
     fontSize: 10,
     letterSpacing: 0.29,
     color: '#333',
-    marginTop: 2,
+    marginTop: 8,
   },
   subInterestList: {
     display: 'flex',
@@ -650,7 +652,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   interestList: {
-    width: '90%',
+    width: '100%',
     alignItems: 'center',
     height: 270,
     marginTop: 15,
@@ -682,21 +684,21 @@ const styles = StyleSheet.create({
     width: 18,
     height: 19,
   },
-  welcomeMsgWrap:{
-    textAlign:'center'
+  welcomeMsgWrap: {
+    textAlign: 'center',
   },
-  welcomeMsgTitle:{
-    marginTop:25,
-    textAlign:'center',
-    color:COLORS.blue,
-fontSize:29,
+  welcomeMsgTitle: {
+    marginTop: 25,
+    textAlign: 'center',
+    color: COLORS.blue,
+    fontSize: 29,
     fontFamily: 'SFpro-Bold',
-marginBottom:13
+    marginBottom: 13,
   },
-  welcomeMsgBody:{
-    textAlign:'center',
-    fontSize:12,
+  welcomeMsgBody: {
+    textAlign: 'center',
+    fontSize: 12,
     fontFamily: 'SFpro-Regular',
-    paddingHorizontal:100
-  }
+    paddingHorizontal: 100,
+  },
 });

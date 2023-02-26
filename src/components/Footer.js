@@ -28,10 +28,11 @@ export default function Footer({style}) {
           <TouchableOpacity style={styles.menuItems}>
             {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
             <View style={styles.iconCont}>
-            <Image
-            resizeMode="stretch"
-            source={require('../assets/images/chat-n.png')}
-            style={[styles.createIcon]}/>
+              <Image
+                resizeMode="stretch"
+                source={require('../assets/images/chat-n.png')}
+                style={[styles.createIcon]}
+              />
               {/* <IonIcon
                 name="chatbubble-outline"
                 size={25}
@@ -46,10 +47,11 @@ export default function Footer({style}) {
             style={styles.menuItems2}
             onPress={() => navigation.push('Creategroup')}>
             <View style={styles.iconCont}>
-            <Image
-            resizeMode="stretch"
-            source={require('../assets/images/group.png')}
-            style={[styles.createIcon]}/>
+              <Image
+                resizeMode="stretch"
+                source={require('../assets/images/group.png')}
+                style={[styles.createIcon]}
+              />
               {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
               {/* <IonIcon name="people-outline" size={25} color={COLORS.blue} /> */}
             </View>
@@ -61,10 +63,11 @@ export default function Footer({style}) {
             onPress={() => navigation.push('Createpost')}>
             {/* <IonIcon name="ios-home-outline" size={20} color={COLORS.blue} /> */}
             <View style={styles.iconCont}>
-            <Image
-            resizeMode="stretch"
-            source={require('../assets/images/post.png')}
-            style={[styles.createIcon]}/>
+              <Image
+                resizeMode="stretch"
+                source={require('../assets/images/post.png')}
+                style={[styles.createIcon]}
+              />
               {/* <IonIcon name="md-card-outline" size={25} color={COLORS.blue} /> */}
             </View>
             <Text style={[styles.createInnerText]}>Post</Text>
@@ -91,7 +94,11 @@ export default function Footer({style}) {
           <Text style={[styles.footIconText, styles.active]}>Home</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.footIconBox, {marginRight: 15}]}>
+        <TouchableOpacity
+          style={[styles.footIconBox, {marginRight: 15}]}
+          onPress={() => {
+            navigation.push('network');
+          }}>
           {/* <IonIcon name="ios-people" size={20} color={COLORS.blue} /> */}
           {/* <IonIcon name="ios-people-outline" size={30} color={COLORS.blue} /> */}
           <Image
@@ -237,7 +244,6 @@ const styles = StyleSheet.create({
     top: 28,
   },
   iconCont: {
-    
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -245,8 +251,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'SFpro-Regular',
     fontSize: 13,
-    position:'relative',
-    top:-8
+    position: 'relative',
+    top: -8,
   },
 
   // iconCont: {
@@ -278,8 +284,8 @@ const styles = StyleSheet.create({
     width: 26,
     height: 24,
   },
-  createIcon:{
-    width:56,
-    height:56
-  }
+  createIcon: {
+    width: 59,
+    height: 59,
+  },
 });

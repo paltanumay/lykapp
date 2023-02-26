@@ -108,15 +108,26 @@ export default function SettingsScreen() {
                 <Text style={styles.notiTitleText}>Notifications</Text>
               </View>
               <View style={styles.snoozenotiWrapper}>
-                <Text style={styles.snoozenotiTitleText}>Snooze Notifications</Text>
+                <Text style={styles.snoozenotiTitleText}>
+                  Snooze Notifications
+                </Text>
                 <View style={styles.snoozenotiList}>
-               <TouchableOpacity style={styles.snoozenotiBt}><Text style={styles.snoozenoti}>1 hour</Text></TouchableOpacity>
-               <TouchableOpacity style={styles.snoozenotiBt}><Text style={styles.snoozenoti}>2 hours</Text></TouchableOpacity>
-               <TouchableOpacity style={styles.snoozenotiBt}><Text style={styles.snoozenoti}>4 hours</Text></TouchableOpacity>
-               <TouchableOpacity style={styles.snoozenotiBt}><Text style={styles.snoozenoti}>1 day</Text></TouchableOpacity>
-               <TouchableOpacity style={styles.snoozenotiBt}><Text style={styles.snoozenoti}>1 week</Text></TouchableOpacity>
-             
-              </View>
+                  <TouchableOpacity style={styles.snoozenotiBt}>
+                    <Text style={styles.snoozenoti}>1 hour</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.snoozenotiBt}>
+                    <Text style={styles.snoozenoti}>2 hours</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.snoozenotiBt}>
+                    <Text style={styles.snoozenoti}>4 hours</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.snoozenotiBt}>
+                    <Text style={styles.snoozenoti}>1 day</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.snoozenotiBt}>
+                    <Text style={styles.snoozenoti}>1 week</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </CollapseBody>
@@ -200,32 +211,30 @@ const styles = StyleSheet.create({
   snoozenotiTitleText: {
     color: '#8d8f91',
     fontSize: 16,
-    marginBottom:15
+    marginBottom: 15,
   },
   snoozenotiWrapper: {
     marginTop: 15,
   },
-  snoozenotiText:{
-    color:'#91969a'
+  snoozenotiText: {
+    color: '#91969a',
   },
-  snoozenotiList:{
-flexDirection:'row',
-alignItems:'center',
-borderBottomColor:'#f8f8f8',
-borderTopColor:'#f8f8f8',
-borderTopWidth:1,
-borderBottomWidth:1,
-paddingVertical:15
-
+  snoozenotiList: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomColor: '#f8f8f8',
+    borderTopColor: '#f8f8f8',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    paddingVertical: 15,
   },
-  snoozenotiBt:{
-    backgroundColor:'#f6f7fb',
-    height:40,
-    paddingHorizontal:15,
-    borderRadius:80,
-    alignItems:'center',
-    justifyContent:'center',
-    marginRight:10
-
-  }
+  snoozenotiBt: {
+    backgroundColor: '#f6f7fb',
+    height: 40,
+    paddingHorizontal: 15,
+    borderRadius: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
 });
