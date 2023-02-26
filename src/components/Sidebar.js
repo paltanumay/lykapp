@@ -23,8 +23,11 @@ import {useState} from 'react';
 import Chatnpost from '../screens/Chatnpost';
 import Events from '../screens/Events';
 import SettingsScreen from '../screens/SettingsScreen';
-import Logoutmodal from '../shared/Logoutmodal';
 import BusinessScreen from '../screens/SIdeBarScreens/BusinessScreen';
+import ChangePassword from '../screens/ChangePassword';
+import ProfileEdit from '../screens/ProfileEdit';
+import BlockedUser from '../screens/BlockedUser';
+import Logoutmodal from '../shared/Logoutmodal';
 
 function NotificationsScreen({navigation}) {
   return (
@@ -367,6 +370,45 @@ export default function Sidebar() {
               color={focused ? '#fff' : '#fff'}
             />
           ),
+        }}
+      />
+
+      <Drawer.Screen
+        name="BlockedUser"
+        component={BlockedUser}
+        options={{
+          drawerActiveTintColor: '#fff',
+          drawerInactiveTintColor: '#fff',
+          drawerLabel: () => null,
+          title: null,
+          drawerIcon: () => null,
+          drawerItemStyle: {display: 'none'},
+        }}
+      />
+
+      <Drawer.Screen
+        name="ChangePassword"
+        component={ChangePassword}
+        options={{
+          drawerActiveTintColor: '#fff',
+          drawerInactiveTintColor: '#fff',
+          drawerLabel: () => null,
+          title: null,
+          drawerIcon: () => null,
+          drawerItemStyle: {display: 'none'},
+        }}
+      />
+
+      <Drawer.Screen
+        name="ProfileEdit"
+        component={ProfileEdit}
+        options={{
+          drawerActiveTintColor: '#fff',
+          drawerInactiveTintColor: '#fff',
+          drawerLabel: () => null,
+          title: null,
+          drawerIcon: () => null,
+          drawerItemStyle: {display: 'none'},
         }}
       />
 

@@ -26,7 +26,7 @@ import SubInterestTag from '../components/subInterestTag';
 const interests = [
   {
     text: 'Dance',
-    image: require('../assets/images/dance.jpg'),
+    image: require('../assets/images/dance.png'),
     subInterest: [
       {
         id: '1',
@@ -40,7 +40,7 @@ const interests = [
   },
   {
     text: 'Music',
-    image: require('../assets/images/music.webp'),
+    image: require('../assets/images/music.png'),
     subInterest: [
       {id: '1', text: 'classical'},
       {id: '2', text: 'rock'},
@@ -53,11 +53,11 @@ const interests = [
   },
   {
     text: 'Theatre',
-    image: require('../assets/images/theatre.jpg'),
+    image: require('../assets/images/theatre.png'),
   },
   {
     text: 'Gardening',
-    image: require('../assets/images/gardening.webp'),
+    image: require('../assets/images/gardening.png'),
   },
   {
     text: 'Pets',
@@ -69,11 +69,11 @@ const interests = [
   },
   {
     text: 'Theatre',
-    image: require('../assets/images/theatre.jpg'),
+    image: require('../assets/images/theatre.png'),
   },
   {
     text: 'Gardening',
-    image: require('../assets/images/gardening.webp'),
+    image: require('../assets/images/gardening.png'),
   },
   {
     text: 'Pets',
@@ -191,6 +191,14 @@ export default function Selectcountry({navigation}) {
                 source={require('../assets/images/arrow-simple-left.png')}
               />
             </TouchableOpacity>
+
+            <View style={styles.welcomeMsgWrap}>
+              <Text style={styles.welcomeMsgTitle}>Welcome Claire!</Text>
+              <Text style={styles.welcomeMsgBody}>
+                Please help us answer the next few questions about yourself to
+                make your experience enjoyable
+              </Text>
+            </View>
             <View style={styles.radioMainWrap}>
               {radioBtnsData.map((data, key) => {
                 return (
@@ -260,13 +268,16 @@ export default function Selectcountry({navigation}) {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[globalStyles.gradBt, {width: '90%'}]}
+                  style={[globalStyles.gradBt, {}]}
                   onPress={() => setChecked(1)}>
                   <LinearGradient
                     start={{x: 0, y: 0}}
                     end={{x: 1, y: 0}}
                     colors={['#037ee5', '#15a2e0', '#28cad9']}
-                    style={[globalStyles.linearGradient, {height: 40}]}>
+                    style={[
+                      globalStyles.linearGradient,
+                      {height: 40, width: 170, padding: 0},
+                    ]}>
                     <Text style={globalStyles.buttonText}>Next</Text>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -672,5 +683,22 @@ const styles = StyleSheet.create({
   searchimg: {
     width: 18,
     height: 19,
+  },
+  welcomeMsgWrap: {
+    textAlign: 'center',
+  },
+  welcomeMsgTitle: {
+    marginTop: 25,
+    textAlign: 'center',
+    color: COLORS.blue,
+    fontSize: 29,
+    fontFamily: 'SFpro-Bold',
+    marginBottom: 13,
+  },
+  welcomeMsgBody: {
+    textAlign: 'center',
+    fontSize: 12,
+    fontFamily: 'SFpro-Regular',
+    paddingHorizontal: 100,
   },
 });
