@@ -358,8 +358,8 @@ export default function Sidebar() {
       />
 
       <Drawer.Screen
-        name="BlockedUser"
-        component={BlockedUser}
+        name="Settings"
+        component={Settings}
         options={{
           title: 'Settings',
           drawerActiveTintColor: '#fff',
@@ -376,6 +376,46 @@ export default function Sidebar() {
               color={focused ? '#fff' : '#fff'}
             />
           ),
+        }}
+      />
+
+
+      <Drawer.Screen
+        name="BlockedUser"
+        component={BlockedUser}
+        options={{
+          drawerActiveTintColor: '#fff',
+          drawerInactiveTintColor: '#fff',
+          drawerLabel: () => null,
+          title: null,
+          drawerIcon: () => null,
+          drawerItemStyle: { display: "none" }
+        }}
+      />
+
+      <Drawer.Screen
+        name="ChangePassword"
+        component={ChangePassword}
+        options={{
+          drawerActiveTintColor: '#fff',
+          drawerInactiveTintColor: '#fff',
+          drawerLabel: () => null,
+          title: null,
+          drawerIcon: () => null,
+          drawerItemStyle: { display: "none" }
+        }}
+      />
+
+      <Drawer.Screen
+        name="ProfileEdit"
+        component={ProfileEdit}
+        options={{
+          drawerActiveTintColor: '#fff',
+          drawerInactiveTintColor: '#fff',
+          drawerLabel: () => null,
+          title: null,
+          drawerIcon: () => null,
+          drawerItemStyle: { display: "none" }
         }}
       />
 

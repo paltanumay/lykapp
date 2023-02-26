@@ -14,6 +14,14 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown';
 import {ScrollView} from 'react-native-gesture-handler';
 import COLORS from '../global/globalColors';
+import axios from 'axios';
+import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import AsyncStorage from '@react-native-community/async-storage';
+
+const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
+const FETCH_MY_PROFILE = `${API_URL}/LYKUser/fetchUserProfile`;
+const FETCH_MY_PROFILE_SHORT = "fthsrrfl";
+
 const countries = ['Art', 'Bussiness', 'Sports', 'Pets'];
 const lang = ['English', 'Spanish', 'Hindi', 'Urdu'];
 const hobbies = ['Reading', 'Music', 'Watching movies', 'Singing'];
@@ -23,7 +31,27 @@ export default function ProfileEdit() {
   const [checked1, setChecked1] = useState(0);
   var gender = ['Male', 'Female', 'Shemale'];
   var ethnicity = ['US', 'UK', 'INDIA'];
-  return (
+  const [user, setUser] = useState();
+  useEffect(()=>{
+    async function profile(){
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token = await AsyncStorage.getItem("token") + "-" + FETCH_MY_PROFILE_SHORT + "-" + getEncTokenAnyUserId(userDetails.userId);
+    axios.post(FETCH_MY_PROFILE, {
+        "userId": getEncUserId(userDetails.userId)
+    }, {
+        headers: {
+            token: token
+        }
+    }).then(res => {
+      setUser(res.data.response)
+      setChecked(res.data.response.gender)
+      setChecked1(res.data.response.ethnicity[0])
+    })
+    }
+    profile();
+  },[]);
+    return (
     <>
       <Header />
 
@@ -71,7 +99,7 @@ export default function ProfileEdit() {
                 />
               </View>
               <View style={styles.profileNameCont}>
-                <Text style={styles.profileName}>Vestibulum ante</Text>
+                <Text style={styles.profileName}>{user?.firstName}</Text>
                 <TouchableOpacity>
                   <Text style={styles.photosEdit}>Tap to photos edit</Text>
                 </TouchableOpacity>
@@ -169,6 +197,7 @@ export default function ProfileEdit() {
                         placeholder=""
                         textContentType="username"
                         maxLength={20}
+                        value={user?.phoneNumber}
                       />
                     </View>
                     <TouchableOpacity style={styles.privacyBox}>
@@ -230,8 +259,8 @@ export default function ProfileEdit() {
                   <View style={styles.dropBox}>
                     <Text style={styles.dropLabelText}>My Interests</Text>
                     <SelectDropdown
-                      data={countries}
-                      defaultButtonText="Art, Business, Sports, Pets.."
+                      data={hobbies}
+                      defaultButtonText={user?.interested.join(',')}
                       buttonStyle={styles.dropdown1BtnStyle}
                       buttonTextStyle={styles.dropdown1BtnTxtStyle}
                       renderDropdownIcon={isOpened => {
@@ -267,7 +296,7 @@ export default function ProfileEdit() {
                     <Text style={styles.dropLabelText}>Faith</Text>
                     <SelectDropdown
                       data={countries}
-                      defaultButtonText=""
+                      defaultButtonText={user?.faith}
                       buttonStyle={styles.dropdown1BtnStyle}
                       buttonTextStyle={styles.dropdown1BtnTxtStyle}
                       renderDropdownIcon={isOpened => {
@@ -374,7 +403,7 @@ export default function ProfileEdit() {
                     <Text style={styles.dropLabelText}>Language Spoken</Text>
                     <SelectDropdown
                       data={lang}
-                      defaultButtonText=""
+                      defaultButtonText={user?.languageSpoken.join(',')}
                       buttonStyle={styles.dropdown1BtnStyle}
                       buttonTextStyle={styles.dropdown1BtnTxtStyle}
                       renderDropdownIcon={isOpened => {
@@ -413,7 +442,7 @@ export default function ProfileEdit() {
                     <Text style={styles.dropLabelText}>Hobbies</Text>
                     <SelectDropdown
                       data={hobbies}
-                      defaultButtonText=""
+                      defaultButtonText={user?.hobbies}
                       buttonStyle={styles.dropdown1BtnStyle}
                       buttonTextStyle={styles.dropdown1BtnTxtStyle}
                       renderDropdownIcon={isOpened => {
@@ -456,6 +485,7 @@ export default function ProfileEdit() {
                         placeholder=""
                         textContentType="username"
                         maxLength={20}
+                        value={user?.countryOfBirth}
                       />
                     </View>
                     <TouchableOpacity style={styles.privacyBox}>
@@ -484,6 +514,7 @@ export default function ProfileEdit() {
                         placeholder=""
                         textContentType="username"
                         maxLength={20}
+                        value={user?.cityOfBirth}
                       />
                     </View>
                     <TouchableOpacity style={styles.privacyBox}>
@@ -511,6 +542,7 @@ export default function ProfileEdit() {
                         placeholder=""
                         textContentType="username"
                         maxLength={20}
+                        value={user?.countryYouLive}
                       />
                     </View>
                     <TouchableOpacity style={styles.privacyBox}>
@@ -538,6 +570,7 @@ export default function ProfileEdit() {
                         placeholder=""
                         textContentType="username"
                         maxLength={20}
+                        value={user?.cityYouLive}
                       />
                     </View>
                     <TouchableOpacity style={styles.privacyBox}>
@@ -565,6 +598,7 @@ export default function ProfileEdit() {
                         placeholder=""
                         textContentType="username"
                         maxLength={20}
+                        value={user?.maritalStatus}
                       />
                     </View>
                     <TouchableOpacity style={styles.privacyBox}>
@@ -592,6 +626,7 @@ export default function ProfileEdit() {
                         placeholder=""
                         textContentType="username"
                         maxLength={20}
+                        value={user?.anniversaryDate}
                       />
                     </View>
                     <TouchableOpacity style={styles.privacyBox}>
@@ -612,7 +647,7 @@ export default function ProfileEdit() {
                     <Text style={styles.dropLabelText}>Profession</Text>
                     <SelectDropdown
                       data={hobbies}
-                      defaultButtonText=""
+                      defaultButtonText={user?.profession}
                       buttonStyle={styles.dropdown1BtnStyle}
                       buttonTextStyle={styles.dropdown1BtnTxtStyle}
                       renderDropdownIcon={isOpened => {
@@ -657,6 +692,7 @@ export default function ProfileEdit() {
                         placeholder="Which school did you attend?"
                         textContentType="username"
                         maxLength={20}
+                        value={user?.highSchool[0]}
                       />
                     </View>
                     <Text style={styles.labelSchool}>Year</Text>
@@ -691,6 +727,7 @@ export default function ProfileEdit() {
                         placeholder="Which College did you attend?"
                         textContentType="username"
                         maxLength={20}
+                        value={user?.college[0]}
                       />
                     </View>
                     <Text style={styles.labelSchool}>Major</Text>

@@ -43,6 +43,9 @@ import DeviceInfo from 'react-native-device-info';
 import Audiocall from './src/screens/Audiocall';
 import Videocall from './src/screens/Videocall';
 import CallScreen from './src/screens/CallScreen';
+import ProfileEdit from './src/screens/ProfileEdit';
+import ChangePassword from './src/screens/ChangePassword';
+import BlockedUser from './src/screens/BlockedUser';
 
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -198,6 +201,9 @@ const App = () => {
           <Stack.Screen options={{ headerShown: false }} name="Addevent" component={Addevent} />
           <Stack.Screen options={{ headerShown: false }} name="Events" component={Events} />
           <Stack.Screen options={{ headerShown: false }} name="EventsDetails" component={EventsDetails} />
+          <Stack.Screen options={{ headerShown: false }} name="ProfileEdit" component={ProfileEdit} />
+          <Stack.Screen options={{ headerShown: false }} name="ChangePassword" component={ChangePassword} />
+          <Stack.Screen options={{ headerShown: false }} name="BlockedUser" component={BlockedUser} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
