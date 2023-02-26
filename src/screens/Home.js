@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Pressable,
+  RefreshControl,
 } from 'react-native';
 import React from 'react';
 import {globalStyles} from '../global/globalStyle';
@@ -33,6 +35,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import HomeComments from '../components/HomeComments';
 
 const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -60,7 +63,9 @@ export default function Home({navigation}) {
   const lastContentOffset = useSharedValue(0);
   const isScrolling = useSharedValue(false);
   const [feeds, setFeeds] = useState([]);
+  const [refresh, setRefresh] = useState(false);
   const [isScrollDown, setScrollDown] = useState(false);
+  // console.log(refresh);
   useEffect(() => {
     async function getHomeFeed() {
       let userDetails = await AsyncStorage.getItem('userId');
@@ -98,6 +103,7 @@ export default function Home({navigation}) {
           res => {
             //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
             setFeeds(res.data.response.feeds);
+            setRefresh(false);
           },
           err => {
             alert(err + userDetails.userId + token);
@@ -117,7 +123,7 @@ export default function Home({navigation}) {
     });
 
     return unsubscribe;
-  }, []);
+  }, [refresh, setRefresh]);
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -128,6 +134,15 @@ export default function Home({navigation}) {
       console.log('Authorization status:', authStatus);
     }
   }
+  const wait = timeout => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  };
+
+  const onRefresh = React.useCallback(() => {
+    console.log('sdfds');
+    setRefresh(prev => !prev);
+    // wait(2000).then(() => setRefresh(false));
+  }, []);
   useEffect(() => {
     async function userInfo() {
       let userDetails = await AsyncStorage.getItem('userId');
@@ -235,14 +250,44 @@ export default function Home({navigation}) {
       isScrolling.value = false;
     },
   });
+  const onRedirectCommentScreen = ({details, type}) => {
+    navigation.push('comments', {
+      details: details,
+      styles: styles,
+      type: type,
+    });
+  };
+  moment.updateLocale('en', {
+    relativeTime: {
+      future: 'in %s',
+      past: '%s ago',
+      s: 'a few seconds',
+      ss: '%d seconds',
+      m: 'a minute',
+      mm: '%d minutes',
+      h: 'an hour',
+      hh: '%d hrs',
+      d: 'a day',
+      dd: '%d days',
+      M: 'a month',
+      MM: '%d months',
+      y: 'a year',
+      yy: '%d years',
+    },
+  });
+  // console.log(feeds);
   return (
     <>
-      <Header />
+      <Header onSetRefresh={onRefresh} />
       <View style={globalStyles.innerPagesContainer}>
         <Animated.ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refresh} onRefresh={() => onRefresh} />
+          }
+          bounces={false}
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
@@ -256,38 +301,10 @@ export default function Home({navigation}) {
             <TouchableOpacity>
               <Image
                 resizeMode="contain"
-                source={require('../assets/images/create-post.png')}
-                style={[styles.postImg]}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/create-post.png')}
-                style={[styles.postImg]}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/create-post.png')}
-                style={[styles.postImg]}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/create-post.png')}
-                style={[styles.postImg]}
-              />
-            </TouchableOpacity>
-            {/* <TouchableOpacity>
-              <Image
-                resizeMode="contain"
                 source={require('../assets/images/invited.png')}
                 style={[styles.postImg]}
               />
-            </TouchableOpacity> */}
+            </TouchableOpacity>
             <TouchableOpacity>
               <Image
                 resizeMode="contain"
@@ -318,7 +335,7 @@ export default function Home({navigation}) {
                         ) < 1
                           ? moment(
                               details.feedTime.replace(' ', 'T') + 'Z',
-                            ).fromNow()
+                            ).fromNow('past')
                           : moment(
                               details.feedTime.replace(' ', 'T') + 'Z',
                             ).format('DD MMM YYYY, h:mm a')}
@@ -365,7 +382,11 @@ export default function Home({navigation}) {
                     </View>
 
                     <View style={styles.likeCommentShareBox}>
-                      <View style={styles.likeCommentShareIconWrap}>
+                      <TouchableOpacity
+                        style={styles.likeCommentShareIconWrap}
+                        onPress={() =>
+                          onRedirectCommentScreen({details, type})
+                        }>
                         {/* <TouchableOpacity style={styles.roundBase}>
                         <AntIcon name="message1" size={22} color="#c1cb99" />
                       </TouchableOpacity> */}
@@ -378,7 +399,7 @@ export default function Home({navigation}) {
                         <Text style={styles.iconText}>
                           {details.commentCount} Comment
                         </Text>
-                      </View>
+                      </TouchableOpacity>
                     </View>
 
                     <View style={styles.likeCommentShareBox}>
@@ -398,6 +419,9 @@ export default function Home({navigation}) {
                       </View>
                     </View>
                   </View>
+                  {details.allComments?.map((comment, ind) => (
+                    <HomeComments commentDetails={comment} key={ind} />
+                  ))}
 
                   <View style={styles.addCommentWrap}>
                     <View style={styles.addCommentImgWrap}>
@@ -407,17 +431,20 @@ export default function Home({navigation}) {
                         style={[styles.addCommentImg]}
                       />
                     </View>
-                    <View style={styles.addCommentField}>
+                    <TouchableOpacity
+                      style={styles.addCommentField}
+                      onPress={() => onRedirectCommentScreen({type, details})}>
                       <TextInput
                         placeholderTextColor="#AFAFAF"
                         style={styles.input}
+                        editable={false}
                         placeholder="Add comment"
                         textContentType="username"
                         underlineColorAndroid="transparent"
                         keyboardType="email-address"
                         autoCapitalize="none"
                       />
-                    </View>
+                    </TouchableOpacity>
                   </View>
                 </View>
               ) : (
@@ -496,7 +523,11 @@ export default function Home({navigation}) {
                       </View>
 
                       <View style={styles.likeCommentShareBox}>
-                        <View style={styles.likeCommentShareIconWrap}>
+                        <TouchableOpacity
+                          onPress={() =>
+                            onRedirectCommentScreen({details, type})
+                          }
+                          style={styles.likeCommentShareIconWrap}>
                           {/* <TouchableOpacity style={styles.roundBase}>
                           <AntIcon name="message1" size={22} color="#c1cb99" />
                         </TouchableOpacity> */}
@@ -509,9 +540,8 @@ export default function Home({navigation}) {
                           <Text style={styles.iconText}>
                             {details.commentCount} Comment
                           </Text>
-                        </View>
+                        </TouchableOpacity>
                       </View>
-
                       <View style={styles.likeCommentShareBox}>
                         <View style={styles.likeCommentShareIconWrap}>
                           {/* <TouchableOpacity style={styles.roundBase}>
@@ -529,7 +559,9 @@ export default function Home({navigation}) {
                         </View>
                       </View>
                     </View>
-
+                    {details.allComments?.map((comment, ind) => (
+                      <HomeComments commentDetails={comment} key={ind} />
+                    ))}
                     <View style={styles.addCommentWrap}>
                       <View style={styles.addCommentImgWrap}>
                         <Image
@@ -538,17 +570,18 @@ export default function Home({navigation}) {
                           style={[styles.addCommentImg]}
                         />
                       </View>
-                      <View style={styles.addCommentField}>
+                      <TouchableOpacity
+                        style={styles.addCommentField}
+                        onPress={() =>
+                          onRedirectCommentScreen({details, type})
+                        }>
                         <TextInput
                           placeholderTextColor="#AFAFAF"
                           style={styles.input}
-                          placeholder="Add comment"
-                          textContentType="username"
-                          underlineColorAndroid="transparent"
-                          keyboardType="email-address"
-                          autoCapitalize="none"
+                          editable={false}
+                          disableFullscreenUI={true}
                         />
-                      </View>
+                      </TouchableOpacity>
                     </View>
                   </View>
                 )
@@ -609,6 +642,8 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   newsTitletext: {
+    textTransform: 'capitalize',
+    fontWeight: '500',
     color: '#323a42',
     fontFamily: 'SFpro-Medium',
     fontSize: 14,
@@ -620,7 +655,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     // flex: 1,
-    height: 'auto',
+    // height: 'auto',
     position: 'relative',
     zIndex: 99,
   },
@@ -633,6 +668,7 @@ const styles = StyleSheet.create({
   //   padding: 15,
   // },
   newsCard: {
+    display: 'flex',
     backgroundColor: '#fff',
     borderRadius: 10,
     paddingVertical: 10,
@@ -685,6 +721,7 @@ const styles = StyleSheet.create({
     // marginLeft: 10,
     fontFamily: 'SFpro-Regular',
     fontSize: 12,
+    paddingLeft: 5,
   },
 
   roundBase: {
@@ -720,7 +757,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   likeImg: {
-    width: 40,
-    height: 40,
+    width: 34,
+    height: 34,
   },
 });

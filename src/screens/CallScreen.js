@@ -1,5 +1,13 @@
 import React, {useEffect, useState, useCallback, useRef} from 'react';
-import {View, StyleSheet, Alert, TextInput, Button, Text, Image} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Alert,
+  TextInput,
+  Button,
+  Text,
+  Image,
+} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 import FIcon from 'react-native-vector-icons/FontAwesome';
@@ -65,8 +73,8 @@ export default function CallScreen() {
   const [isVideo, setIsVideo] = useState(true);
   const [isAudio, setIsAudio] = useState(true);
   const [isFront, setIsFront] = useState(true);
-  const [timer, setTimer] = useState(0)
-  const increment = useRef(null)
+  const [timer, setTimer] = useState(0);
+  const increment = useRef(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -160,7 +168,7 @@ export default function CallScreen() {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     mediaDevices.enumerateDevices().then(sourceInfos => {
       let videoSourceId;
       for (let i = 0; i < sourceInfos.length; i++) {
@@ -196,7 +204,7 @@ export default function CallScreen() {
           // Log error
         });
     });
-  },[isFront]);
+  }, [isFront]);
 
   useEffect(() => {
     /**
@@ -208,7 +216,6 @@ export default function CallScreen() {
     /**
      * Socjket Signalling Ends
      */
-    
 
     yourConn.onaddstream = event => {
       console.log('On Add Stream', event);
@@ -236,8 +243,7 @@ export default function CallScreen() {
     yourConn.onSignalingState = state => {
       console.log('state changed' + state);
     };
-    yourConn.oniceconnectionstatechange = 
-    state => {
+    yourConn.oniceconnectionstatechange = state => {
       console.log('state changed' + JSON.stringify(yourConn.connectionState));
     };
   }, []);
@@ -368,84 +374,98 @@ export default function CallScreen() {
 
   const handleStart = () => {
     increment.current = setInterval(() => {
-      setTimer((timer) => timer + 1)
-    }, 1000)
+      setTimer(timer => timer + 1);
+    }, 1000);
   };
 
   const handleReset = () => {
-    clearInterval(increment.current)
-    setTimer(0)
+    clearInterval(increment.current);
+    setTimer(0);
   };
 
   const formatTime = () => {
-    const getSeconds = `0${(timer % 60)}`.slice(-2)
-    const minutes = `${Math.floor(timer / 60)}`
-    const getMinutes = `0${minutes % 60}`.slice(-2)
-    const getHours = `0${Math.floor(timer / 3600)}`.slice(-2)
+    const getSeconds = `0${timer % 60}`.slice(-2);
+    const minutes = `${Math.floor(timer / 60)}`;
+    const getMinutes = `0${minutes % 60}`.slice(-2);
+    const getHours = `0${Math.floor(timer / 3600)}`.slice(-2);
 
-    return `${getHours} : ${getMinutes} : ${getSeconds}`
+    return `${getHours} : ${getMinutes} : ${getSeconds}`;
   };
 
   /**
    * Calling Stuff Ends
    */
 
-  if(calling) return (<Audiocall />)
+  if (calling) return <Audiocall />;
   else
-  return (
-    <View style={styles.root}>
-      <View style={styles.topTitle}>
-        <View style={styles.pro}>
-          <Image
-            style={styles.proIcon}
-            source={require('../assets/images/avatar.jpg')}
-          />
+    return (
+      <View style={styles.root}>
+        <View style={styles.topTitle}>
+          <View style={styles.pro}>
+            <Image
+              style={styles.proIcon}
+              source={require('../assets/images/avatar.jpg')}
+            />
+          </View>
+          <View style={styles.topTitleInfo}>
+            <Text style={styles.topTitleInfoText}>{route.params.userName}</Text>
+            <Text style={styles.topTitleInfoText}>{formatTime()}</Text>
+          </View>
         </View>
-        <View style={styles.topTitleInfo}>
-          <Text style={styles.topTitleInfoText}>{route.params.userName}</Text>
-          <Text style={styles.topTitleInfoText}>{formatTime()}</Text>
+        <View style={styles.floatTools}>
+          {isCalling ? (
+            <TouchableOpacity style={styles.bluetools}>
+              <MIcon name="call" size={22} color="#fff" onPress={onCall} />
+            </TouchableOpacity>
+          ) : (
+            <>
+              <TouchableOpacity style={styles.tools}>
+                <MIcon
+                  name={isVideo ? 'videocam' : 'videocam-off'}
+                  size={22}
+                  color={COLORS.blue}
+                  onPress={() => {
+                    if (isVideo)
+                      localStream.getVideoTracks()[0].enabled = false;
+                    else localStream.getVideoTracks()[0].enabled = true;
+                    setIsVideo(!isVideo);
+                  }}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.tools}>
+                <FIcon
+                  name={isAudio ? 'microphone' : 'microphone-slash'}
+                  size={22}
+                  color={COLORS.blue}
+                  onPress={() => {
+                    if (isAudio)
+                      localStream.getAudioTracks()[0].enabled = false;
+                    else localStream.getAudioTracks()[0].enabled = true;
+                    setIsAudio(!isAudio);
+                  }}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.tools}>
+                <IonIcon
+                  name="camera-reverse-outline"
+                  size={22}
+                  color={COLORS.blue}
+                  onPress={() => {
+                    setIsFront(!isFront);
+                  }}
+                />
+              </TouchableOpacity>
+            </>
+          )}
+
+          <TouchableOpacity style={styles.redtools}>
+            <IonIcon name="call" size={22} color="#fff" onPress={hangUp} />
+          </TouchableOpacity>
         </View>
-      </View>
-      <View style={styles.floatTools}>
 
-        {isCalling?<TouchableOpacity style={styles.bluetools}>
-          <MIcon name="call" size={22} color="#fff" onPress={onCall}/>
-        </TouchableOpacity>:<>
-        <TouchableOpacity style={styles.tools}>
-          <MIcon name={isVideo?"videocam":"videocam-off"} size={22} color={COLORS.blue} onPress={()=>{
-            if(isVideo)
-              localStream.getVideoTracks()[0].enabled = false;
-            else
-              localStream.getVideoTracks()[0].enabled = true;
-            setIsVideo(!isVideo);
-          }} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.tools}>
-          <FIcon name={isAudio?"microphone":"microphone-slash"} size={22} color={COLORS.blue} onPress={()=>{
-            if(isAudio)
-              localStream.getAudioTracks()[0].enabled = false;
-            else
-              localStream.getAudioTracks()[0].enabled = true;
-            setIsAudio(!isAudio);
-          }} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.tools}>
-          <IonIcon
-            name="camera-reverse-outline"
-            size={22}
-            color={COLORS.blue}
-            onPress={()=>{setIsFront(!isFront)}}
-          />
-        </TouchableOpacity></>}
-
-        <TouchableOpacity style={styles.redtools}>
-          <IonIcon name="call" size={22} color="#fff" onPress={hangUp}/>
-        </TouchableOpacity>
-      </View>
-
-      {/* <View style={styles.inputField}>
+        {/* <View style={styles.inputField}>
         <TextInput
           label="Enter Friends Id"
           mode="outlined"
@@ -491,39 +511,44 @@ export default function CallScreen() {
         </View>
       </View> */}
 
-      {!isCalling && <View style={styles.videoContainer}>
+        {!isCalling && (
+          <View style={styles.videoContainer}>
+            <View style={[styles.smallVideowrap]}>
+              {/* <Text>Your Video</Text> */}
+              <RTCView
+                streamURL={localStream.toURL()}
+                style={styles.smallVideo}
+              />
+            </View>
 
-      
-        <View style={[styles.smallVideowrap]}>
-          {/* <Text>Your Video</Text> */}
-          <RTCView streamURL={localStream.toURL()} style={styles.smallVideo} />
-        </View>
+            <View style={[styles.largeVideowrap]}>
+              {/* <Text>Your Video</Text> */}
+              <RTCView
+                streamURL={remoteStream.toURL()}
+                style={styles.largeVideo}
+              />
+            </View>
 
-        <View style={[styles.largeVideowrap]}>
-          {/* <Text>Your Video</Text> */}
-          <RTCView streamURL={remoteStream.toURL()} style={styles.largeVideo} />
-        </View>
-
-
-        <View style={[styles.remoteVideos]}>
-          <TouchableOpacity>
-            <RTCView
-              streamURL={remoteStream.toURL()}
-              style={styles.localVideo}
-            />
-          </TouchableOpacity>
-          {/* <Text>Friends Video</Text> */}
-        </View>
-      </View>}
-    </View>
-  );
+            <View style={[styles.remoteVideos]}>
+              <TouchableOpacity>
+                <RTCView
+                  streamURL={remoteStream.toURL()}
+                  style={styles.localVideo}
+                />
+              </TouchableOpacity>
+              {/* <Text>Friends Video</Text> */}
+            </View>
+          </View>
+        )}
+      </View>
+    );
 }
 
 const styles = StyleSheet.create({
   root: {
     backgroundColor: ' #ccc',
     flex: 1,
-    position:'relative'
+    position: 'relative',
     // padding: 20,
   },
   inputField: {
@@ -532,7 +557,7 @@ const styles = StyleSheet.create({
   },
   videoContainer: {
     flex: 1,
-   // minHeight: 450,
+    // minHeight: 450,
     position: 'relative',
   },
   // videos: {
@@ -548,7 +573,7 @@ const styles = StyleSheet.create({
   //   height: '100%',
   //   height: '100%',
   // },
-  smallVideowrap:{
+  smallVideowrap: {
     position: 'absolute',
     width: 127,
     height: 165,
@@ -560,10 +585,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 127,
     height: 165,
-   
+
     zIndex: 9999,
   },
-  largeVideowrap:{
+  largeVideowrap: {
     position: 'absolute',
     width: '100%',
     height: '100%',
@@ -573,7 +598,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-   
+
     zIndex: 999,
   },
   remoteVideos: {
@@ -629,28 +654,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 100,
   },
-  topTitle:{
-    flexDirection:'row',
-    alignItems:'center',
-    padding:20,
-    position:'absolute',
-    left:0,
-    top:0
+  topTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    position: 'absolute',
+    left: 0,
+    top: 0,
   },
-  proIcon:{
-    width:40,
-    height:40,
-    borderRadius:100
+  proIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 100,
   },
-  pro:{
-marginRight:10,
-
+  pro: {
+    marginRight: 10,
   },
-  topTitleInfoText:{
-    color:'#333'
+  topTitleInfoText: {
+    color: '#333',
   },
-  remoteVideo:{
-    height:'100%',
-    width:'100%'
-  }
+  remoteVideo: {
+    height: '100%',
+    width: '100%',
+  },
 });
