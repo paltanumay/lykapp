@@ -142,14 +142,7 @@ export default function Verification({ navigation, route }) {
         
 
           <Text style={styles.loginText}>Sign Up</Text>
-          <TouchableOpacity  style={styles.backBtWrap}><Text>
-           <Image
-        resizeMode='contain'
-              style={styles.backBt}
-              source={require('../assets/images/google.png')}
-            />
-        </Text>
-        </TouchableOpacity>
+         
           <View style={styles.phoneInputWrap}>
             <TextInput
               placeholderTextColor="#AFAFAF"
@@ -162,7 +155,15 @@ export default function Verification({ navigation, route }) {
             />
           </View>
 
-          <TouchableOpacity style={[globalStyles.gradBt, { width: '50%', marginBottom: 10 }]} onPress={handleSubmit}>
+          <TouchableOpacity  style={styles.backBtWrap}><Text>
+           <Image
+              style={styles.backBt}
+              source={require('../assets/images/arrow-simple-left.png')}
+            />
+        </Text>
+        </TouchableOpacity>
+
+          <TouchableOpacity style={[globalStyles.gradBt, { width: 167, height:31, marginBottom: 10 }]} onPress={handleSubmit}>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -186,13 +187,7 @@ export default function Verification({ navigation, route }) {
             options below instead
 
 
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sollicitudin molestie malesuada. Curabitur aliquet quam id dui posuere blandit. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Cras ultricies ligula sed magna dictum porta.
-
-Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Sed porttitor lectus nibh. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Sed porttitor lectus nibh.
-
-Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Cras ultricies ligula sed magna dictum porta. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ultricies ligula sed magna dictum porta. Cras ultricies ligula sed magna dictum porta.
-
-Pellentesque in ipsum id orci porta dapibus. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Pellentesque in ipsum id orci porta dapibus. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.
+          
             
            </Text>
 
@@ -316,20 +311,22 @@ const styles = StyleSheet.create({
     height: 30,
   },
   gBtText: {
-    color: '#080d14',
-    fontFamily: 'Lato-Regular',
+    color: '#000',
+    fontFamily: 'SFpro-Regular',
     marginLeft: 10,
+    fontSize:16
   },
   aBtText: {
     color: '#fff',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     marginLeft: 10,
+    fontSize:16
   },
   orText: {
     textTransform: 'uppercase',
     textAlign: 'center',
     color: '#080d14',
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'SFpro-Bold',
     marginVertical: 25,
   },
   Iagree: {
@@ -343,7 +340,7 @@ const styles = StyleSheet.create({
   IagreeText: {
     textAlign: 'center',
     color: '#333',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
   },
   termsW: {
     position: 'relative',
@@ -375,7 +372,7 @@ const styles = StyleSheet.create({
   youCanText: {
     marginBottom: 25,
     color: COLORS.blue,
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     fontSize: 15,
     textAlign: 'center'
 
@@ -393,14 +390,14 @@ const styles = StyleSheet.create({
     
     width:50,
     height:50,
-    // position:'absolute',
-    // left:25,
-    // top:22,
-    // zIndex:9999
+    position:'absolute',
+    left:25,
+    top:35,
+    zIndex:9999
   },
   backBt:{
-    width:'100%',
-    height:'100%',
+    width:10,
+    height:17,
   
   }
 });
