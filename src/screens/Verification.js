@@ -144,9 +144,9 @@ export default function Verification({ navigation, route }) {
           <Text style={styles.loginText}>Sign Up</Text>
           <TouchableOpacity  style={styles.backBtWrap}><Text>
            <Image
-          resizeMode='contain'
+        resizeMode='contain'
               style={styles.backBt}
-              source={require('../assets/images/arrow-simple-left.png')}
+              source={require('../assets/images/google.png')}
             />
         </Text>
         </TouchableOpacity>
@@ -184,6 +184,15 @@ export default function Verification({ navigation, route }) {
 
           <Text style={styles.youCanText}>You can use one of the sign up{"\n"}
             options below instead
+
+
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sollicitudin molestie malesuada. Curabitur aliquet quam id dui posuere blandit. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Cras ultricies ligula sed magna dictum porta.
+
+Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Sed porttitor lectus nibh. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Sed porttitor lectus nibh.
+
+Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Cras ultricies ligula sed magna dictum porta. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ultricies ligula sed magna dictum porta. Cras ultricies ligula sed magna dictum porta.
+
+Pellentesque in ipsum id orci porta dapibus. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Pellentesque in ipsum id orci porta dapibus. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.
             
            </Text>
 
@@ -235,15 +244,6 @@ export default function Verification({ navigation, route }) {
               By signing in you confirm that you are 13 years of age or above and
               agree to our
 
-
-
-              Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Vivamus suscipit tortor eget felis porttitor volutpat. Nulla porttitor accumsan tincidunt. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem.
-
-Nulla porttitor accumsan tincidunt. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Curabitur aliquet quam id dui posuere blandit.
-
-Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Nulla quis lorem ut libero malesuada feugiat.
-
-Cras ultricies ligula sed magna dictum porta. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Pellentesque in ipsum id orci porta dapibus. Pellentesque in ipsum id orci porta dapibus. Vivamus suscipit tortor eget felis porttitor volutpat.
             </Text>
 
             <TouchableOpacity style={styles.termsW}>
@@ -271,9 +271,10 @@ Cras ultricies ligula sed magna dictum porta. Curabitur non nulla sit amet nisl 
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
+ 
     alignItems: 'center',
     backgroundColor: '#fff',
+    
   },
   loginText: {
     marginTop: 20,
@@ -289,9 +290,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf2fe',
     borderWidth: 1,
     borderColor: '#488bb4',
-    width: '70%',
+    width: 261,
     borderRadius: 100,
-    height: 45,
+    height: 47,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -304,10 +305,11 @@ const styles = StyleSheet.create({
     borderColor: '#434343',
     width: '70%',
     borderRadius: 100,
-    height: 45,
+    height: 47,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
+    width: 261,
   },
   gBtIcon: {
     width: 30,
@@ -388,13 +390,17 @@ const styles = StyleSheet.create({
     color:'#333'
   },
   backBtWrap:{
-    position:'absolute',
-    left:25,
-    top:22,
-    zIndex:9999
+    
+    width:50,
+    height:50,
+    // position:'absolute',
+    // left:25,
+    // top:22,
+    // zIndex:9999
   },
   backBt:{
-    width:10,
-    height:25
+    width:'100%',
+    height:'100%',
+  
   }
 });
