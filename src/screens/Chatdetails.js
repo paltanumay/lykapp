@@ -322,7 +322,7 @@ export default function Chatdetails() {
                         <View style={styles.chatLImg}>
                           <Image
                             resizeMode="cover"
-                            source={require('../assets/images/music.webp')}
+                            source={require('../assets/images/music_avatar.webp')}
                             style={[styles.chatLImgM]}
                           />
                         </View>
