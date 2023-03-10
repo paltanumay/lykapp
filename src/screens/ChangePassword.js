@@ -54,7 +54,7 @@ export default function ChangePassword() {
                 end={{ x: 1, y: 0 }}
                 colors={['#037ee5', '#15a2e0', '#28cad9']}
                 style={[globalStyles.linearGradient, {height:42}]}>
-                <Text style={globalStyles.buttonText}>Save CHanges</Text>
+                <Text style={globalStyles.buttonText}>Save Changes</Text>
               </LinearGradient>
             </TouchableOpacity>
     </View>

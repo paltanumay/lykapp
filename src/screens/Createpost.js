@@ -348,10 +348,10 @@ export default function Createpost() {
                 <TouchableOpacity style={styles.shareOptions}>
                   <Image
                     resizeMode="cover"
-                    source={require('../assets/images/family.png')}
+                    source={require('../assets/images/family-icon.png')}
                     style={styles.familyIcon}
                   />
-                  <Text style={styles.shareOptionsText}>Family</Text>
+                  <Text style={styles.shareOptionsText}>My Family</Text>
                 </TouchableOpacity>
               </View>
 
@@ -493,6 +493,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    borderTopColor:'#f5f5f5',
+    borderTopWidth:1,
+    paddingVertical:12,
+    borderBottomColor:'#f5f5f5',
+    borderBottomWidth:1,
   },
   postBoxOptions: {
     backgroundColor: '#fff',
@@ -519,6 +524,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignItems: 'center',
     flexDirection: 'row',
+    justifyContent:'space-between'
   },
   goLiveText: {
     color: COLORS.blue,
@@ -571,11 +577,11 @@ const styles = StyleSheet.create({
   },
   connectionIcon: {
     width: 21,
-    height: 22,
+    height: 21,
   },
   familyIcon: {
     width: 21,
-    height: 17,
+    height: 18,
   },
   imageIcon: {
     width: 25,

@@ -201,7 +201,9 @@ export default function Login({navigation}) {
             .catch(err => {});
         }}>
         {({handleChange, handleSubmit, setFieldValue, isSubmitting}) => (
-          <ScrollView contentContainerStyle={styles.scView}>
+          <ScrollView
+            contentContainerStyle={styles.scView}
+            showsVerticalScrollIndicator={false}>
             <Text style={styles.loginText}>Log In</Text>
             <Findconnectionsmodal />
             <TouchableOpacity style={styles.gBt} onPress={_signIn}>
@@ -232,6 +234,9 @@ export default function Login({navigation}) {
                   padding: 0,
                   marginLeft: -24,
                   fontSize: 14,
+                }}
+                textInputProps={{
+                  placeholderTextColor: '#000',
                 }}
                 textContainerStyle={{
                   paddingVertical: 0,
@@ -516,5 +521,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     alignItems: 'center',
     marginBottom: 10,
+  },
+  eyeIcon: {
+    width: 18,
+    height: 11,
   },
 });

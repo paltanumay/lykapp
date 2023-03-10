@@ -322,7 +322,7 @@ export default function Chatdetails() {
                         <View style={styles.chatLImg}>
                           <Image
                             resizeMode="cover"
-                            source={require('../assets/images/music.webp')}
+                            source={require('../assets/images/music_avatar.webp')}
                             style={[styles.chatLImgM]}
                           />
                         </View>
@@ -396,7 +396,12 @@ export default function Chatdetails() {
           <TouchableOpacity
             style={styles.chatTypeTool}
             onPress={() => setModalVisible(true)}>
-            <IonIcon name="add-circle-outline" size={34} color="#abacb1" />
+            <Image
+                          resizeMode="cover"
+                          source={require('../assets/images/add.png')}
+                          style={[styles.chatPlus]}
+                        />
+            {/* <IonIcon name="add-circle-outline" size={34} color="#abacb1" /> */}
           </TouchableOpacity>
 
 {/*           
@@ -407,13 +412,13 @@ export default function Chatdetails() {
       </View> */}
 
           <TouchableOpacity style={styles.chatTypeTool}>
-            <OctIcon name="smiley" size={27} color="#8e8f91" />
+            <OctIcon name="smiley" size={24} color="#8e8f91" />
           </TouchableOpacity>
 
           <TextInput
             placeholderTextColor="#AFAFAF"
             style={styles.input}
-            placeholder="Type your message"
+            placeholder="Type a message…"
             textContentType="username"
             underlineColorAndroid="transparent"
             multiline={true}
@@ -437,12 +442,22 @@ export default function Chatdetails() {
             }}
           />
 
-          <TouchableOpacity style={styles.chatTypeTool}>
-            <MatIcon name="incognito" size={27} color="#8e8f91" />
+          <TouchableOpacity style={styles.incognitoTool}>
+          <Image
+                      resizeMode="cover"
+                      source={require('../assets/images/incognito.png')}
+                      style={[styles.incognitoIcon]}
+                    />
+            {/* <MatIcon name="incognito" size={27} color="#8e8f91" /> */}
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.chatSendBt} onPress={sendMsg}>
-          <IonIcon name="send" size={24} color="#fff" />
+        <TouchableOpacity onPress={sendMsg}>
+          {/* <IonIcon name="send" size={24} color="#fff" /> */}
+                  <Image
+                      resizeMode="cover"
+                      source={require('../assets/images/send.png')}
+                      style={[styles.sendBt]}
+                    />
         </TouchableOpacity>
       </View>
 
@@ -537,8 +552,8 @@ const styles = StyleSheet.create({
 
   },
   chatLImg: {
-    width: 40,
-    height: 40,
+    width: 24,
+    height: 24,
     overflow: 'hidden',
     borderRadius: 100,
   },
@@ -605,14 +620,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     alignItems: 'center',
     flexDirection: 'row',
-    width: '85%',
+    width: '90%',
 
   },
   chatTypeTool: {
-    marginRight: 8,
+    marginRight: 15,
   },
   input: {
-    width: '65%',
+    width: '68%',
     color: '#333',
   },
   chatSendBt: {
@@ -722,4 +737,21 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  chatPlus:{
+    width:24,
+    height:24
+  },
+  incognitoIcon:{
+    width:22,
+    height:24
+  },
+  sendBt:{
+    width:36,
+    height:36,
+    marginTop:5
+  },
+  incognitoTool:{
+position:'absolute',
+right:12
+  }
 });

@@ -306,27 +306,27 @@ export default function Home({navigation}) {
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
-            <TouchableOpacity>
+          
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/create-post.png')}
                 style={[styles.postImg]}
               />
-            </TouchableOpacity>
-            <TouchableOpacity>
+          
+           
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/invited.png')}
                 style={[styles.postImg]}
               />
-            </TouchableOpacity>
-            <TouchableOpacity>
+          
+           
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/grow-network.png')}
                 style={[styles.postImg]}
               />
-            </TouchableOpacity>
+           
           </View>
 
           <View style={styles.newsCardsWrap}>

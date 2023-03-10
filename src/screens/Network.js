@@ -73,7 +73,7 @@ const Network = () => {
         <Pressable style={styles.rewords}>
           <View style={styles.icons}></View>
           <View>
-            <Text style={styles.btnText}>Invite & Earn Rewords</Text>
+            <Text style={styles.btnText}>Invite & Earn Rewards</Text>
           </View>
           <View style={styles.icons}>
             <Icon name="right" size={20} color="#ffffff" />
