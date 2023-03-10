@@ -1,10 +1,5 @@
-import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
-import React, { useState } from 'react';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {useState} from 'react';
 import COLORS from '../global/globalColors';
 import Footer from '../components/Footer';
 import ChatList from './Chatlist';
@@ -43,42 +38,59 @@ export default function Chatnpost() {
   const [activeTab, setActiveTab] = useState('a');
   return (
     <>
-    <Header isBack={true} />
+      <Header isBack={true} />
       <View style={styles.chatPostContainer}>
         <View style={styles.tabWrap}>
-          <TouchableOpacity style={[styles.tab, activeTab === 'a' ? styles.tabActive : '']} onPress={() => setActiveTab('a')}>
-            <Text style={activeTab === 'a' ? [styles.tabActiveText] : [styles.tabText]}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'a' ? styles.tabActive : '']}
+            onPress={() => setActiveTab('a')}>
+            <Text
+              style={
+                activeTab === 'a' ? [styles.tabActiveText] : [styles.tabText]
+              }>
               My Chats
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.tab, activeTab === 'b' ? styles.tabActive : '']} onPress={() => setActiveTab('b')}>
-            <Text style={activeTab === 'b' ? [styles.tabActiveText] : [styles.tabText]}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'b' ? styles.tabActive : '']}
+            onPress={() => setActiveTab('b')}>
+            <Text
+              style={
+                activeTab === 'b' ? [styles.tabActiveText] : [styles.tabText]
+              }>
               My Posts
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.tab, activeTab === 'c' ? styles.tabActive : '']} onPress={() => setActiveTab('c')}>
-            <Text style={activeTab === 'c' ? [styles.tabActiveText] : [styles.tabText]}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'c' ? styles.tabActive : '']}
+            onPress={() => setActiveTab('c')}>
+            <Text
+              style={
+                activeTab === 'c' ? [styles.tabActiveText] : [styles.tabText]
+              }>
               My Calls
             </Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.tabContentWrap}>
-          {activeTab === 'a' ?
-            (<View style={styles.myChatsWrap}>
+          {activeTab === 'a' ? (
+            <View style={styles.myChatsWrap}>
               <ChatList />
-            </View>) :
-            activeTab === 'b' ?
-              (<View style={styles.myPostsWrap}>
-                <Postlist />
-              </View>) :
-              activeTab === 'c' ?
-                (<View style={styles.myPostsWrap}>
-                  <CallList />
-                </View>) : (<></>)
-          }
+            </View>
+          ) : activeTab === 'b' ? (
+            <View style={styles.myPostsWrap}>
+              <Postlist />
+            </View>
+          ) : activeTab === 'c' ? (
+            <View style={styles.myPostsWrap}>
+              <CallList />
+            </View>
+          ) : (
+            <></>
+          )}
         </View>
       </View>
       <Footer />
@@ -90,7 +102,7 @@ const styles = StyleSheet.create({
   chatPostContainer: {
     // backgroundColor: '#e7ebf6',
     backgroundColor: '#fff',
-    flex: 1
+    flex: 1,
   },
   tabWrap: {
     backgroundColor: '#f6f7fb',
@@ -122,7 +134,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontFamily: 'SFpro-Bold',
-    color:'#333'
+    color: '#333',
   },
   tabActiveText: {
     color: COLORS.blue,

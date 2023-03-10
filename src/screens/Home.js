@@ -36,6 +36,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import HomeComments from '../components/HomeComments';
+import ThreeDotComponent from '../components/threeDot';
 
 const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -65,11 +66,14 @@ export default function Home({navigation}) {
   const [feeds, setFeeds] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [isScrollDown, setScrollDown] = useState(false);
-  // console.log(refresh);
+  const [threeDot, setThreeDot] = useState(false);
+  const [threeDotData, setThreeDotData] = useState({});
+  console.log(feeds);
   useEffect(() => {
     async function getHomeFeed() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
+      // console.log(userDetails);
       let token =
         (await AsyncStorage.getItem('token')) +
         '-' +
@@ -103,6 +107,7 @@ export default function Home({navigation}) {
           res => {
             //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
             setFeeds(res.data.response.feeds);
+            console.log('feed');
             setRefresh(false);
           },
           err => {
@@ -123,7 +128,7 @@ export default function Home({navigation}) {
     });
 
     return unsubscribe;
-  }, [refresh, setRefresh]);
+  }, [refresh]);
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -139,7 +144,6 @@ export default function Home({navigation}) {
   };
 
   const onRefresh = React.useCallback(() => {
-    console.log('sdfds');
     setRefresh(prev => !prev);
     // wait(2000).then(() => setRefresh(false));
   }, []);
@@ -265,7 +269,7 @@ export default function Home({navigation}) {
       ss: '%d seconds',
       m: 'a minute',
       mm: '%d minutes',
-      h: 'an hour',
+      h: '%d hour ago',
       hh: '%d hrs',
       d: 'a day',
       dd: '%d days',
@@ -276,9 +280,20 @@ export default function Home({navigation}) {
     },
   });
   // console.log(feeds);
+  const onPressThreeDot = ({type, feedId}) => {
+    setThreeDotData({type, feedId});
+    setThreeDot(true);
+  };
   return (
     <>
       <Header onSetRefresh={onRefresh} />
+      {threeDot && (
+        <ThreeDotComponent
+          onClose={() => setThreeDot(false)}
+          type={threeDotData.type}
+          feedId={threeDotData.feedId}
+        />
+      )}
       <View style={globalStyles.innerPagesContainer}>
         <Animated.ScrollView
           style={styles.scrollView}
@@ -317,7 +332,10 @@ export default function Home({navigation}) {
           <View style={styles.newsCardsWrap}>
             {feeds.map(({type, details}) =>
               type === 'news' ? (
-                <View style={styles.newsCard} key={details.newsId}>
+                <Pressable
+                  style={styles.newsCard}
+                  key={details.newsId}
+                  onPress={() => onRedirectCommentScreen({type, details})}>
                   <View style={styles.cardTitle}>
                     <View style={styles.cardProImg}>
                       <Image
@@ -335,13 +353,17 @@ export default function Home({navigation}) {
                         ) < 1
                           ? moment(
                               details.feedTime.replace(' ', 'T') + 'Z',
-                            ).fromNow('past')
+                            ).fromNow()
                           : moment(
                               details.feedTime.replace(' ', 'T') + 'Z',
                             ).format('DD MMM YYYY, h:mm a')}
                       </Text>
                     </View>
-                    <TouchableOpacity style={styles.options}>
+                    <TouchableOpacity
+                      style={styles.options}
+                      onPress={() =>
+                        onPressThreeDot({type, feedId: details.newsId})
+                      }>
                       <EnIcon
                         name="dots-three-horizontal"
                         size={25}
@@ -446,7 +468,7 @@ export default function Home({navigation}) {
                       />
                     </TouchableOpacity>
                   </View>
-                </View>
+                </Pressable>
               ) : (
                 type === 'post' && (
                   <View style={styles.newsCard} key={details.postId}>
@@ -475,7 +497,11 @@ export default function Home({navigation}) {
                               ).format('DD MMM YYYY, h:mm a')}
                         </Text>
                       </View>
-                      <TouchableOpacity style={styles.options}>
+                      <TouchableOpacity
+                        style={styles.options}
+                        onPress={() =>
+                          onPressThreeDot({type, feedId: details.postId})
+                        }>
                         <EnIcon
                           name="dots-three-horizontal"
                           size={25}

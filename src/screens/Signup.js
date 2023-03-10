@@ -388,18 +388,17 @@ export default function Signup({navigation}) {
 
             <View style={styles.Iagree}>
               <Text style={styles.IagreeText}>
-                By signing in you confirm that you are 13 {'\n'}  years of age or above
-                and agree to our
+                By signing in you confirm that you are 13 {'\n'} years of age or
+                above and agree to our
               </Text>
-              <View style={{flexDirection:'row', alignItems:'center'}}>
-
-              <TouchableOpacity style={styles.termsW}>
-                <Text style={styles.terms}>Terms of use </Text>
-              </TouchableOpacity>
-              <Text style={styles.IagreeText}> and </Text>
-              <TouchableOpacity>
-                <Text style={styles.terms}>Privacy Policy.</Text>
-              </TouchableOpacity>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <TouchableOpacity style={styles.termsW}>
+                  <Text style={styles.terms}>Terms of use </Text>
+                </TouchableOpacity>
+                <Text style={styles.IagreeText}> and </Text>
+                <TouchableOpacity>
+                  <Text style={styles.terms}>Privacy Policy.</Text>
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -502,7 +501,7 @@ const styles = StyleSheet.create({
     color: COLORS.blue,
     fontFamily: 'SFpro-Regular',
     fontSize: 10,
-    textDecorationLine:'underline'
+    textDecorationLine: 'underline',
   },
 
   phoneInputWrap: {
