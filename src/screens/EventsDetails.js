@@ -28,6 +28,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import { getEncTokenAnyUserId, getEncUserId } from '../shared/encryption';
+import HeaderWithTitle from '../components/HeaderWithTitle';
 
 const API_URL = process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const MY_EVENT = `${API_URL}/LYKEvent/getMyEvent`;
@@ -65,6 +66,9 @@ export default function EventsDetails() {
     getEventDtls()
   }, [])
   return eventDtls ? (
+    <>
+       <HeaderWithTitle isBack= {true}/>
+   
     <View style={globalStyles.innerPagesContainerWhite}>
       <View style={styles.addPhotoWrap}>
         <Image
@@ -172,6 +176,7 @@ export default function EventsDetails() {
       )}
 
     </View>
+    </>
   ) : (<></>);
 }
 

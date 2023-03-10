@@ -32,7 +32,11 @@ export default class Creategroup extends Component {
       <View style={globalStyles.innerPagesContainerWhite}>
         <View style={styles.addGroupNamewrap}>
           <View style={styles.addGroupImage}>
-            <FIcon name="camera" size={25} color={COLORS.blue} />
+            {/* <FIcon name="camera" size={25} color={COLORS.blue} /> */}
+            <Image
+                      style={styles.addG}
+                      source={require('../assets/images/create-group-camera.png')} 
+                    />
           </View>
 
           <View style={styles.addGroupNameInner}>
@@ -91,12 +95,12 @@ export default class Creategroup extends Component {
         </View>
       </View>
       <View style={styles.createGroupWrap}>
-      <TouchableOpacity style={[globalStyles.gradBt, {width:'90%'}]} onPress={() => navigation.push('Country')}>
+      <TouchableOpacity style={[globalStyles.gradBt, {width:294, }]} onPress={() => navigation.push('Country')}>
               <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 colors={['#037ee5', '#15a2e0', '#28cad9']}
-                style={globalStyles.linearGradient}>
+                style={[globalStyles.linearGradient, {height:46}]}>
                 <Text style={globalStyles.buttonText}>Create Group</Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -182,5 +186,9 @@ const styles = StyleSheet.create({
     backgroundColor:'#fff',
     alignItems:'center',
     flex:1
+  },
+  addG:{
+    width:80,
+    height:80
   }
 });

@@ -25,6 +25,14 @@ const CommentHeader = ({name, isCreateBusiness, setCreateBusiness}) => {
       <View>
         <Text style={styles.headerTitle}>{name}</Text>
       </View>
+      <TouchableOpacity style={styles.user}>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/search.png')}
+                style={[styles.searchIcon]}
+              />
+              {/* <FIcon name="heart" size={25} color={COLORS.green} /> */}
+            </TouchableOpacity>
     </View>
   );
 };
@@ -51,10 +59,18 @@ const styles = StyleSheet.create({
   headerTitle: {
     textTransform: 'capitalize',
     color: '#fff',
-    fontSize: 20,
-    fontWeight: '600',
-    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 17,
+    fontFamily: 'SFpro-Regular',
   },
+  user: {
+    position: 'absolute',
+    right: 15,
+    top: 15,
+  },
+  searchIcon: {
+    width: 19,
+    height: 20,
+  }
 });
 
 export default CommentHeader;

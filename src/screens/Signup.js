@@ -308,7 +308,7 @@ export default function Signup({navigation}) {
         }}>
         {({handleChange, handleSubmit, setFieldValue, isSubmitting}) => (
           <View style={styles.container}>
-<ScrollView contentContainerStyle={styles.scView}>
+<ScrollView contentContainerStyle={styles.scView} showsVerticalScrollIndicator={false}>
 
 
             <Text style={styles.loginText}>Sign Up</Text>
@@ -339,6 +339,9 @@ export default function Signup({navigation}) {
                   marginLeft: -30,
                   fontSize: 14,
                 }}
+                textInputProps={{
+  placeholderTextColor: '#000'
+}}
                 textContainerStyle={{
                   paddingVertical: 0,
                   paddingHorizontal: 0,
@@ -531,6 +534,7 @@ width:'100%',
     resizeMode: 'contain',
   },
   input:{
-    fontSize:14
+    fontSize:14,
+    color:'#000'
   }
 });

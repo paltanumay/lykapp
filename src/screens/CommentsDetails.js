@@ -421,8 +421,8 @@ const CommentsDetails = () => {
                 );
               })}
             {details.commentCount === '0' && (
-              <View style={styles.messageWrapper}>
-                <Text style={mainStyles.message}>Still no Comments!</Text>
+              <View style={mainStyles.messageWrapper}>
+                <Text style={mainStyles.message}>Still no comments!</Text>
               </View>
             )}
           </ScrollView>
@@ -514,5 +514,26 @@ const mainStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
   },
+  newsCoverImg:{
+    height:550,
+    width:'100%'
+  },
+  postImg:{
+    height:550,
+    width:'100%'
+  },
+  messageWrapper:{
+    height:400,
+alignItems:'center',
+justifyContent:'center'
+  //  bottom:'50%',
+   
+  },
+  message:{
+    color: '#000',
+    fontWeight: '700',
+    fontFamily: 'SFpro-Bold',
+  }
+
 });
 export default CommentsDetails;

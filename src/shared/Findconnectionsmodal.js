@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   learnmoreBtText:{
     color:COLORS.blue,
     fontFamily: 'SFpro-Medium',
-    textTransform:'uppercase'
+    // textTransform:'uppercase'
 
   },
   modalClose: {

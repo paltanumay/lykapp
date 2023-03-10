@@ -69,15 +69,15 @@ export default function SettingsScreen() {
           <CollapseBody>
             <View style={styles.collapseContent}>
               <TouchableOpacity style={styles.collapseItems} onPress={()=>navigation.navigate('ProfileEdit')}>
-                <Text>Edit Profile</Text>
+                <Text style={styles.collapseItemsText}>Edit Profile</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.collapseItems} onPress={()=>navigation.navigate('ChangePassword')}>
-                <Text>Change Password</Text>
+                <Text style={styles.collapseItemsText}>Change Password</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.collapseItems}>
-                <Text>Manage Account</Text>
+                <Text style={styles.collapseItemsText}>Manage Account</Text>
               </TouchableOpacity>
             </View>
           </CollapseBody>
@@ -237,4 +237,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 10,
   },
+  collapseItemsText:{
+    color:'#333'
+  }
 });

@@ -268,7 +268,7 @@ export default function Sidebar() {
         name="Bussiness Page"
         component={BusinessScreen}
         options={{
-          title: 'Bussiness Page',
+          title: 'Business Page',
           drawerActiveTintColor: '#fff',
           drawerInactiveTintColor: '#fff',
           drawerLabelStyle: {

@@ -200,7 +200,7 @@ export default function Login({navigation}) {
             .catch(err => {});
         }}>
         {({handleChange, handleSubmit, setFieldValue, isSubmitting}) => (
-          <ScrollView contentContainerStyle={styles.scView}>
+          <ScrollView contentContainerStyle={styles.scView} showsVerticalScrollIndicator={false}>
             <Text style={styles.loginText}>Log In</Text>
             <Findconnectionsmodal />
             <TouchableOpacity style={styles.gBt} onPress={_signIn}>
@@ -232,6 +232,9 @@ export default function Login({navigation}) {
                   marginLeft: -24,
                   fontSize: 14,
                 }}
+                textInputProps={{
+  placeholderTextColor: '#000'
+}}
                 textContainerStyle={{
                   paddingVertical: 0,
                   paddingHorizontal: 0,
@@ -262,12 +265,21 @@ export default function Login({navigation}) {
                 maxLength={20}
               />
               <TouchableOpacity style={styles.passNShow}>
+              {/* <Image
+                  style={styles.eyeIcon}
+                  source={require('../assets/images/eye.png')}
+                /> */}
+
+                <Image
+                  style={styles.eyeIcon}
+                  source={require('../assets/images/eye-off.png')}
+                />
                 {/* <IonIcon name="eye-outline" size={20} color={COLORS.blue} /> */}
-                <IonIcon
+                {/* <IonIcon
                   name="ios-eye-off-outline"
                   size={20}
                   color={COLORS.blue}
-                />
+                /> */}
               </TouchableOpacity>
             </View>
 
@@ -510,4 +522,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+  eyeIcon:{
+    width:18,
+    height:11
+  }
 });
