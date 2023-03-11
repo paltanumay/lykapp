@@ -291,7 +291,10 @@ export default function Home({navigation}) {
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.push('Createpost');
+              }}>
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/create-post.png')}
@@ -305,7 +308,10 @@ export default function Home({navigation}) {
                 style={[styles.postImg]}
               />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.push('network');
+              }}>
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/grow-network.png')}
