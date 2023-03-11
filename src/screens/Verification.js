@@ -112,6 +112,7 @@ export default function Verification({ navigation, route }) {
       })
   };
   return (
+    <View style={{backgroundColor:'#fff'}}>
     <Formik
       initialValues={{ otp: '', userId: route.params.userId, type: 'phone' }}
       onSubmit={(values, { setSubmitting }) => {
@@ -135,10 +136,13 @@ export default function Verification({ navigation, route }) {
         setFieldValue,
         isSubmitting
       }) => (
-        <View style={styles.container}>
         <ScrollView contentContainerStyle={{alignItems:"center"}}>
-          <Text style={styles.loginText}>Sign Up</Text>
+        <View style={styles.container}>
+     
+        
 
+          <Text style={styles.loginText}>Sign Up</Text>
+         
           <View style={styles.phoneInputWrap}>
             <TextInput
               placeholderTextColor="#AFAFAF"
@@ -151,7 +155,15 @@ export default function Verification({ navigation, route }) {
             />
           </View>
 
-          <TouchableOpacity style={[globalStyles.gradBt, { width: '50%', marginBottom: 10 }]} onPress={handleSubmit}>
+          <TouchableOpacity  style={styles.backBtWrap}><Text>
+           <Image
+              style={styles.backBt}
+              source={require('../assets/images/arrow-simple-left.png')}
+            />
+        </Text>
+        </TouchableOpacity>
+
+          <TouchableOpacity style={[globalStyles.gradBt, { width: 167, height:31, marginBottom: 10 }]} onPress={handleSubmit}>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -165,10 +177,21 @@ export default function Verification({ navigation, route }) {
             <Text style={styles.resendCodetext}>Resend the code</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity style={[styles.resendCode, {marginTop:4}]}>
+            <Text style={styles.resendCodetext}>Call with Verification Code</Text>
+          </TouchableOpacity>
+
           <Text style={styles.probWithVcode}>Problem with {"\n"} your verification code?</Text>
 
           <Text style={styles.youCanText}>You can use one of the sign up{"\n"}
-            options below instead</Text>
+            options below instead
+
+
+          
+            
+           </Text>
+
+
 
 
           <TouchableOpacity style={styles.gBt} onPress={_signIn}>
@@ -191,7 +214,7 @@ export default function Verification({ navigation, route }) {
 
 
 
-          <TouchableOpacity style={[globalStyles.gradBt, {width:'45%', marginTop:30}]} onPress={() => navigation.push('Login')}>
+          <TouchableOpacity style={[globalStyles.gradBt, {width:197, height:38, marginTop:30}]} onPress={() => navigation.push('Login')}>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -201,7 +224,7 @@ export default function Verification({ navigation, route }) {
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[globalStyles.gradBt, {width:'45%'}]} onPress={() => navigation.push('Country')}>
+          <TouchableOpacity style={[globalStyles.gradBt, {width:197, height:38,}]} onPress={() => navigation.push('Country')}>
             <LinearGradient
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -215,6 +238,7 @@ export default function Verification({ navigation, route }) {
             <Text style={styles.IagreeText}>
               By signing in you confirm that you are 13 years of age or above and
               agree to our
+
             </Text>
 
             <TouchableOpacity style={styles.termsW}>
@@ -231,18 +255,21 @@ export default function Verification({ navigation, route }) {
             source={require('../assets/images/login-b-img.png')}
           />
 
-</ScrollView>
+
         </View>
+        </ScrollView>
       )}
     </Formik>
+    </View> 
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
+ 
     alignItems: 'center',
     backgroundColor: '#fff',
+    
   },
   loginText: {
     marginTop: 20,
@@ -258,9 +285,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf2fe',
     borderWidth: 1,
     borderColor: '#488bb4',
-    width: '70%',
+    width: 261,
     borderRadius: 100,
-    height: 45,
+    height: 47,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -273,30 +300,33 @@ const styles = StyleSheet.create({
     borderColor: '#434343',
     width: '70%',
     borderRadius: 100,
-    height: 45,
+    height: 47,
     alignItems: 'center',
     paddingHorizontal: 15,
     justifyContent: 'center',
+    width: 261,
   },
   gBtIcon: {
     width: 30,
     height: 30,
   },
   gBtText: {
-    color: '#080d14',
-    fontFamily: 'Lato-Regular',
+    color: '#000',
+    fontFamily: 'SFpro-Regular',
     marginLeft: 10,
+    fontSize:16
   },
   aBtText: {
     color: '#fff',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     marginLeft: 10,
+    fontSize:16
   },
   orText: {
     textTransform: 'uppercase',
     textAlign: 'center',
     color: '#080d14',
-    fontFamily: 'Lato-Bold',
+    fontFamily: 'SFpro-Bold',
     marginVertical: 25,
   },
   Iagree: {
@@ -310,7 +340,7 @@ const styles = StyleSheet.create({
   IagreeText: {
     textAlign: 'center',
     color: '#333',
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
   },
   termsW: {
     position: 'relative',
@@ -342,7 +372,7 @@ const styles = StyleSheet.create({
   youCanText: {
     marginBottom: 25,
     color: COLORS.blue,
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'SFpro-Regular',
     fontSize: 15,
     textAlign: 'center'
 
@@ -355,5 +385,19 @@ const styles = StyleSheet.create({
   },
   input:{
     color:'#333'
+  },
+  backBtWrap:{
+    
+    width:50,
+    height:50,
+    position:'absolute',
+    left:25,
+    top:35,
+    zIndex:9999
+  },
+  backBt:{
+    width:10,
+    height:17,
+  
   }
 });

@@ -120,22 +120,22 @@ const styles = StyleSheet.create({
   slideBox: {
     textAlign: 'center',
     alignItems: 'center',
-    paddingTop: 35,
+    paddingTop: 55,
     paddingHorizontal: 10,
   },
   slideMainText: {
-    fontSize: 29,
+    fontSize: 30,
     textAlign: 'center',
-    fontFamily: 'SFpro-Bold',
+    fontFamily: 'Helvetica-Bold',
     color: COLORS.blue,
   },
   slideSecText: {
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 16,
     // textAlign: 'center',
-    fontFamily: 'SFpro-Bold',
     color: COLORS.blue,
     marginTop: 15,
+    fontFamily: 'Helvetica-Bold',
   },
   btWraps: {
     alignItems: 'center',

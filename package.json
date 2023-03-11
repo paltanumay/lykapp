@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@invertase/react-native-apple-authentication": "^2.2.2",
+    "@react-native-clipboard/clipboard": "^1.11.2",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/checkbox": "^0.5.12",
     "@react-native-community/datetimepicker": "^6.5.4",

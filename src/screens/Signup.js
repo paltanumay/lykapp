@@ -13,6 +13,7 @@ import Acalreadyexitmodal from '../shared/Acalreadyexitmodal';
 import Findconnectionsmodal from '../shared/Findconnectionsmodal';
 import AsyncStorage from '@react-native-community/async-storage';
 import Agemodal from '../shared/Agemodal';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/LYKUser';
@@ -232,7 +233,7 @@ export default function Signup({navigation}) {
     return out;
   };
   return (
-    <>
+    <View style={{backgroundColor: '#fff', flex: 1}}>
       <Formik
         initialValues={{
           contactNo: '',
@@ -307,121 +308,134 @@ export default function Signup({navigation}) {
         }}>
         {({handleChange, handleSubmit, setFieldValue, isSubmitting}) => (
           <View style={styles.container}>
-            <Text style={styles.loginText}>Sign Up</Text>
-            <TouchableOpacity style={styles.gBt} onPress={_signIn}>
-              <Image
-                style={styles.gBtIcon}
-                source={require('../assets/images/google.png')}
-              />
-              <Text style={styles.gBtText}>Continue with Google</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.aBt} onPress={onAppleButtonPress}>
-              <Image
-                style={styles.gBtIcon}
-                source={require('../assets/images/apple.png')}
-              />
-              <Text style={styles.aBtText}>Continue with Apple</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.orText}>OR</Text>
-
-            <View style={styles.phoneInputWrap}>
-              <PhoneInput
-                containerStyle={{
-                  width: '100%',
-                  height: 50,
-                  padding: 0,
-                  marginLeft: -30,
-                  fontSize: 14,
-                }}
-                textContainerStyle={{
-                  paddingVertical: 0,
-                  paddingHorizontal: 0,
-                  margin: 0,
-                  backgroundColor: '#fff',
-                }}
-                defaultCode="IN"
-                layout="second"
-                onChangeText={handleChange('contactNo')}
-                onChangeCountry={e => {
-                  setFieldValue('countryISO', e.cca2),
-                    setFieldValue('countryCode', e.callingCode[0]),
-                    setFieldValue('orgISO', e.cca2);
-                }}
-                textInputStyle={styles.input}
-                ref={phone}
-                autoFocus
-              />
-            </View>
-
-            <TouchableOpacity
-              style={globalStyles.lineBt}
-              onPress={handleSubmit}
-              disabled={isSubmitting || !phone.current}>
-              <Text style={globalStyles.lineBtText}>Next</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={globalStyles.gradBt}
-              onPress={() => navigation.push('Login')}>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#037ee5', '#15a2e0', '#28cad9']}
-                style={globalStyles.linearGradient}>
-                <Text style={globalStyles.buttonText}>Log In</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={globalStyles.gradBt}
-              onPress={() => navigation.push('Country')}>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#037ee5', '#15a2e0', '#28cad9']}
-                style={globalStyles.linearGradient}>
-                <Text style={globalStyles.buttonText}>Skip Sign Up</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <View style={styles.Iagree}>
-              <Text style={styles.IagreeText}>
-                By signing in you confirm that you are 13 {'\n'}  years of age or above
-                and agree to our
-              </Text>
-              <View style={{flexDirection:'row', alignItems:'center'}}>
-
-              <TouchableOpacity style={styles.termsW}>
-                <Text style={styles.terms}>Terms of use </Text>
+            <ScrollView
+              contentContainerStyle={styles.scView}
+              showsVerticalScrollIndicator={false}>
+              <Text style={styles.loginText}>Sign Up</Text>
+              <TouchableOpacity style={styles.gBt} onPress={_signIn}>
+                <Image
+                  style={styles.gBtIcon}
+                  source={require('../assets/images/google.png')}
+                />
+                <Text style={styles.gBtText}>Continue with Google</Text>
               </TouchableOpacity>
-              <Text style={styles.IagreeText}> and </Text>
-              <TouchableOpacity>
-                <Text style={styles.terms}>Privacy Policy.</Text>
+
+              <TouchableOpacity style={styles.aBt} onPress={onAppleButtonPress}>
+                <Image
+                  style={styles.gBtIcon}
+                  source={require('../assets/images/apple.png')}
+                />
+                <Text style={styles.aBtText}>Continue with Apple</Text>
               </TouchableOpacity>
+
+              <Text style={styles.orText}>OR</Text>
+
+              <View style={styles.phoneInputWrap}>
+                <PhoneInput
+                  containerStyle={{
+                    width: '100%',
+                    height: 50,
+                    padding: 0,
+                    marginLeft: -30,
+                    fontSize: 14,
+                  }}
+                  textInputProps={{
+                    placeholderTextColor: '#000',
+                  }}
+                  textContainerStyle={{
+                    paddingVertical: 0,
+                    paddingHorizontal: 0,
+                    margin: 0,
+                    backgroundColor: '#fff',
+                  }}
+                  defaultCode="IN"
+                  layout="second"
+                  onChangeText={handleChange('contactNo')}
+                  onChangeCountry={e => {
+                    setFieldValue('countryISO', e.cca2),
+                      setFieldValue('countryCode', e.callingCode[0]),
+                      setFieldValue('orgISO', e.cca2);
+                  }}
+                  textInputStyle={styles.input}
+                  ref={phone}
+                  autoFocus
+                />
               </View>
-            </View>
 
-            <Image
-              style={styles.lbimg}
-              source={require('../assets/images/login-b-img.png')}
-            />
+              <TouchableOpacity
+                style={[
+                  globalStyles.lineBt,
+                  {height: 31, width: 131, marginBottom: 15},
+                ]}
+                onPress={handleSubmit}
+                disabled={isSubmitting || !phone.current}>
+                <Text style={globalStyles.lineBtText}>Next</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[globalStyles.gradBt, {width: 197}]}
+                onPress={() => navigation.push('Login')}>
+                <LinearGradient
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 0}}
+                  colors={['#037ee5', '#15a2e0', '#28cad9']}
+                  style={globalStyles.linearGradient}>
+                  <Text style={globalStyles.buttonText}>Log In</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[globalStyles.gradBt, {width: 197}]}
+                onPress={() => navigation.push('Country')}>
+                <LinearGradient
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 0}}
+                  colors={['#037ee5', '#15a2e0', '#28cad9']}
+                  style={globalStyles.linearGradient}>
+                  <Text style={globalStyles.buttonText}>Skip Sign Up</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <View style={styles.Iagree}>
+                <Text style={styles.IagreeText}>
+                  By signing in you confirm that you are 13 {'\n'} years of age
+                  or above and agree to our
+                </Text>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <TouchableOpacity style={styles.termsW}>
+                    <Text style={styles.terms}>Terms of use </Text>
+                  </TouchableOpacity>
+                  <Text style={styles.IagreeText}> and </Text>
+                  <TouchableOpacity>
+                    <Text style={styles.terms}>Privacy Policy.</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <Image
+                style={styles.lbimg}
+                source={require('../assets/images/login-b-img.png')}
+              />
+            </ScrollView>
           </View>
         )}
       </Formik>
       <Findconnectionsmodal />
       {alreadyExist && <Acalreadyexitmodal />}
       {modal && <Agemodal />}
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
     alignItems: 'center',
     backgroundColor: '#fff',
+  },
+  scView: {
+    width: '100%',
+    alignItems: 'center',
+    // height:'100%'
   },
   loginText: {
     marginTop: 20,
@@ -502,7 +516,7 @@ const styles = StyleSheet.create({
     color: COLORS.blue,
     fontFamily: 'SFpro-Regular',
     fontSize: 10,
-    textDecorationLine:'underline'
+    textDecorationLine: 'underline',
   },
 
   phoneInputWrap: {
@@ -516,5 +530,9 @@ const styles = StyleSheet.create({
     width: 150,
     height: 200,
     resizeMode: 'contain',
+  },
+  input: {
+    fontSize: 14,
+    color: '#000',
   },
 });

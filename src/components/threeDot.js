@@ -1,14 +1,23 @@
 /* eslint-disable react-native/no-inline-styles */
+import Clipboard from '@react-native-clipboard/clipboard';
 import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
-import {View} from 'react-native';
 import COLORS from '../global/globalColors';
 import WhiteButton from './buttons/whiteButton';
 
-const ThreeDotComponent = ({onClose}) => {
+const ThreeDotComponent = ({onClose, type, feedId}) => {
+  const handleCopyLink = async () => {
+    Clipboard.setString(`www.lykapp.com/${type}/${feedId}`);
+    onClose();
+  };
+
   return (
     <TouchableOpacity style={styles.menuItemsWrap} onPress={onClose}>
-      <WhiteButton buttonName={'copy link'} textColor={COLORS.primaryRed} />
+      <WhiteButton
+        buttonName={'copy link'}
+        textColor={COLORS.primaryRed}
+        onPress={handleCopyLink}
+      />
       <WhiteButton
         buttonName={'mark as inappropriate'}
         textColor={COLORS.primaryRed}

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable, StyleSheet} from 'react-native';
+import {Pressable, StyleSheet,Image} from 'react-native';
 import {Text} from 'react-native';
 import {View} from 'react-native';
 import FIIcon from 'react-native-vector-icons/Feather';
@@ -11,7 +11,11 @@ const CreateBusinessButton = ({onRedirect}) => {
     <View style={styles.body}>
       <Pressable style={styles.createCardWrap} onPress={onRedirect}>
         <View>
-          <FIIcon name="plus-square" size={50} color={COLORS.blue} />
+        <Image
+              resizeMode="contain"
+              source={require('../../assets/images/create-business-page.png')}
+              style={[styles.createBusinessPageIcon]}
+            />
         </View>
         <Text style={styles.cardName}>Create Business Page</Text>
       </Pressable>
@@ -41,5 +45,9 @@ const styles = StyleSheet.create({
     fontFamily: 'SFpro-Regular',
     color: COLORS.blue,
   },
+  createBusinessPageIcon:{
+    width:40,
+    height:40
+  }
 });
 export default CreateBusinessButton;
