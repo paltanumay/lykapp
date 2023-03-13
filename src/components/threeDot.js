@@ -1,14 +1,57 @@
 /* eslint-disable react-native/no-inline-styles */
 import Clipboard from '@react-native-clipboard/clipboard';
+import AsyncStorage from '@react-native-community/async-storage';
 import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import COLORS from '../global/globalColors';
+import {INAPPROPRIATE_URL} from '../screens/Home';
+import {setMarkAsInAppropriate} from '../services/homeFeed.service';
+import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import WhiteButton from './buttons/whiteButton';
 
-const ThreeDotComponent = ({onClose, type, feedId}) => {
+const INAPPROPRIATE_SHORT = 'rprIe';
+
+const ThreeDotComponent = ({
+  onClose,
+  type,
+  feedId,
+  title,
+  imageUrl,
+  setFeeds,
+}) => {
   const handleCopyLink = async () => {
     Clipboard.setString(`www.lykapp.com/${type}/${feedId}`);
     onClose();
+  };
+
+  const handleInappropriate = async () => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    // console.log(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      INAPPROPRIATE_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    setMarkAsInAppropriate({
+      URL: INAPPROPRIATE_URL,
+      data: {
+        itemId: feedId,
+        userId: getEncUserId(userDetails.userId),
+        itemType: type,
+        title: title,
+        imageUrl: imageUrl,
+        reason: 'From Home Feed',
+      },
+      token,
+    })
+      .then(res => {
+        console.log(res.data, 'api---->');
+        setFeeds(prev => prev.filter(data => data.details.newsId !== feedId));
+        onClose();
+      })
+      .catch(err => console.log(err, 'err--->'));
   };
 
   return (
@@ -21,6 +64,7 @@ const ThreeDotComponent = ({onClose, type, feedId}) => {
       <WhiteButton
         buttonName={'mark as inappropriate'}
         textColor={COLORS.primaryRed}
+        onPress={handleInappropriate}
       />
       <WhiteButton
         buttonName={'cancel'}

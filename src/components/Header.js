@@ -52,7 +52,7 @@ export default function Header(props) {
               <Text style={styles.headerTitle}>{'comments'}</Text>
             </View>
           ) : (
-            <TouchableOpacity onPress={() => props.onSetRefresh(true)}>
+            <TouchableOpacity onPress={() => props.onSetRefresh(prev => !prev)}>
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/logo.png')}

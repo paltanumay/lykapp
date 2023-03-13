@@ -17,10 +17,12 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import axios from 'axios';
 import {useState} from 'react';
-import {saveCommentFeed} from '../services/homeFeedComment.service';
 import CommentHeader from '../components/commentHeader';
 import ThreeDotComponent from '../components/threeDot';
-import {generalApiCallPost} from '../services/homeFeedComment.service';
+import {
+  generalApiCallPost,
+  saveCommentFeed,
+} from '../services/homeFeed.service';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const COMMENT_URL = `${API_URL}/gtfdcmts`;
@@ -42,6 +44,7 @@ const CommentsDetails = () => {
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([]);
   const [likeresponse, setLikeResponse] = useState({});
+  const [threeDotData, setThreeDotData] = useState();
   // const [commentReplies, setCommentReplies] = useState([]);
   // console.log('comments-----------', comments);
 
@@ -161,11 +164,25 @@ const CommentsDetails = () => {
 
     // console.log(res, 'responsdf');
   };
+
+   const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
+     setThreeDotData({type, feedId, title, imageUrl});
+     setThreeDot(true);
+   };
   // console.log('Comments------------------', commentReplies);
   return (
     <>
       <CommentHeader name={'Comments'} />
-      {threeDot && <ThreeDotComponent onClose={() => setThreeDot(false)} />}
+      {threeDot && (
+        <ThreeDotComponent
+          onClose={() => setThreeDot(false)}
+          type={threeDotData.type}
+          feedId={threeDotData.feedId}
+          imageUrl={threeDotData.imageUrl}
+          title={threeDotData.title}
+          setFeeds={setFeeds}
+        />
+      )}
 
       {type === 'news' ? (
         <>
@@ -201,7 +218,7 @@ const CommentsDetails = () => {
                 </View>
                 <TouchableOpacity
                   style={styles.options}
-                  onPress={() => setThreeDot(prev => !prev)}>
+                  onPress={() => onPressThreeDot({type,})}>
                   <EnIcon name="dots-three-horizontal" size={25} color="#333" />
                 </TouchableOpacity>
               </View>
@@ -514,26 +531,24 @@ const mainStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
   },
-  newsCoverImg:{
-    height:550,
-    width:'100%'
+  newsCoverImg: {
+    height: 550,
+    width: '100%',
   },
-  postImg:{
-    height:550,
-    width:'100%'
+  postImg: {
+    height: 550,
+    width: '100%',
   },
-  messageWrapper:{
-    height:400,
-alignItems:'center',
-justifyContent:'center'
-  //  bottom:'50%',
-   
+  messageWrapper: {
+    height: 400,
+    alignItems: 'center',
+    justifyContent: 'center',
+    //  bottom:'50%',
   },
-  message:{
+  message: {
     color: '#000',
     fontWeight: '700',
     fontFamily: 'SFpro-Bold',
-  }
-
+  },
 });
 export default CommentsDetails;

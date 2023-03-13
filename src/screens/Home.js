@@ -38,10 +38,12 @@ import Animated, {
 import HomeComments from '../components/HomeComments';
 import ThreeDotComponent from '../components/threeDot';
 
-const API_URL =
+export const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
+export const INAPPROPRIATE_URL = `${API_URL}Analytical/reportItem`;
+
 export const INSERT_PUSH_SHORT = 'isrPs';
 const HOME_FEED_SHORT = 'gttmln';
 const offset = 0,
@@ -68,12 +70,10 @@ export default function Home({navigation}) {
   const [isScrollDown, setScrollDown] = useState(false);
   const [threeDot, setThreeDot] = useState(false);
   const [threeDotData, setThreeDotData] = useState({});
-  console.log(feeds);
   useEffect(() => {
     async function getHomeFeed() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
-      // console.log(userDetails);
       let token =
         (await AsyncStorage.getItem('token')) +
         '-' +
@@ -107,7 +107,7 @@ export default function Home({navigation}) {
           res => {
             //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
             setFeeds(res.data.response.feeds);
-            console.log('feed');
+            console.log('reset');
             setRefresh(false);
           },
           err => {
@@ -280,10 +280,11 @@ export default function Home({navigation}) {
     },
   });
   // console.log(feeds);
-  const onPressThreeDot = ({type, feedId}) => {
-    setThreeDotData({type, feedId});
+  const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
+    setThreeDotData({type, feedId, title, imageUrl});
     setThreeDot(true);
   };
+  console.log(feeds);
   return (
     <>
       <Header onSetRefresh={onRefresh} />
@@ -292,6 +293,9 @@ export default function Home({navigation}) {
           onClose={() => setThreeDot(false)}
           type={threeDotData.type}
           feedId={threeDotData.feedId}
+          imageUrl={threeDotData.imageUrl}
+          title={threeDotData.title}
+          setFeeds={setFeeds}
         />
       )}
       <View style={globalStyles.innerPagesContainer}>
@@ -306,27 +310,23 @@ export default function Home({navigation}) {
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
-          
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/create-post.png')}
-                style={[styles.postImg]}
-              />
-          
-           
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/invited.png')}
-                style={[styles.postImg]}
-              />
-          
-           
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/grow-network.png')}
-                style={[styles.postImg]}
-              />
-           
+            <Image
+              resizeMode="contain"
+              source={require('../assets/images/create-post.png')}
+              style={[styles.postImg]}
+            />
+
+            <Image
+              resizeMode="contain"
+              source={require('../assets/images/invited.png')}
+              style={[styles.postImg]}
+            />
+
+            <Image
+              resizeMode="contain"
+              source={require('../assets/images/grow-network.png')}
+              style={[styles.postImg]}
+            />
           </View>
 
           <View style={styles.newsCardsWrap}>
@@ -362,7 +362,12 @@ export default function Home({navigation}) {
                     <TouchableOpacity
                       style={styles.options}
                       onPress={() =>
-                        onPressThreeDot({type, feedId: details.newsId})
+                        onPressThreeDot({
+                          type,
+                          feedId: details.newsId,
+                          title: details.newsTitle,
+                          imageUrl: details.newsImageUrl,
+                        })
                       }>
                       <EnIcon
                         name="dots-three-horizontal"
@@ -500,7 +505,11 @@ export default function Home({navigation}) {
                       <TouchableOpacity
                         style={styles.options}
                         onPress={() =>
-                          onPressThreeDot({type, feedId: details.postId})
+                          onPressThreeDot({
+                            type,
+                            feedId: details.postId,
+                            imageUrl: details.postImageUrl,
+                          })
                         }>
                         <EnIcon
                           name="dots-three-horizontal"
