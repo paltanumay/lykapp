@@ -107,7 +107,6 @@ export default function Home({navigation}) {
           res => {
             //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
             setFeeds(res.data.response.feeds);
-            console.log('reset');
             setRefresh(false);
           },
           err => {
@@ -128,7 +127,7 @@ export default function Home({navigation}) {
     });
 
     return unsubscribe;
-  }, [refresh]);
+  }, [refresh, setRefresh]);
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -144,6 +143,7 @@ export default function Home({navigation}) {
   };
 
   const onRefresh = React.useCallback(() => {
+    console.log('sdfds');
     setRefresh(prev => !prev);
     // wait(2000).then(() => setRefresh(false));
   }, []);
@@ -269,7 +269,7 @@ export default function Home({navigation}) {
       ss: '%d seconds',
       m: 'a minute',
       mm: '%d minutes',
-      h: '%d hour ago',
+      h: 'an hour',
       hh: '%d hrs',
       d: 'a day',
       dd: '%d days',
@@ -310,32 +310,39 @@ export default function Home({navigation}) {
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
-            <Image
-              resizeMode="contain"
-              source={require('../assets/images/create-post.png')}
-              style={[styles.postImg]}
-            />
-
-            <Image
-              resizeMode="contain"
-              source={require('../assets/images/invited.png')}
-              style={[styles.postImg]}
-            />
-
-            <Image
-              resizeMode="contain"
-              source={require('../assets/images/grow-network.png')}
-              style={[styles.postImg]}
-            />
+            <TouchableOpacity
+              onPress={() => {
+                navigation.push('Createpost');
+              }}>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/create-post.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/invited.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.push('network');
+              }}>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/grow-network.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.newsCardsWrap}>
             {feeds.map(({type, details}) =>
               type === 'news' ? (
-                <Pressable
-                  style={styles.newsCard}
-                  key={details.newsId}
-                  onPress={() => onRedirectCommentScreen({type, details})}>
+                <View style={styles.newsCard} key={details.newsId}>
                   <View style={styles.cardTitle}>
                     <View style={styles.cardProImg}>
                       <Image
@@ -353,7 +360,7 @@ export default function Home({navigation}) {
                         ) < 1
                           ? moment(
                               details.feedTime.replace(' ', 'T') + 'Z',
-                            ).fromNow()
+                            ).fromNow('past')
                           : moment(
                               details.feedTime.replace(' ', 'T') + 'Z',
                             ).format('DD MMM YYYY, h:mm a')}
@@ -473,7 +480,7 @@ export default function Home({navigation}) {
                       />
                     </TouchableOpacity>
                   </View>
-                </Pressable>
+                </View>
               ) : (
                 type === 'post' && (
                   <View style={styles.newsCard} key={details.postId}>
