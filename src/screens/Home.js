@@ -11,6 +11,7 @@ import {
   Alert,
   Pressable,
   RefreshControl,
+  Linking,
 } from 'react-native';
 import React from 'react';
 import {globalStyles} from '../global/globalStyle';
@@ -80,18 +81,10 @@ export default function Home() {
   const [isScrollDown, setScrollDown] = useState(false);
   const [threeDot, setThreeDot] = useState(false);
   const [threeDotData, setThreeDotData] = useState({});
-  const [userDetailsInfo, setUserDetailsInfo] = useState([]);
   const {feeds, setFeeds, userInfo} = useContext(HomeContext);
 
-  // console.log(userDetailsInfo, '------>');
-  // useEffect(() => {
-  //   async function getuserDetails() {
-  //     let userDetailsinfo = await AsyncStorage.getItem('userId');
-  //     let userDetails = JSON.parse(userDetailsinfo);
-  //     setUserDetailsInfo(userDetails);
-  //   }
-  //   getuserDetails();
-  // }, []);
+  console.log(feeds, '--------->feed');
+
   useFocusEffect(
     useCallback(() => {
       async function getHomeFeed() {
@@ -130,7 +123,6 @@ export default function Home() {
           .then(res => {
             //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
             setFeeds(res.data.response.feeds);
-            console.log(feeds, '--------->feed');
             setRefresh(false);
           })
           .catch(err => console.log(err));
@@ -452,6 +444,13 @@ export default function Home() {
                       }}
                       style={[styles.postImg]}
                     />
+                    <Pressable
+                      style={styles.newsLink}
+                      onPress={() => Linking.openURL(details.newsLink)}>
+                      <Text style={styles.newsTextSource}>
+                        Source : {details.newsSource}
+                      </Text>
+                    </Pressable>
                   </View>
                   <Text style={styles.secDesc}>{details.newsDescription}</Text>
 
@@ -556,7 +555,11 @@ export default function Home() {
                       <View style={styles.cardProImg}>
                         <Image
                           resizeMode="contain"
-                          source={require('../assets/images/avatar.jpg')}
+                          source={
+                            details.createdBy.imageUrl
+                              ? {uri: details.createdBy.imageUrl}
+                              : require('../assets/images/avatar.jpg')
+                          }
                           style={[styles.logoImg]}
                         />
                       </View>
@@ -868,5 +871,24 @@ const styles = StyleSheet.create({
   likeImg: {
     width: 34,
     height: 34,
+  },
+  newsLink: {
+    position: 'absolute',
+    display: 'flex',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    alignItems: 'center',
+    right: 0,
+    bottom: 0,
+    height: 32,
+    borderRadius: 30,
+    backgroundColor: COLORS.blue,
+  },
+  newsTextSource: {
+    color: '#fff',
+    fontFamily: 'SFpro-Regular',
+    fontSize: 12,
+    fontWeight: '400',
   },
 });

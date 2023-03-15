@@ -2,7 +2,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import moment from 'moment';
 import React, {useEffect, useRef} from 'react';
-import {ScrollView, TextInput, TouchableOpacity, Pressable} from 'react-native';
+import {
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  Pressable,
+  Linking,
+} from 'react-native';
 import {Text} from 'react-native';
 import {Image} from 'react-native';
 import {StyleSheet, View} from 'react-native';
@@ -257,6 +263,13 @@ const CommentsDetails = () => {
                   }}
                   style={[styles.postImg]}
                 />
+                <Pressable
+                  style={styles.newsLink}
+                  onPress={() => Linking.openURL(details.newsLink)}>
+                  <Text style={styles.newsTextSource}>
+                    Source : {details.newsSource}
+                  </Text>
+                </Pressable>
               </View>
               <Text style={styles.secDesc}>{details.newsDescription}</Text>
 
