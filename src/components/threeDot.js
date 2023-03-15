@@ -20,7 +20,7 @@ const ThreeDotComponent = ({
   setFeeds,
 }) => {
   const handleCopyLink = async () => {
-    Clipboard.setString(`www.lykapp.com/${type}/${feedId}`);
+    Clipboard.setString(`https://www.lykapp.com/${type}/${feedId}`);
     onClose();
   };
 
@@ -48,7 +48,13 @@ const ThreeDotComponent = ({
     })
       .then(res => {
         console.log(res.data, 'api---->');
-        setFeeds(prev => prev.filter(data => data.details.newsId !== feedId));
+        type === 'news'
+          ? setFeeds(prev =>
+              prev.filter(data => data.details.newsId !== feedId),
+            )
+          : setFeeds(prev =>
+              prev.filter(data => data.details.postId !== feedId),
+            );
         onClose();
       })
       .catch(err => console.log(err, 'err--->'));

@@ -8,7 +8,11 @@ import {Image} from 'react-native';
 import {StyleSheet, View} from 'react-native';
 import Header from '../components/Header';
 import EnIcon from 'react-native-vector-icons/Entypo';
-import {useRoute} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import HomeComments from '../components/HomeComments';
 import CommentComponents from '../components/CommentsComponent';
 import smileImg from '../assets/images/smile.png';
@@ -23,6 +27,8 @@ import {
   generalApiCallPost,
   saveCommentFeed,
 } from '../services/homeFeed.service';
+import {useContext} from 'react';
+import {HomeContext} from '../shared/homeFeedCotext';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const COMMENT_URL = `${API_URL}/gtfdcmts`;
@@ -39,14 +45,12 @@ const CommentsDetails = () => {
   const COMMENT_FEED_SHORT = 'bH3m8q';
   const POST_COMMENT_SHORT = 'g4QyL';
   const COMMENT_REPLY_SHORT = 'mS72Lc';
-  // console.log('Details------', details);
-  // console.log('Type---------', type);
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([]);
   const [likeresponse, setLikeResponse] = useState({});
   const [threeDotData, setThreeDotData] = useState();
-  // const [commentReplies, setCommentReplies] = useState([]);
-  // console.log('comments-----------', comments);
+  const {feeds, setFeeds} = useContext(HomeContext);
+  const navigation = useNavigation();
 
   const inputRef = useRef();
   useEffect(() => {
@@ -165,17 +169,40 @@ const CommentsDetails = () => {
     // console.log(res, 'responsdf');
   };
 
-   const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
-     setThreeDotData({type, feedId, title, imageUrl});
-     setThreeDot(true);
-   };
+  moment.updateLocale('en', {
+    relativeTime: {
+      future: 'in %s',
+      past: '%s ago',
+      s: 'a few seconds',
+      ss: '%d seconds',
+      m: 'a minute',
+      mm: '%d minutes',
+      h: '1 hrs ago',
+      hh: '%d hrs ago',
+      d: 'a day',
+      dd: '%d days',
+      M: 'a month',
+      MM: '%d months',
+      y: 'a year',
+      yy: '%d years',
+    },
+  });
+
+  const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
+    setThreeDotData({type, feedId, title, imageUrl});
+    setThreeDot(true);
+  };
   // console.log('Comments------------------', commentReplies);
+  const handleOnClose = () => {
+    setThreeDot(false);
+    navigation.goBack();
+  };
   return (
     <>
       <CommentHeader name={'Comments'} />
       {threeDot && (
         <ThreeDotComponent
-          onClose={() => setThreeDot(false)}
+          onClose={handleOnClose}
           type={threeDotData.type}
           feedId={threeDotData.feedId}
           imageUrl={threeDotData.imageUrl}
@@ -210,7 +237,7 @@ const CommentsDetails = () => {
                     ) < 1
                       ? moment(
                           details.feedTime.replace(' ', 'T') + 'Z',
-                        ).fromNow()
+                        ).fromNow('past')
                       : moment(details.feedTime.replace(' ', 'T') + 'Z').format(
                           'DD MMM YYYY, h:mm a',
                         )}
@@ -218,7 +245,14 @@ const CommentsDetails = () => {
                 </View>
                 <TouchableOpacity
                   style={styles.options}
-                  onPress={() => onPressThreeDot({type,})}>
+                  onPress={() =>
+                    onPressThreeDot({
+                      type,
+                      feedId: details.newsId,
+                      title: details.newsTitle,
+                      imageUrl: details.newsImageUrl,
+                    })
+                  }>
                   <EnIcon name="dots-three-horizontal" size={25} color="#333" />
                 </TouchableOpacity>
               </View>
@@ -335,13 +369,22 @@ const CommentsDetails = () => {
                     ) < 1
                       ? moment(
                           details.createdOn.replace(' ', 'T') + 'Z',
-                        ).fromNow()
+                        ).fromNow('past')
                       : moment(
                           details.createdOn.replace(' ', 'T') + 'Z',
                         ).format('DD MMM YYYY, h:mm a')}
                   </Text>
                 </View>
-                <TouchableOpacity style={styles.options}>
+                <TouchableOpacity
+                  style={styles.options}
+                  onPress={() =>
+                    onPressThreeDot({
+                      type,
+                      feedId: details.postId,
+                      title: details.title,
+                      imageUrl: details.imageUrl,
+                    })
+                  }>
                   <EnIcon name="dots-three-horizontal" size={25} color="#333" />
                 </TouchableOpacity>
               </View>

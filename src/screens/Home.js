@@ -37,6 +37,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import HomeComments from '../components/HomeComments';
 import ThreeDotComponent from '../components/threeDot';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useContext} from 'react';
+import {HomeContext} from '../shared/homeFeedCotext';
 
 export const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -61,15 +70,16 @@ const pId = null,
   promoId = '0',
   nextNewsId = '0',
   postStatus = '0';
-export default function Home({navigation}) {
+export default function Home() {
+  const navigation = useNavigation();
   const translateY = useSharedValue(0);
   const lastContentOffset = useSharedValue(0);
   const isScrolling = useSharedValue(false);
-  const [feeds, setFeeds] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [isScrollDown, setScrollDown] = useState(false);
   const [threeDot, setThreeDot] = useState(false);
   const [threeDotData, setThreeDotData] = useState({});
+  const {feeds, setFeeds} = useContext(HomeContext);
   useEffect(() => {
     async function getHomeFeed() {
       let userDetails = await AsyncStorage.getItem('userId');
@@ -127,7 +137,7 @@ export default function Home({navigation}) {
     });
 
     return unsubscribe;
-  }, [refresh, setRefresh]);
+  }, [refresh]);
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -269,8 +279,8 @@ export default function Home({navigation}) {
       ss: '%d seconds',
       m: 'a minute',
       mm: '%d minutes',
-      h: 'an hour',
-      hh: '%d hrs',
+      h: '1 hrs ago',
+      hh: '%d hrs ago',
       d: 'a day',
       dd: '%d days',
       M: 'a month',
@@ -342,7 +352,10 @@ export default function Home({navigation}) {
           <View style={styles.newsCardsWrap}>
             {feeds.map(({type, details}) =>
               type === 'news' ? (
-                <View style={styles.newsCard} key={details.newsId}>
+                <Pressable
+                  style={styles.newsCard}
+                  key={details.newsId}
+                  onPress={() => onRedirectCommentScreen({details, type})}>
                   <View style={styles.cardTitle}>
                     <View style={styles.cardProImg}>
                       <Image
@@ -374,6 +387,7 @@ export default function Home({navigation}) {
                           feedId: details.newsId,
                           title: details.newsTitle,
                           imageUrl: details.newsImageUrl,
+                          setFeeds: setFeeds,
                         })
                       }>
                       <EnIcon
@@ -435,23 +449,30 @@ export default function Home({navigation}) {
                         </Text>
                       </TouchableOpacity>
                     </View>
+                    <Menu>
+                      <MenuTrigger>
+                        <View style={styles.likeCommentShareBox}>
+                          <View style={styles.likeCommentShareIconWrap}>
+                            <Image
+                              resizeMode="contain"
+                              source={require('../assets/images/share.png')}
+                              style={[styles.likeImg]}
+                            />
 
-                    <View style={styles.likeCommentShareBox}>
-                      <View style={styles.likeCommentShareIconWrap}>
-                        {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="sharealt" size={22} color="#f8767a" />
-                      </TouchableOpacity> */}
-                        <Image
-                          resizeMode="contain"
-                          source={require('../assets/images/share.png')}
-                          style={[styles.likeImg]}
-                        />
-
-                        <Text style={styles.iconText}>
-                          {details.shareCount} Share
-                        </Text>
-                      </View>
-                    </View>
+                            <Text style={styles.iconText}>
+                              {details.shareCount} Share
+                            </Text>
+                          </View>
+                        </View>
+                      </MenuTrigger>
+                      <MenuOptions>
+                        <MenuOption value={1} text="One" />
+                        <MenuOption value={2}>
+                          <Text style={{color: 'red'}}>Two</Text>
+                        </MenuOption>
+                        <MenuOption value={3} disabled={true} text="Three" />
+                      </MenuOptions>
+                    </Menu>
                   </View>
                   {details.allComments?.map((comment, ind) => (
                     <HomeComments commentDetails={comment} key={ind} />
@@ -480,10 +501,10 @@ export default function Home({navigation}) {
                       />
                     </TouchableOpacity>
                   </View>
-                </View>
+                </Pressable>
               ) : (
                 type === 'post' && (
-                  <View style={styles.newsCard} key={details.postId}>
+                  <Pressable style={styles.newsCard} key={details.postId}>
                     <View style={styles.cardTitle}>
                       <View style={styles.cardProImg}>
                         <Image
@@ -503,7 +524,7 @@ export default function Home({navigation}) {
                           ) < 1
                             ? moment(
                                 details.createdOn.replace(' ', 'T') + 'Z',
-                              ).fromNow()
+                              ).fromNow('past')
                             : moment(
                                 details.createdOn.replace(' ', 'T') + 'Z',
                               ).format('DD MMM YYYY, h:mm a')}
@@ -514,8 +535,10 @@ export default function Home({navigation}) {
                         onPress={() =>
                           onPressThreeDot({
                             type,
+                            title: details.title,
+
                             feedId: details.postId,
-                            imageUrl: details.postImageUrl,
+                            imageUrl: details.imageUrl,
                           })
                         }>
                         <EnIcon
@@ -625,7 +648,7 @@ export default function Home({navigation}) {
                         />
                       </TouchableOpacity>
                     </View>
-                  </View>
+                  </Pressable>
                 )
               ),
             )}
