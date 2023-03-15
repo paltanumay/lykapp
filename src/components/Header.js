@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   Text,
   TouchableOpacity,
@@ -15,10 +16,11 @@ import {useEffect} from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useState} from 'react';
 import AuthButtons from './buttons/AuthButtons';
+import {HomeContext} from '../shared/homeFeedCotext';
 
 export default function Header(props) {
   const navigation = useNavigation();
-  const [userInfo, setUserInfo] = useState('');
+  const {userInfo, setUserInfo} = useContext(HomeContext);
   console.log(userInfo);
   useEffect(() => {
     (async () => {

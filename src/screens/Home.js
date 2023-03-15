@@ -80,14 +80,24 @@ export default function Home() {
   const [isScrollDown, setScrollDown] = useState(false);
   const [threeDot, setThreeDot] = useState(false);
   const [threeDotData, setThreeDotData] = useState({});
-  const {feeds, setFeeds} = useContext(HomeContext);
+  const [userDetailsInfo, setUserDetailsInfo] = useState([]);
+  const {feeds, setFeeds, userInfo} = useContext(HomeContext);
 
-  console.log(refresh, '------>');
+  // console.log(userDetailsInfo, '------>');
+  // useEffect(() => {
+  //   async function getuserDetails() {
+  //     let userDetailsinfo = await AsyncStorage.getItem('userId');
+  //     let userDetails = JSON.parse(userDetailsinfo);
+  //     setUserDetailsInfo(userDetails);
+  //   }
+  //   getuserDetails();
+  // }, []);
   useFocusEffect(
     useCallback(() => {
       async function getHomeFeed() {
         let userDetails = await AsyncStorage.getItem('userId');
         userDetails = JSON.parse(userDetails);
+        // setUserDetailsInfo(userDetails);
         let token =
           (await AsyncStorage.getItem('token')) +
           '-' +
@@ -117,16 +127,13 @@ export default function Home() {
               },
             },
           )
-          .then(
-            res => {
-              //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
-              setFeeds(res.data.response.feeds);
-              setRefresh(false);
-            },
-            err => {
-              alert(err + userDetails.userId + token);
-            },
-          );
+          .then(res => {
+            //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
+            setFeeds(res.data.response.feeds);
+            console.log(feeds, '--------->feed');
+            setRefresh(false);
+          })
+          .catch(err => console.log(err));
       }
       getHomeFeed();
       const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -322,33 +329,68 @@ export default function Home() {
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.push('Createpost');
-              }}>
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/create-post.png')}
-                style={[styles.postImg]}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/invited.png')}
-                style={[styles.postImg]}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.push('network');
-              }}>
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/grow-network.png')}
-                style={[styles.postImg]}
-              />
-            </TouchableOpacity>
+            {((!!userInfo && userInfo?.countryISO === 'IN') ||
+              userInfo.countryISO === 'US' ||
+              userInfo.countryISO === 'GB') && (
+              <TouchableOpacity
+              // onPress={() => {
+              //   navigation.push('Createpost');
+              // }}
+              >
+                <Image
+                  resizeMode="contain"
+                  source={require('../assets/images/wallet.jpg')}
+                  style={[styles.postImg]}
+                />
+              </TouchableOpacity>
+            )}
+            {feeds.map(({type, details}, ind) => {
+              if (type === 'card' && details.metaType === 'lessPosts') {
+                return (
+                  <TouchableOpacity
+                    key={ind}
+                    onPress={() => {
+                      navigation.push('Createpost');
+                    }}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/images/create-post.png')}
+                      style={[styles.postImg]}
+                    />
+                  </TouchableOpacity>
+                );
+              } else if (
+                type === 'card' &&
+                details.metaType === 'lessFriends'
+              ) {
+                return (
+                  <TouchableOpacity
+                    key={ind}
+                    onPress={() => {
+                      navigation.push('network');
+                    }}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/images/grow-network.png')}
+                      style={[styles.postImg]}
+                    />
+                  </TouchableOpacity>
+                );
+              } else if (
+                type === 'card' &&
+                details.metaType === 'lessPrivateCommentConversation'
+              ) {
+                return (
+                  <TouchableOpacity key={ind}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/images/invited.png')}
+                      style={[styles.postImg]}
+                    />
+                  </TouchableOpacity>
+                );
+              }
+            })}
           </View>
 
           <View style={styles.newsCardsWrap}>
