@@ -141,18 +141,19 @@ const CommentsDetails = () => {
         itemType: type,
         isReply: false,
         isPrivate: false,
-        toUserId: getEncUserId(userDetails.userId),
-        // type === 'news'
-        //   ? getEncUserId(details.newsId)
-        //   : getEncUserId(details.postId),
+        // toUserId: getEncUserId(userDetails.userId),
+        // // type === 'news'
+        // //   ? getEncUserId(details.newsId)
+        // //   : getEncUserId(details.postId),
         commentor: {
           userId: getEncUserId(userDetails.userId),
           firstName: userDetails.firstName,
           imageUrl: userDetails.imageUrl,
         },
+        mentions: [],
         ownerName: userDetails.firstName,
         myName: userDetails.firstName,
-        creatorId: getEncUserId(userDetails.userId),
+        creatorId: getEncTokenAnyUserId(userDetails.userId),
         replyTo: replyTo,
         replyToName: replyToName,
       },
@@ -514,26 +515,24 @@ const mainStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
   },
-  newsCoverImg:{
-    height:550,
-    width:'100%'
+  newsCoverImg: {
+    height: 550,
+    width: '100%',
   },
-  postImg:{
-    height:550,
-    width:'100%'
+  postImg: {
+    height: 550,
+    width: '100%',
   },
-  messageWrapper:{
-    height:400,
-alignItems:'center',
-justifyContent:'center'
-  //  bottom:'50%',
-   
+  messageWrapper: {
+    height: 400,
+    alignItems: 'center',
+    justifyContent: 'center',
+    //  bottom:'50%',
   },
-  message:{
+  message: {
     color: '#000',
     fontWeight: '700',
     fontFamily: 'SFpro-Bold',
-  }
-
+  },
 });
 export default CommentsDetails;

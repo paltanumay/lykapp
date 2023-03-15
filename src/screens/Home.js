@@ -36,6 +36,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import HomeComments from '../components/HomeComments';
+import {postLike} from '../services/homeFeedComment.service';
 
 const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -43,6 +44,7 @@ export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
 export const INSERT_PUSH_SHORT = 'isrPs';
 const HOME_FEED_SHORT = 'gttmln';
+const LIKE_FEED_SHORT = 'lkPs';
 const offset = 0,
   limit = 25,
   feedPosition = -1,
@@ -64,6 +66,7 @@ export default function Home({navigation}) {
   const isScrolling = useSharedValue(false);
   const [feeds, setFeeds] = useState([]);
   const [refresh, setRefresh] = useState(false);
+  const [liked, setLiked] = useState(false);
   const [isScrollDown, setScrollDown] = useState(false);
   // console.log(refresh);
   useEffect(() => {
@@ -123,7 +126,7 @@ export default function Home({navigation}) {
     });
 
     return unsubscribe;
-  }, [refresh, setRefresh]);
+  }, [refresh, setRefresh, liked]);
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -213,6 +216,86 @@ export default function Home({navigation}) {
   
       return unsubscribe; */
   }, []);
+
+  const onNewsLike = async newsId => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      LIKE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    postLike(
+      {
+        newsId: newsId,
+        userId: getEncUserId(userDetails.userId),
+        likerName: userDetails.firstName,
+        creatorId: '',
+      },
+      token,
+    )
+      .then(response => {
+        // const newState = feeds.map(obj => {
+        //   if (obj.postId === postId) {
+        //     if (response.data.response?.liked === 0) {
+        //       return {...obj, likeCount: 0};
+        //     }
+        //     return {...obj, likeCount: obj.likeCount + 1};
+        //   }
+        //   return obj;
+        // });
+        // setFeeds(newState);
+        if (response.data.response?.success) {
+          setLiked(!liked);
+        }
+      })
+      .catch(error => {
+        console.log('Error---------', error.response);
+      });
+  };
+
+  const onPressLike = async (postId, creatorId) => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    console.log(
+      `postId: ${postId} creatorId: ${creatorId} likerName: ${userDetails.firstName} userId: ${userDetails.userId}`,
+    );
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      LIKE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    postLike(
+      {
+        postId: postId,
+        userId: getEncUserId(userDetails.userId),
+        likerName: userDetails.firstName,
+        creatorId: getEncTokenAnyUserId(creatorId),
+      },
+      token,
+    )
+      .then(response => {
+        // const newState = feeds.map(obj => {
+        //   if (obj.postId === postId) {
+        //     if (response.data.response?.liked === 0) {
+        //       return {...obj, likeCount: 0};
+        //     }
+        //     return {...obj, likeCount: obj.likeCount + 1};
+        //   }
+        //   return obj;
+        // });
+        // setFeeds(newState);
+        if (response.data.response?.success) {
+          setLiked(!liked);
+        }
+      })
+      .catch(error => {
+        console.log('Error---------', error.response);
+      });
+  };
+
   const actionBarStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -275,7 +358,7 @@ export default function Home({navigation}) {
       yy: '%d years',
     },
   });
-  // console.log(feeds);
+  console.log('Feeds------------------', feeds);
   return (
     <>
       <Header onSetRefresh={onRefresh} />
@@ -372,15 +455,21 @@ export default function Home({navigation}) {
                   <View style={styles.likeCommentShare}>
                     <View style={styles.likeCommentShareBox}>
                       <View style={styles.likeCommentShareIconWrap}>
-                        <Image
-                          resizeMode="contain"
-                          source={require('../assets/images/liked.png')}
-                          style={[styles.likeImg]}
-                        />
-                        {/* <TouchableOpacity style={styles.roundBase}>
+                        <TouchableOpacity
+                          style={styles.likeCommentShareIconWrap}
+                          onPress={() => {
+                            console.log('Details------------------', details);
+                            onNewsLike(details.newsId);
+                          }}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/liked.png')}
+                            style={[styles.likeImg]}
+                          />
+                          {/* <TouchableOpacity style={styles.roundBase}>
                         <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
                       </TouchableOpacity> */}
-
+                        </TouchableOpacity>
                         <Text style={styles.iconText}>
                           {details.likeCount} Like
                         </Text>
@@ -512,11 +601,21 @@ export default function Home({navigation}) {
                     <View style={styles.likeCommentShare}>
                       <View style={styles.likeCommentShareBox}>
                         <View style={styles.likeCommentShareIconWrap}>
-                          <Image
-                            resizeMode="contain"
-                            source={require('../assets/images/liked.png')}
-                            style={[styles.likeImg]}
-                          />
+                          <TouchableOpacity
+                            onPress={() => {
+                              console.log('User details------------', details);
+                              onPressLike(
+                                details.postId,
+                                details.createdBy.userId,
+                              );
+                            }}
+                            style={styles.likeCommentShareIconWrap}>
+                            <Image
+                              resizeMode="contain"
+                              source={require('../assets/images/liked.png')}
+                              style={[styles.likeImg]}
+                            />
+                          </TouchableOpacity>
 
                           {/* <TouchableOpacity style={styles.roundBase}>
                           <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
