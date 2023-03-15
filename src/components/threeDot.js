@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import Clipboard from '@react-native-clipboard/clipboard';
 import AsyncStorage from '@react-native-community/async-storage';
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import COLORS from '../global/globalColors';
@@ -18,7 +19,9 @@ const ThreeDotComponent = ({
   title,
   imageUrl,
   setFeeds,
+  isHome,
 }) => {
+  const navigation = useNavigation();
   const handleCopyLink = async () => {
     Clipboard.setString(`https://www.lykapp.com/${type}/${feedId}`);
     onClose();
@@ -56,8 +59,13 @@ const ThreeDotComponent = ({
               prev.filter(data => data.details.postId !== feedId),
             );
         onClose();
+        !isHome && navigation.goBack();
       })
       .catch(err => console.log(err, 'err--->'));
+  };
+
+  const handleDelete = () => {
+    console.log('dfd');
   };
 
   return (
@@ -67,11 +75,19 @@ const ThreeDotComponent = ({
         textColor={COLORS.primaryRed}
         onPress={handleCopyLink}
       />
-      <WhiteButton
-        buttonName={'mark as inappropriate'}
-        textColor={COLORS.primaryRed}
-        onPress={handleInappropriate}
-      />
+      {type === 'post' ? (
+        <WhiteButton
+          buttonName={'delete'}
+          textColor={COLORS.primaryRed}
+          onPress={handleDelete}
+        />
+      ) : (
+        <WhiteButton
+          buttonName={'mark as inappropriate'}
+          textColor={COLORS.primaryRed}
+          onPress={handleInappropriate}
+        />
+      )}
       <WhiteButton
         buttonName={'cancel'}
         textColor={COLORS.blue}

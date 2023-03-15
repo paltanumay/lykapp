@@ -63,7 +63,6 @@ const CommentsDetails = () => {
         COMMENT_FEED_SHORT +
         '-' +
         getEncTokenAnyUserId(userDetails.userId);
-      console.log(token);
 
       const response = await axios.post(
         COMMENT_URL,
@@ -84,14 +83,6 @@ const CommentsDetails = () => {
         },
       );
       setComments(response.data.response.comments);
-      console.log('res-------------', userDetails);
-      console.log({
-        userId: getEncUserId(userDetails.userId),
-        feedId: type === 'news' ? details.newsId : details.postId,
-        feedType: type,
-        start: 0,
-        limit: 25,
-      });
     };
     getAllComments();
   }, []);
@@ -120,7 +111,6 @@ const CommentsDetails = () => {
       token: token,
     })
       .then(response => {
-        console.log('Res---------------', response.data);
         setLikeResponse(response.data);
       })
       .catch(err => {
@@ -195,7 +185,6 @@ const CommentsDetails = () => {
   // console.log('Comments------------------', commentReplies);
   const handleOnClose = () => {
     setThreeDot(false);
-    navigation.goBack();
   };
   return (
     <>
@@ -208,6 +197,7 @@ const CommentsDetails = () => {
           imageUrl={threeDotData.imageUrl}
           title={threeDotData.title}
           setFeeds={setFeeds}
+          isHome={false}
         />
       )}
 
@@ -353,7 +343,7 @@ const CommentsDetails = () => {
               <View style={styles.cardTitle}>
                 <View style={styles.cardProImg}>
                   <Image
-                    resizeMode="contain"
+                    resizeMode="cover"
                     source={require('../assets/images/avatar.jpg')}
                     style={[styles.logoImg]}
                   />
@@ -364,15 +354,15 @@ const CommentsDetails = () => {
                   </Text>
                   <Text style={styles.newsSubTitletext}>
                     {moment(new Date()).diff(
-                      moment(details.createdOn.replace(' ', 'T') + 'Z'),
+                      moment(details.feedTime.replace(' ', 'T') + 'Z'),
                       'days',
                     ) < 1
                       ? moment(
-                          details.createdOn.replace(' ', 'T') + 'Z',
+                          details.feedTime.replace(' ', 'T') + 'Z',
                         ).fromNow('past')
-                      : moment(
-                          details.createdOn.replace(' ', 'T') + 'Z',
-                        ).format('DD MMM YYYY, h:mm a')}
+                      : moment(details.feedTime.replace(' ', 'T') + 'Z').format(
+                          'DD MMM YYYY, h:mm a',
+                        )}
                   </Text>
                 </View>
                 <TouchableOpacity
@@ -396,7 +386,7 @@ const CommentsDetails = () => {
               {details.imageUrl && (
                 <View style={styles.newsCoverImg}>
                   <Image
-                    resizeMode="stretch"
+                    resizeMode="cover"
                     source={{
                       uri:
                         'https://cdn.lykapp.com/newsImages/images/' +
@@ -579,7 +569,7 @@ const mainStyles = StyleSheet.create({
     width: '100%',
   },
   postImg: {
-    height: 550,
+    height: '100%',
     width: '100%',
   },
   messageWrapper: {

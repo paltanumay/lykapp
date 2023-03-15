@@ -52,13 +52,13 @@ export default function Header(props) {
               <Text style={styles.headerTitle}>{'comments'}</Text>
             </View>
           ) : (
-            <TouchableOpacity onPress={() => props.onSetRefresh(prev => !prev)}>
+            <Pressable onPress={() => props.onSetRefresh(prev => !prev)}>
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/logo.png')}
                 style={[styles.logoSmall]}
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       ) : (

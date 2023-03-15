@@ -46,6 +46,7 @@ import {
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useContext} from 'react';
 import {HomeContext} from '../shared/homeFeedCotext';
+import {useCallback} from 'react';
 
 export const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -80,64 +81,68 @@ export default function Home() {
   const [threeDot, setThreeDot] = useState(false);
   const [threeDotData, setThreeDotData] = useState({});
   const {feeds, setFeeds} = useContext(HomeContext);
-  useEffect(() => {
-    async function getHomeFeed() {
-      let userDetails = await AsyncStorage.getItem('userId');
-      userDetails = JSON.parse(userDetails);
-      let token =
-        (await AsyncStorage.getItem('token')) +
-        '-' +
-        HOME_FEED_SHORT +
-        '-' +
-        getEncTokenAnyUserId(userDetails.userId);
-      axios
-        .post(
-          HOME_FEED,
-          {
-            userId: getEncUserId(userDetails.userId),
-            limit: limit,
-            country: userDetails.countryName,
-            offset: offset,
-            nextPostId: nextPostId,
-            pId: pId,
-            promoId: promoId,
-            deviceType: 'android',
-            apiVersion: 2,
-            nextNewsId: nextNewsId,
-            postStatus: postStatus,
-            activityFriendOffsetCount: activityFriendOffsetCount,
-          },
-          {
-            headers: {
-              token: token,
-            },
-          },
-        )
-        .then(
-          res => {
-            //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
-            setFeeds(res.data.response.feeds);
-            setRefresh(false);
-          },
-          err => {
-            alert(err + userDetails.userId + token);
-          },
-        );
-    }
-    getHomeFeed();
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      if (remoteMessage.data.type === 'startcall') {
-        navigation.push('Callscreen', {
-          toUserId: remoteMessage.data.fromUserId,
-          userName: remoteMessage.data.incomingCallerName,
-          isCalling: true,
-        });
-      }
-    });
 
-    return unsubscribe;
-  }, [refresh]);
+  console.log(refresh, '------>');
+  useFocusEffect(
+    useCallback(() => {
+      async function getHomeFeed() {
+        let userDetails = await AsyncStorage.getItem('userId');
+        userDetails = JSON.parse(userDetails);
+        let token =
+          (await AsyncStorage.getItem('token')) +
+          '-' +
+          HOME_FEED_SHORT +
+          '-' +
+          getEncTokenAnyUserId(userDetails.userId);
+        axios
+          .post(
+            HOME_FEED,
+            {
+              userId: getEncUserId(userDetails.userId),
+              limit: limit,
+              country: userDetails.countryName,
+              offset: offset,
+              nextPostId: nextPostId,
+              pId: pId,
+              promoId: promoId,
+              deviceType: 'android',
+              apiVersion: 2,
+              nextNewsId: nextNewsId,
+              postStatus: postStatus,
+              activityFriendOffsetCount: activityFriendOffsetCount,
+            },
+            {
+              headers: {
+                token: token,
+              },
+            },
+          )
+          .then(
+            res => {
+              //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
+              setFeeds(res.data.response.feeds);
+              setRefresh(false);
+            },
+            err => {
+              alert(err + userDetails.userId + token);
+            },
+          );
+      }
+      getHomeFeed();
+      const unsubscribe = messaging().onMessage(async remoteMessage => {
+        //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+        if (remoteMessage.data.type === 'startcall') {
+          navigation.push('Callscreen', {
+            toUserId: remoteMessage.data.fromUserId,
+            userName: remoteMessage.data.incomingCallerName,
+            isCalling: true,
+          });
+        }
+      });
+
+      return unsubscribe;
+    }, [refresh]),
+  );
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -153,7 +158,6 @@ export default function Home() {
   };
 
   const onRefresh = React.useCallback(() => {
-    console.log('sdfds');
     setRefresh(prev => !prev);
     // wait(2000).then(() => setRefresh(false));
   }, []);
@@ -289,15 +293,13 @@ export default function Home() {
       yy: '%d years',
     },
   });
-  // console.log(feeds);
   const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
     setThreeDotData({type, feedId, title, imageUrl});
     setThreeDot(true);
   };
-  console.log(feeds);
   return (
     <>
-      <Header onSetRefresh={onRefresh} />
+      <Header onSetRefresh={setRefresh} />
       {threeDot && (
         <ThreeDotComponent
           onClose={() => setThreeDot(false)}
@@ -504,7 +506,10 @@ export default function Home() {
                 </Pressable>
               ) : (
                 type === 'post' && (
-                  <Pressable style={styles.newsCard} key={details.postId}>
+                  <Pressable
+                    style={styles.newsCard}
+                    key={details.postId}
+                    onPress={() => onRedirectCommentScreen({details, type})}>
                     <View style={styles.cardTitle}>
                       <View style={styles.cardProImg}>
                         <Image
@@ -548,11 +553,9 @@ export default function Home() {
                         />
                       </TouchableOpacity>
                     </View>
-
                     {/* <Text style={styles.mainDesc}>
                   {details.title}
                 </Text> */}
-
                     {details.imageUrl && (
                       <View style={styles.newsCoverImg}>
                         <Image
@@ -567,7 +570,6 @@ export default function Home() {
                       </View>
                     )}
                     <Text style={styles.secDesc}>{details.title}</Text>
-
                     <View style={styles.likeCommentShare}>
                       <View style={styles.likeCommentShareBox}>
                         <View style={styles.likeCommentShareIconWrap}>
