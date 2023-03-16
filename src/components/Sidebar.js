@@ -29,6 +29,8 @@ import ChangePassword from '../screens/ChangePassword';
 import ProfileEdit from '../screens/ProfileEdit';
 import BlockedUser from '../screens/BlockedUser';
 import Logoutmodal from '../shared/Logoutmodal';
+import {MenuProvider} from 'react-native-popup-menu';
+import HomeContextProvider from '../shared/homeFeedCotext';
 
 function NotificationsScreen({navigation}) {
   return (
@@ -199,7 +201,7 @@ export default function Sidebar() {
       initialRouteName="Home">
       <Drawer.Screen
         name="Home"
-        component={Home}
+        // component={Home}
         options={{
           title: 'Home',
 
@@ -218,8 +220,15 @@ export default function Sidebar() {
               color={focused ? '#fff' : '#fff'}
             />
           ),
-        }}
-      />
+        }}>
+        {() => (
+          <HomeContextProvider>
+            <MenuProvider>
+              <Home />
+            </MenuProvider>
+          </HomeContextProvider>
+        )}
+      </Drawer.Screen>
 
       <Drawer.Screen
         name="Event Calendar"

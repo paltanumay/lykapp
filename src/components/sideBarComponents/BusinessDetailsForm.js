@@ -55,7 +55,7 @@ const BusinessDetailsForm = ({extraFieldName}) => {
             style={{
               padding: 10,
               backgroundColor: '#fff',
-              width: '79.9%',
+              width: '79%',
               borderTopRightRadius: 10,
               borderBottomRightRadius: 10,
               height: 49,

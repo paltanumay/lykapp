@@ -3,7 +3,7 @@ import React, {useState, useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 import {View, Image, Text, Pressable} from 'react-native';
 import avatarImg from '../assets/images/avatar.jpg';
-import {generalApiCallPost} from '../services/homeFeedComment.service';
+import {generalApiCallPost} from '../services/homeFeed.service';
 import AsyncStorage from '@react-native-community/async-storage';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 

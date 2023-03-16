@@ -192,13 +192,15 @@ export default function Selectcountry({navigation}) {
               />
             </TouchableOpacity>
 
-            <View style={styles.welcomeMsgWrap}>
-              <Text style={styles.welcomeMsgTitle}>Welcome Claire!</Text>
-              <Text style={styles.welcomeMsgBody}>
-                Please help us answer the next few questions about yourself to
-                make your experience enjoyable
-              </Text>
-            </View>
+            {checked === 0 && (
+              <View style={styles.welcomeMsgWrap}>
+                <Text style={styles.welcomeMsgTitle}>Welcome Claire!</Text>
+                <Text style={styles.welcomeMsgBody}>
+                  Please help us answer the next few questions about yourself to
+                  make your experience enjoyable
+                </Text>
+              </View>
+            )}
             <View style={styles.radioMainWrap}>
               {radioBtnsData.map((data, key) => {
                 return (

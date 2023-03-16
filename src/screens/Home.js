@@ -10,7 +10,8 @@ import {
   ScrollView,
   Pressable,
   RefreshControl,
-  Alert, Modal
+  Alert,
+  Modal,
 } from 'react-native';
 import React from 'react';
 import {globalStyles} from '../global/globalStyle';
@@ -42,12 +43,25 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import HomeComments from '../components/HomeComments';
-const hobbies = ['Lyk World', 'My Connections', 'My Family', 'Selective Users'];
 
-const API_URL =
+import ThreeDotComponent from '../components/threeDot';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useContext} from 'react';
+import {HomeContext} from '../shared/homeFeedCotext';
+import {useCallback} from 'react';
+const hobbies = ['Lyk World', 'My Connections', 'My Family', 'Selective Users'];
+export const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
+export const INAPPROPRIATE_URL = `${API_URL}Analytical/reportItem`;
+
 export const INSERT_PUSH_SHORT = 'isrPs';
 const HOME_FEED_SHORT = 'gttmln';
 const offset = 0,
@@ -65,72 +79,78 @@ const pId = null,
   promoId = '0',
   nextNewsId = '0',
   postStatus = '0';
-export default function Home({navigation}) {
+export default function Home() {
+  const navigation = useNavigation();
   const translateY = useSharedValue(0);
   const lastContentOffset = useSharedValue(0);
   const isScrolling = useSharedValue(false);
-  const [feeds, setFeeds] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [isScrollDown, setScrollDown] = useState(false);
-  // console.log(refresh);
-  useEffect(() => {
-    async function getHomeFeed() {
-      let userDetails = await AsyncStorage.getItem('userId');
-      userDetails = JSON.parse(userDetails);
-      let token =
-        (await AsyncStorage.getItem('token')) +
-        '-' +
-        HOME_FEED_SHORT +
-        '-' +
-        getEncTokenAnyUserId(userDetails.userId);
-      axios
-        .post(
-          HOME_FEED,
-          {
-            userId: getEncUserId(userDetails.userId),
-            limit: limit,
-            country: userDetails.countryName,
-            offset: offset,
-            nextPostId: nextPostId,
-            pId: pId,
-            promoId: promoId,
-            deviceType: 'android',
-            apiVersion: 2,
-            nextNewsId: nextNewsId,
-            postStatus: postStatus,
-            activityFriendOffsetCount: activityFriendOffsetCount,
-          },
-          {
-            headers: {
-              token: token,
-            },
-          },
-        )
-        .then(
-          res => {
-            //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
-            setFeeds(res.data.response.feeds);
-            setRefresh(false);
-          },
-          err => {
-            alert(err + userDetails.userId + token);
-          },
-        );
-    }
-    getHomeFeed();
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      if (remoteMessage.data.type === 'startcall') {
-        navigation.push('Callscreen', {
-          toUserId: remoteMessage.data.fromUserId,
-          userName: remoteMessage.data.incomingCallerName,
-          isCalling: true,
-        });
-      }
-    });
+  const [threeDot, setThreeDot] = useState(false);
+  const [threeDotData, setThreeDotData] = useState({});
+  const {feeds, setFeeds} = useContext(HomeContext);
 
-    return unsubscribe;
-  }, [refresh, setRefresh]);
+  console.log(refresh, '------>');
+  useFocusEffect(
+    useCallback(() => {
+      async function getHomeFeed() {
+        let userDetails = await AsyncStorage.getItem('userId');
+        userDetails = JSON.parse(userDetails);
+        let token =
+          (await AsyncStorage.getItem('token')) +
+          '-' +
+          HOME_FEED_SHORT +
+          '-' +
+          getEncTokenAnyUserId(userDetails.userId);
+        axios
+          .post(
+            HOME_FEED,
+            {
+              userId: getEncUserId(userDetails.userId),
+              limit: limit,
+              country: userDetails.countryName,
+              offset: offset,
+              nextPostId: nextPostId,
+              pId: pId,
+              promoId: promoId,
+              deviceType: 'android',
+              apiVersion: 2,
+              nextNewsId: nextNewsId,
+              postStatus: postStatus,
+              activityFriendOffsetCount: activityFriendOffsetCount,
+            },
+            {
+              headers: {
+                token: token,
+              },
+            },
+          )
+          .then(
+            res => {
+              //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
+              setFeeds(res.data.response.feeds);
+              setRefresh(false);
+            },
+            err => {
+              alert(err + userDetails.userId + token);
+            },
+          );
+      }
+      getHomeFeed();
+      const unsubscribe = messaging().onMessage(async remoteMessage => {
+        //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+        if (remoteMessage.data.type === 'startcall') {
+          navigation.push('Callscreen', {
+            toUserId: remoteMessage.data.fromUserId,
+            userName: remoteMessage.data.incomingCallerName,
+            isCalling: true,
+          });
+        }
+      });
+
+      return unsubscribe;
+    }, [refresh]),
+  );
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -146,7 +166,6 @@ export default function Home({navigation}) {
   };
 
   const onRefresh = React.useCallback(() => {
-    console.log('sdfds');
     setRefresh(prev => !prev);
     // wait(2000).then(() => setRefresh(false));
   }, []);
@@ -272,8 +291,8 @@ export default function Home({navigation}) {
       ss: '%d seconds',
       m: 'a minute',
       mm: '%d minutes',
-      h: 'an hour',
-      hh: '%d hrs',
+      h: '1 hrs ago',
+      hh: '%d hrs ago',
       d: 'a day',
       dd: '%d days',
       M: 'a month',
@@ -286,79 +305,98 @@ export default function Home({navigation}) {
   const [user, setUser] = useState();
   // console.log(feeds);
   const [modalVisible, setModalVisible] = useState(false);
+  const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
+    setThreeDotData({type, feedId, title, imageUrl});
+    setThreeDot(true);
+  };
   return (
     <>
-      <Header onSetRefresh={onRefresh} />
+      <Header onSetRefresh={setRefresh} />
+      {threeDot && (
+        <ThreeDotComponent
+          onClose={() => setThreeDot(false)}
+          type={threeDotData.type}
+          feedId={threeDotData.feedId}
+          imageUrl={threeDotData.imageUrl}
+          title={threeDotData.title}
+          setFeeds={setFeeds}
+        />
+      )}
       <View style={globalStyles.innerPagesContainer}>
 
-      <View style={styles.centeredView}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredViewInner}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Select from the people listed below with whom you can share this post</Text>
+        <View style={styles.centeredView}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+              setModalVisible(!modalVisible);
+            }}>
+            <View style={styles.centeredViewInner}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>
+                  Select from the people listed below with whom you can share
+                  this post
+                </Text>
 
-            <View style={styles.dropBox}>
-                    
-                    <SelectDropdown
-                      data={hobbies}
-                      defaultButtonText={user?.interested.join(',')}
-                      buttonStyle={styles.dropdown1BtnStyle}
-                      buttonTextStyle={styles.dropdown1BtnTxtStyle}
-                      renderDropdownIcon={isOpened => {
-                        return (
-                          <FontAwesome
-                            name={isOpened ? 'chevron-up' : 'chevron-down'}
-                            color={'#444'}
-                            size={18}
-                          />
-                        );
-                      }}
-                      dropdownIconPosition={'right'}
-                      dropdownStyle={styles.dropdown1DropdownStyle}
-                      rowStyle={styles.dropdown1RowStyle}
-                      rowTextStyle={styles.dropdown1RowTxtStyle}
-                      onSelect={(selectedItem, index) => {
-                        console.log(selectedItem, index);
-                      }}
-                      buttonTextAfterSelection={(selectedItem, index) => {
-                        // text represented after item is selected
-                        // if data array is an array of objects then return selectedItem.property to render after item is selected
-                        return selectedItem;
-                      }}
-                      rowTextForSelection={(item, index) => {
-                        // text represented for each item in dropdown
-                        // if data array is an array of objects then return item.property to represent item in dropdown
-                        return item;
-                      }}
-                    />
-                  </View>
-            <Pressable
-             style={{width:'90%', marginTop:150}}
-              onPress={() => setModalVisible(!modalVisible)}>
-                <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#037ee5', '#15a2e0', '#28cad9']}
-                style={[globalStyles.linearGradient, {height: 38}]}>
-                <Text style={globalStyles.buttonText}>Share on timeline</Text>
-              </LinearGradient>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
-      {/* <Pressable
+                <View style={styles.dropBox}>
+                  <SelectDropdown
+                    data={hobbies}
+                    defaultButtonText={user?.interested.join(',')}
+                    buttonStyle={styles.dropdown1BtnStyle}
+                    buttonTextStyle={styles.dropdown1BtnTxtStyle}
+                    renderDropdownIcon={isOpened => {
+                      return (
+                        <FontAwesome
+                          name={isOpened ? 'chevron-up' : 'chevron-down'}
+                          color={'#444'}
+                          size={18}
+                        />
+                      );
+                    }}
+                    dropdownIconPosition={'right'}
+                    dropdownStyle={styles.dropdown1DropdownStyle}
+                    rowStyle={styles.dropdown1RowStyle}
+                    rowTextStyle={styles.dropdown1RowTxtStyle}
+                    onSelect={(selectedItem, index) => {
+                      console.log(selectedItem, index);
+                    }}
+                    buttonTextAfterSelection={(selectedItem, index) => {
+                      // text represented after item is selected
+                      // if data array is an array of objects then return selectedItem.property to render after item is selected
+                      return selectedItem;
+                    }}
+                    rowTextForSelection={(item, index) => {
+                      // text represented for each item in dropdown
+                      // if data array is an array of objects then return item.property to represent item in dropdown
+                      return item;
+                    }}
+                  />
+                </View>
+                <Pressable
+                  style={{width: '90%', marginTop: 150}}
+                  onPress={() => setModalVisible(!modalVisible)}>
+                  <LinearGradient
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={['#037ee5', '#15a2e0', '#28cad9']}
+                    style={[globalStyles.linearGradient, {height: 38}]}>
+                    <Text style={globalStyles.buttonText}>
+                      Share on timeline
+                    </Text>
+                  </LinearGradient>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+          <Pressable
         style={[styles.button, styles.buttonOpen]}
         onPress={() => setModalVisible(true)}>
         <Text style={styles.textStyle}>Show Modal</Text>
-      </Pressable> */}
-    </View>
+      </Pressable>
+        </View>
+
         <Animated.ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
@@ -370,29 +408,42 @@ export default function Home({navigation}) {
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
-            <Image
-              resizeMode="contain"
-              source={require('../assets/images/create-post.png')}
-              style={[styles.postImg]}
-            />
-
-            <Image
-              resizeMode="contain"
-              source={require('../assets/images/invited.png')}
-              style={[styles.postImg]}
-            />
-
-            <Image
-              resizeMode="contain"
-              source={require('../assets/images/grow-network.png')}
-              style={[styles.postImg]}
-            />
+            <TouchableOpacity
+              onPress={() => {
+                navigation.push('Createpost');
+              }}>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/create-post.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/invited.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.push('network');
+              }}>
+              <Image
+                resizeMode="contain"
+                source={require('../assets/images/grow-network.png')}
+                style={[styles.postImg]}
+              />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.newsCardsWrap}>
             {feeds.map(({type, details}) =>
               type === 'news' ? (
-                <View style={styles.newsCard} key={details.newsId}>
+                <Pressable
+                  style={styles.newsCard}
+                  key={details.newsId}
+                  onPress={() => onRedirectCommentScreen({details, type})}>
                   <View style={styles.cardTitle}>
                     <View style={styles.cardProImg}>
                       <Image
@@ -416,7 +467,17 @@ export default function Home({navigation}) {
                             ).format('DD MMM YYYY, h:mm a')}
                       </Text>
                     </View>
-                    <TouchableOpacity style={styles.options}>
+                    <TouchableOpacity
+                      style={styles.options}
+                      onPress={() =>
+                        onPressThreeDot({
+                          type,
+                          feedId: details.newsId,
+                          title: details.newsTitle,
+                          imageUrl: details.newsImageUrl,
+                          setFeeds: setFeeds,
+                        })
+                      }>
                       <EnIcon
                         name="dots-three-horizontal"
                         size={25}
@@ -476,48 +537,41 @@ export default function Home({navigation}) {
                         </Text>
                       </TouchableOpacity>
                     </View>
+                    <Menu>
+                      <MenuTrigger >
+                        <View style={styles.likeCommentShareBox}>
+                          <View style={styles.likeCommentShareIconWrap}>
+                            <Image
+                              resizeMode="contain"
+                              source={require('../assets/images/share.png')}
+                              style={[styles.likeImg]}
+                            />
 
-                    <View style={styles.likeCommentShareBox}>
-                      <View style={styles.likeCommentShareIconWrap}>
-                        {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="sharealt" size={22} color="#f8767a" />
-                      </TouchableOpacity> */}
-                        <Image
-                          resizeMode="contain"
-                          source={require('../assets/images/share.png')}
-                          style={[styles.likeImg]}
-                        />
-
-                        <Text style={styles.iconText}>
-                          {details.shareCount} Share
-                        </Text>
-                      </View>
-
-                      <View style={styles.shareWrap}>
-                        <TouchableOpacity style={styles.shareWrapInner}  onPress={() => setModalVisible(true)}>
-                         
+                            <Text style={styles.iconText}>
+                              {details.shareCount} Share
+                            </Text>
+                          </View>
+                        </View>
+                      </MenuTrigger>
+                      <MenuOptions style={styles.shareWrap}>
+                        <MenuOption value={1} style={styles.shareWrapInner} onPress={() => setModalVisible(true)}>
                           <Image
                             resizeMode="contain"
-                            source={require('../assets/images/image.png')}
-                            style={[styles.likeShareImg]}
+                            source={require('../assets/images/share-on-lyk.png')}
+                            style={[styles.likeShareImg, {width:22, height:18}]}
                           />
                           <Text style={styles.shareText}>Share on LYK</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.shareWrapInner}>
-                         
-                         <Image
-                           resizeMode="contain"
-                           source={require('../assets/images/image.png')}
-                           style={[styles.likeShareImg]}
-                         />
-                         <Text style={styles.shareText}>External share</Text>
-                       </TouchableOpacity>
-                      </View>
-
-
-
-                    </View>
+                        </MenuOption>
+                        <MenuOption value={2} style={styles.shareWrapInner}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/external-share.png')}
+                            style={[styles.likeShareImg, {width:18, height:24}]}
+                          />
+                          <Text style={styles.shareText}>External share</Text>
+                        </MenuOption>
+                      </MenuOptions>
+                    </Menu>
                   </View>
                   {details.allComments?.map((comment, ind) => (
                     <HomeComments commentDetails={comment} key={ind} />
@@ -546,10 +600,13 @@ export default function Home({navigation}) {
                       />
                     </TouchableOpacity>
                   </View>
-                </View>
+                </Pressable>
               ) : (
                 type === 'post' && (
-                  <View style={styles.newsCard} key={details.postId}>
+                  <Pressable
+                    style={styles.newsCard}
+                    key={details.postId}
+                    onPress={() => onRedirectCommentScreen({details, type})}>
                     <View style={styles.cardTitle}>
                       <View style={styles.cardProImg}>
                         <Image
@@ -569,13 +626,23 @@ export default function Home({navigation}) {
                           ) < 1
                             ? moment(
                                 details.createdOn.replace(' ', 'T') + 'Z',
-                              ).fromNow()
+                              ).fromNow('past')
                             : moment(
                                 details.createdOn.replace(' ', 'T') + 'Z',
                               ).format('DD MMM YYYY, h:mm a')}
                         </Text>
                       </View>
-                      <TouchableOpacity style={styles.options}>
+                      <TouchableOpacity
+                        style={styles.options}
+                        onPress={() =>
+                          onPressThreeDot({
+                            type,
+                            title: details.title,
+
+                            feedId: details.postId,
+                            imageUrl: details.imageUrl,
+                          })
+                        }>
                         <EnIcon
                           name="dots-three-horizontal"
                           size={25}
@@ -583,11 +650,9 @@ export default function Home({navigation}) {
                         />
                       </TouchableOpacity>
                     </View>
-
                     {/* <Text style={styles.mainDesc}>
                   {details.title}
                 </Text> */}
-
                     {details.imageUrl && (
                       <View style={styles.newsCoverImg}>
                         <Image
@@ -602,7 +667,6 @@ export default function Home({navigation}) {
                       </View>
                     )}
                     <Text style={styles.secDesc}>{details.title}</Text>
-
                     <View style={styles.likeCommentShare}>
                       <View style={styles.likeCommentShareBox}>
                         <View style={styles.likeCommentShareIconWrap}>
@@ -683,7 +747,7 @@ export default function Home({navigation}) {
                         />
                       </TouchableOpacity>
                     </View>
-                  </View>
+                  </Pressable>
                 )
               ),
             )}
@@ -855,42 +919,39 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: '88%',
     paddingHorizontal: 10,
-    position:'relative',
-    zIndex:-1
+    position: 'relative',
+    zIndex: -1,
   },
   likeImg: {
     width: 34,
     height: 34,
   },
-  likeShareImg:{
+  likeShareImg: {
     width: 24,
-    height:24,
-    marginRight:8
+    height: 24,
+    marginRight: 8,
   },
-  shareWrap:{
-    borderRadius:10,
-    borderWidth:1,
-    borderColor:'#e5e5e5',
-    backgroundColor:'#fff',
-    width:150,
-    padding:10,
-    position:'absolute',
-    bottom:-40,
-    right:25,
-  
+  shareWrap: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    backgroundColor: '#fff',
+    width: 150,
+    padding: 10,
+    position: 'absolute',
+    bottom: -80,
+    right: 25,
   },
-  shareText:{
-    color:'#b5b5b5',
-    fontSize:12
+  shareText: {
+    color: '#b5b5b5',
+    fontSize: 12,
   },
-  shareWrapInner:{
-    display:'flex',
-    flexDirection:'row',
-    alignItems:'center',
-    marginBottom:8
+  shareWrapInner: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
   },
-  
-
 
   centeredView: {
     flex: 1,
@@ -909,7 +970,7 @@ const styles = StyleSheet.create({
   modalView: {
     paddingTop: 30,
     width: '100%',
-    height:350,
+    height: 350,
     paddingHorizontal: 55,
     paddingBottom: 20,
     backgroundColor: 'white',
@@ -920,7 +981,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    
+
     shadowOffset: {
       width: 0,
       height: 2,
@@ -985,20 +1046,19 @@ const styles = StyleSheet.create({
     zIndex: 999,
   },
 
-
   dropBox: {
     marginHorizontal: 15,
     width: '100%',
     marginBottom: 15,
-    alignItems:'center'
+    alignItems: 'center',
   },
   dropdown1BtnStyle: {
     width: '50%',
-    height:40,
+    height: 40,
     backgroundColor: '#FFF',
     borderRadius: 80,
     borderWidth: 1,
     borderColor: '#c1cad3',
   },
-  dropdown1BtnTxtStyle: {color: '#444', textAlign: 'left', fontSize: 14}
+  dropdown1BtnTxtStyle: {color: '#444', textAlign: 'left', fontSize: 14},
 });
