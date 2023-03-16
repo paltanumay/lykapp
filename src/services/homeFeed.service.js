@@ -36,3 +36,17 @@ export const postLike = async (params, token) => {
   };
   return await axios(config);
 };
+
+export const setMarkAsInAppropriate = async ({URL, data, token}) => {
+  console.log(URL, token);
+  try {
+    const response = await axios.post(URL, data, {
+      headers: {
+        token: token,
+      },
+    });
+    return response;
+  } catch (e) {
+    console.log(e, 'error');
+  }
+};

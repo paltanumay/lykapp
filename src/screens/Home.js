@@ -36,12 +36,24 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import HomeComments from '../components/HomeComments';
-import {postLike} from '../services/homeFeedComment.service';
+import ThreeDotComponent from '../components/threeDot';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useContext} from 'react';
+import {HomeContext} from '../shared/homeFeedCotext';
+import {useCallback} from 'react';
 
-const API_URL =
+export const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
+export const INAPPROPRIATE_URL = `${API_URL}Analytical/reportItem`;
+
 export const INSERT_PUSH_SHORT = 'isrPs';
 const HOME_FEED_SHORT = 'gttmln';
 const LIKE_FEED_SHORT = 'lkPs';
@@ -60,73 +72,79 @@ const pId = null,
   promoId = '0',
   nextNewsId = '0',
   postStatus = '0';
-export default function Home({navigation}) {
+export default function Home() {
+  const navigation = useNavigation();
   const translateY = useSharedValue(0);
   const lastContentOffset = useSharedValue(0);
   const isScrolling = useSharedValue(false);
-  const [feeds, setFeeds] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [liked, setLiked] = useState(false);
   const [isScrollDown, setScrollDown] = useState(false);
-  // console.log(refresh);
-  useEffect(() => {
-    async function getHomeFeed() {
-      let userDetails = await AsyncStorage.getItem('userId');
-      userDetails = JSON.parse(userDetails);
-      let token =
-        (await AsyncStorage.getItem('token')) +
-        '-' +
-        HOME_FEED_SHORT +
-        '-' +
-        getEncTokenAnyUserId(userDetails.userId);
-      axios
-        .post(
-          HOME_FEED,
-          {
-            userId: getEncUserId(userDetails.userId),
-            limit: limit,
-            country: userDetails.countryName,
-            offset: offset,
-            nextPostId: nextPostId,
-            pId: pId,
-            promoId: promoId,
-            deviceType: 'android',
-            apiVersion: 2,
-            nextNewsId: nextNewsId,
-            postStatus: postStatus,
-            activityFriendOffsetCount: activityFriendOffsetCount,
-          },
-          {
-            headers: {
-              token: token,
-            },
-          },
-        )
-        .then(
-          res => {
-            //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
-            setFeeds(res.data.response.feeds);
-            setRefresh(false);
-          },
-          err => {
-            alert(err + userDetails.userId + token);
-          },
-        );
-    }
-    getHomeFeed();
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      if (remoteMessage.data.type === 'startcall') {
-        navigation.push('Callscreen', {
-          toUserId: remoteMessage.data.fromUserId,
-          userName: remoteMessage.data.incomingCallerName,
-          isCalling: true,
-        });
-      }
-    });
+  const [threeDot, setThreeDot] = useState(false);
+  const [threeDotData, setThreeDotData] = useState({});
+  const {feeds, setFeeds} = useContext(HomeContext);
 
-    return unsubscribe;
-  }, [refresh, setRefresh, liked]);
+  console.log(refresh, '------>');
+  useFocusEffect(
+    useCallback(() => {
+      async function getHomeFeed() {
+        let userDetails = await AsyncStorage.getItem('userId');
+        userDetails = JSON.parse(userDetails);
+        let token =
+          (await AsyncStorage.getItem('token')) +
+          '-' +
+          HOME_FEED_SHORT +
+          '-' +
+          getEncTokenAnyUserId(userDetails.userId);
+        axios
+          .post(
+            HOME_FEED,
+            {
+              userId: getEncUserId(userDetails.userId),
+              limit: limit,
+              country: userDetails.countryName,
+              offset: offset,
+              nextPostId: nextPostId,
+              pId: pId,
+              promoId: promoId,
+              deviceType: 'android',
+              apiVersion: 2,
+              nextNewsId: nextNewsId,
+              postStatus: postStatus,
+              activityFriendOffsetCount: activityFriendOffsetCount,
+            },
+            {
+              headers: {
+                token: token,
+              },
+            },
+          )
+          .then(
+            res => {
+              //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
+              setFeeds(res.data.response.feeds);
+              setRefresh(false);
+            },
+            err => {
+              alert(err + userDetails.userId + token);
+            },
+          );
+      }
+      getHomeFeed();
+      const unsubscribe = messaging().onMessage(async remoteMessage => {
+        //Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+        if (remoteMessage.data.type === 'startcall') {
+          navigation.push('Callscreen', {
+            toUserId: remoteMessage.data.fromUserId,
+            userName: remoteMessage.data.incomingCallerName,
+            isCalling: true,
+          });
+        }
+      });
+
+      return unsubscribe;
+    }, [refresh, liked]),
+  );
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -142,7 +160,6 @@ export default function Home({navigation}) {
   };
 
   const onRefresh = React.useCallback(() => {
-    console.log('sdfds');
     setRefresh(prev => !prev);
     // wait(2000).then(() => setRefresh(false));
   }, []);
@@ -348,8 +365,8 @@ export default function Home({navigation}) {
       ss: '%d seconds',
       m: 'a minute',
       mm: '%d minutes',
-      h: 'an hour',
-      hh: '%d hrs',
+      h: '1 hrs ago',
+      hh: '%d hrs ago',
       d: 'a day',
       dd: '%d days',
       M: 'a month',
@@ -359,9 +376,23 @@ export default function Home({navigation}) {
     },
   });
   console.log('Feeds------------------', feeds);
+  const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
+    setThreeDotData({type, feedId, title, imageUrl});
+    setThreeDot(true);
+  };
   return (
     <>
-      <Header onSetRefresh={onRefresh} />
+      <Header onSetRefresh={setRefresh} />
+      {threeDot && (
+        <ThreeDotComponent
+          onClose={() => setThreeDot(false)}
+          type={threeDotData.type}
+          feedId={threeDotData.feedId}
+          imageUrl={threeDotData.imageUrl}
+          title={threeDotData.title}
+          setFeeds={setFeeds}
+        />
+      )}
       <View style={globalStyles.innerPagesContainer}>
         <Animated.ScrollView
           style={styles.scrollView}
@@ -406,7 +437,10 @@ export default function Home({navigation}) {
           <View style={styles.newsCardsWrap}>
             {feeds.map(({type, details}) =>
               type === 'news' ? (
-                <View style={styles.newsCard} key={details.newsId}>
+                <Pressable
+                  style={styles.newsCard}
+                  key={details.newsId}
+                  onPress={() => onRedirectCommentScreen({details, type})}>
                   <View style={styles.cardTitle}>
                     <View style={styles.cardProImg}>
                       <Image
@@ -430,7 +464,17 @@ export default function Home({navigation}) {
                             ).format('DD MMM YYYY, h:mm a')}
                       </Text>
                     </View>
-                    <TouchableOpacity style={styles.options}>
+                    <TouchableOpacity
+                      style={styles.options}
+                      onPress={() =>
+                        onPressThreeDot({
+                          type,
+                          feedId: details.newsId,
+                          title: details.newsTitle,
+                          imageUrl: details.newsImageUrl,
+                          setFeeds: setFeeds,
+                        })
+                      }>
                       <EnIcon
                         name="dots-three-horizontal"
                         size={25}
@@ -496,23 +540,30 @@ export default function Home({navigation}) {
                         </Text>
                       </TouchableOpacity>
                     </View>
+                    <Menu>
+                      <MenuTrigger>
+                        <View style={styles.likeCommentShareBox}>
+                          <View style={styles.likeCommentShareIconWrap}>
+                            <Image
+                              resizeMode="contain"
+                              source={require('../assets/images/share.png')}
+                              style={[styles.likeImg]}
+                            />
 
-                    <View style={styles.likeCommentShareBox}>
-                      <View style={styles.likeCommentShareIconWrap}>
-                        {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="sharealt" size={22} color="#f8767a" />
-                      </TouchableOpacity> */}
-                        <Image
-                          resizeMode="contain"
-                          source={require('../assets/images/share.png')}
-                          style={[styles.likeImg]}
-                        />
-
-                        <Text style={styles.iconText}>
-                          {details.shareCount} Share
-                        </Text>
-                      </View>
-                    </View>
+                            <Text style={styles.iconText}>
+                              {details.shareCount} Share
+                            </Text>
+                          </View>
+                        </View>
+                      </MenuTrigger>
+                      <MenuOptions>
+                        <MenuOption value={1} text="One" />
+                        <MenuOption value={2}>
+                          <Text style={{color: 'red'}}>Two</Text>
+                        </MenuOption>
+                        <MenuOption value={3} disabled={true} text="Three" />
+                      </MenuOptions>
+                    </Menu>
                   </View>
                   {details.allComments?.map((comment, ind) => (
                     <HomeComments commentDetails={comment} key={ind} />
@@ -541,10 +592,13 @@ export default function Home({navigation}) {
                       />
                     </TouchableOpacity>
                   </View>
-                </View>
+                </Pressable>
               ) : (
                 type === 'post' && (
-                  <View style={styles.newsCard} key={details.postId}>
+                  <Pressable
+                    style={styles.newsCard}
+                    key={details.postId}
+                    onPress={() => onRedirectCommentScreen({details, type})}>
                     <View style={styles.cardTitle}>
                       <View style={styles.cardProImg}>
                         <Image
@@ -564,13 +618,23 @@ export default function Home({navigation}) {
                           ) < 1
                             ? moment(
                                 details.createdOn.replace(' ', 'T') + 'Z',
-                              ).fromNow()
+                              ).fromNow('past')
                             : moment(
                                 details.createdOn.replace(' ', 'T') + 'Z',
                               ).format('DD MMM YYYY, h:mm a')}
                         </Text>
                       </View>
-                      <TouchableOpacity style={styles.options}>
+                      <TouchableOpacity
+                        style={styles.options}
+                        onPress={() =>
+                          onPressThreeDot({
+                            type,
+                            title: details.title,
+
+                            feedId: details.postId,
+                            imageUrl: details.imageUrl,
+                          })
+                        }>
                         <EnIcon
                           name="dots-three-horizontal"
                           size={25}
@@ -578,11 +642,9 @@ export default function Home({navigation}) {
                         />
                       </TouchableOpacity>
                     </View>
-
                     {/* <Text style={styles.mainDesc}>
                   {details.title}
                 </Text> */}
-
                     {details.imageUrl && (
                       <View style={styles.newsCoverImg}>
                         <Image
@@ -597,7 +659,6 @@ export default function Home({navigation}) {
                       </View>
                     )}
                     <Text style={styles.secDesc}>{details.title}</Text>
-
                     <View style={styles.likeCommentShare}>
                       <View style={styles.likeCommentShareBox}>
                         <View style={styles.likeCommentShareIconWrap}>
@@ -681,6 +742,7 @@ export default function Home({navigation}) {
                           onRedirectCommentScreen({details, type})
                         }>
                         <TextInput
+                          placeholder="Add comment"
                           placeholderTextColor="#AFAFAF"
                           style={styles.input}
                           editable={false}
@@ -688,7 +750,7 @@ export default function Home({navigation}) {
                         />
                       </TouchableOpacity>
                     </View>
-                  </View>
+                  </Pressable>
                 )
               ),
             )}

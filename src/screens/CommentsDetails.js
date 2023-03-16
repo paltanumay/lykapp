@@ -8,7 +8,11 @@ import {Image} from 'react-native';
 import {StyleSheet, View} from 'react-native';
 import Header from '../components/Header';
 import EnIcon from 'react-native-vector-icons/Entypo';
-import {useRoute} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import HomeComments from '../components/HomeComments';
 import CommentComponents from '../components/CommentsComponent';
 import smileImg from '../assets/images/smile.png';
@@ -17,10 +21,14 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import axios from 'axios';
 import {useState} from 'react';
-import {saveCommentFeed} from '../services/homeFeedComment.service';
 import CommentHeader from '../components/commentHeader';
 import ThreeDotComponent from '../components/threeDot';
-import {generalApiCallPost} from '../services/homeFeedComment.service';
+import {
+  generalApiCallPost,
+  saveCommentFeed,
+} from '../services/homeFeed.service';
+import {useContext} from 'react';
+import {HomeContext} from '../shared/homeFeedCotext';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const COMMENT_URL = `${API_URL}/gtfdcmts`;
@@ -37,13 +45,12 @@ const CommentsDetails = () => {
   const COMMENT_FEED_SHORT = 'bH3m8q';
   const POST_COMMENT_SHORT = 'g4QyL';
   const COMMENT_REPLY_SHORT = 'mS72Lc';
-  // console.log('Details------', details);
-  // console.log('Type---------', type);
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([]);
   const [likeresponse, setLikeResponse] = useState({});
-  // const [commentReplies, setCommentReplies] = useState([]);
-  // console.log('comments-----------', comments);
+  const [threeDotData, setThreeDotData] = useState();
+  const {feeds, setFeeds} = useContext(HomeContext);
+  const navigation = useNavigation();
 
   const inputRef = useRef();
   useEffect(() => {
@@ -56,7 +63,6 @@ const CommentsDetails = () => {
         COMMENT_FEED_SHORT +
         '-' +
         getEncTokenAnyUserId(userDetails.userId);
-      console.log(token);
 
       const response = await axios.post(
         COMMENT_URL,
@@ -77,14 +83,6 @@ const CommentsDetails = () => {
         },
       );
       setComments(response.data.response.comments);
-      console.log('res-------------', userDetails);
-      console.log({
-        userId: getEncUserId(userDetails.userId),
-        feedId: type === 'news' ? details.newsId : details.postId,
-        feedType: type,
-        start: 0,
-        limit: 25,
-      });
     };
     getAllComments();
   }, []);
@@ -113,7 +111,6 @@ const CommentsDetails = () => {
       token: token,
     })
       .then(response => {
-        console.log('Res---------------', response.data);
         setLikeResponse(response.data);
       })
       .catch(err => {
@@ -121,7 +118,12 @@ const CommentsDetails = () => {
       });
   };
 
-  const onSubmitComment = async (replyTo, replyToName) => {
+  const onSubmitComment = async (
+    replyTo,
+    replyToName,
+    createdBy,
+    ownerName,
+  ) => {
     let userDetails = await AsyncStorage.getItem('userId');
     userDetails = JSON.parse(userDetails);
     let token =
@@ -131,7 +133,7 @@ const CommentsDetails = () => {
       '-' +
       getEncTokenAnyUserId(userDetails.userId);
 
-    const res = saveCommentFeed({
+    saveCommentFeed({
       URL: POST_COMMENT_URL,
 
       data: {
@@ -151,22 +153,65 @@ const CommentsDetails = () => {
           imageUrl: userDetails.imageUrl,
         },
         mentions: [],
-        ownerName: userDetails.firstName,
+        ownerName: ownerName,
         myName: userDetails.firstName,
-        creatorId: getEncTokenAnyUserId(userDetails.userId),
+        creatorId: getEncTokenAnyUserId(createdBy),
         replyTo: replyTo,
         replyToName: replyToName,
       },
       token: token,
-    });
+    })
+      .then(response => {
+        setComments([...comments, response.data.response?.comment]);
+        setCommentText('');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
-    // console.log(res, 'responsdf');
+  moment.updateLocale('en', {
+    relativeTime: {
+      future: 'in %s',
+      past: '%s ago',
+      s: 'a few seconds',
+      ss: '%d seconds',
+      m: 'a minute',
+      mm: '%d minutes',
+      h: '1 hrs ago',
+      hh: '%d hrs ago',
+      d: 'a day',
+      dd: '%d days',
+      M: 'a month',
+      MM: '%d months',
+      y: 'a year',
+      yy: '%d years',
+    },
+  });
+
+  const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
+    setThreeDotData({type, feedId, title, imageUrl});
+    setThreeDot(true);
   };
   // console.log('Comments------------------', commentReplies);
+  console.log('Details----------', details);
+  const handleOnClose = () => {
+    setThreeDot(false);
+  };
   return (
     <>
       <CommentHeader name={'Comments'} />
-      {threeDot && <ThreeDotComponent onClose={() => setThreeDot(false)} />}
+      {threeDot && (
+        <ThreeDotComponent
+          onClose={handleOnClose}
+          type={threeDotData.type}
+          feedId={threeDotData.feedId}
+          imageUrl={threeDotData.imageUrl}
+          title={threeDotData.title}
+          setFeeds={setFeeds}
+          isHome={false}
+        />
+      )}
 
       {type === 'news' ? (
         <>
@@ -194,7 +239,7 @@ const CommentsDetails = () => {
                     ) < 1
                       ? moment(
                           details.feedTime.replace(' ', 'T') + 'Z',
-                        ).fromNow()
+                        ).fromNow('past')
                       : moment(details.feedTime.replace(' ', 'T') + 'Z').format(
                           'DD MMM YYYY, h:mm a',
                         )}
@@ -202,7 +247,14 @@ const CommentsDetails = () => {
                 </View>
                 <TouchableOpacity
                   style={styles.options}
-                  onPress={() => setThreeDot(prev => !prev)}>
+                  onPress={() =>
+                    onPressThreeDot({
+                      type,
+                      feedId: details.newsId,
+                      title: details.newsTitle,
+                      imageUrl: details.newsImageUrl,
+                    })
+                  }>
                   <EnIcon name="dots-three-horizontal" size={25} color="#333" />
                 </TouchableOpacity>
               </View>
@@ -303,7 +355,7 @@ const CommentsDetails = () => {
               <View style={styles.cardTitle}>
                 <View style={styles.cardProImg}>
                   <Image
-                    resizeMode="contain"
+                    resizeMode="cover"
                     source={require('../assets/images/avatar.jpg')}
                     style={[styles.logoImg]}
                   />
@@ -314,18 +366,27 @@ const CommentsDetails = () => {
                   </Text>
                   <Text style={styles.newsSubTitletext}>
                     {moment(new Date()).diff(
-                      moment(details.createdOn.replace(' ', 'T') + 'Z'),
+                      moment(details.feedTime.replace(' ', 'T') + 'Z'),
                       'days',
                     ) < 1
                       ? moment(
-                          details.createdOn.replace(' ', 'T') + 'Z',
-                        ).fromNow()
-                      : moment(
-                          details.createdOn.replace(' ', 'T') + 'Z',
-                        ).format('DD MMM YYYY, h:mm a')}
+                          details.feedTime.replace(' ', 'T') + 'Z',
+                        ).fromNow('past')
+                      : moment(details.feedTime.replace(' ', 'T') + 'Z').format(
+                          'DD MMM YYYY, h:mm a',
+                        )}
                   </Text>
                 </View>
-                <TouchableOpacity style={styles.options}>
+                <TouchableOpacity
+                  style={styles.options}
+                  onPress={() =>
+                    onPressThreeDot({
+                      type,
+                      feedId: details.postId,
+                      title: details.title,
+                      imageUrl: details.imageUrl,
+                    })
+                  }>
                   <EnIcon name="dots-three-horizontal" size={25} color="#333" />
                 </TouchableOpacity>
               </View>
@@ -337,7 +398,7 @@ const CommentsDetails = () => {
               {details.imageUrl && (
                 <View style={styles.newsCoverImg}>
                   <Image
-                    resizeMode="stretch"
+                    resizeMode="cover"
                     source={{
                       uri:
                         'https://cdn.lykapp.com/newsImages/images/' +
@@ -401,10 +462,10 @@ const CommentsDetails = () => {
                   </View>
                 </View>
               </View>
-              {details.commentCount > '0' &&
+              {/* {details.commentCount > '0' &&
                 details.allComments?.map((comment, ind) => (
                   <CommentComponents commentDetails={comment} key={ind} />
-                ))}
+                ))} */}
             </View>
             {comments > '0' &&
               comments?.map((comment, ind) => {
@@ -421,11 +482,11 @@ const CommentsDetails = () => {
                   </>
                 );
               })}
-            {details.commentCount === '0' && (
+            {/* {details.commentCount === '0' && (
               <View style={mainStyles.messageWrapper}>
                 <Text style={mainStyles.message}>Still no comments!</Text>
               </View>
-            )}
+            )} */}
           </ScrollView>
         )
       )}
@@ -437,15 +498,21 @@ const CommentsDetails = () => {
         <TextInput
           ref={inputRef}
           onChangeText={text => setCommentText(text)}
+          value={commentText}
           style={mainStyles.commentInput}
           placeholder="Type your comment here"
           placeholderTextColor="#9e9c9c"
         />
         <TouchableOpacity
           onPress={() => {
-            onSubmitComment('', '');
+            onSubmitComment(
+              '',
+              '',
+              details.createdBy.userId,
+              details.createdBy.firstName,
+            );
           }}>
-          <Image source={sendImg} />
+          <Image source={sendImg} style={mainStyles.send} />
         </TouchableOpacity>
       </View>
     </>
@@ -520,7 +587,7 @@ const mainStyles = StyleSheet.create({
     width: '100%',
   },
   postImg: {
-    height: 550,
+    height: '100%',
     width: '100%',
   },
   messageWrapper: {
@@ -533,6 +600,10 @@ const mainStyles = StyleSheet.create({
     color: '#000',
     fontWeight: '700',
     fontFamily: 'SFpro-Bold',
+  },
+  send: {
+    width: 50,
+    height: 50,
   },
 });
 export default CommentsDetails;
