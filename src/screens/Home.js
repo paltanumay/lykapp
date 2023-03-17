@@ -8,16 +8,21 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   Pressable,
   RefreshControl,
   Linking,
+  Alert,
+  Modal,
 } from 'react-native';
 import React from 'react';
 import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 import messaging from '@react-native-firebase/messaging';
 import DeviceInfo from 'react-native-device-info';
+import LinearGradient from 'react-native-linear-gradient';
+import SelectDropdown from 'react-native-select-dropdown';
 
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import EnIcon from 'react-native-vector-icons/Entypo';
@@ -28,6 +33,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {useState} from 'react';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import moment from 'moment';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+
 import Header from '../components/Header';
 import Animated, {
   Easing,
@@ -37,6 +44,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import HomeComments from '../components/HomeComments';
+
 import ThreeDotComponent from '../components/threeDot';
 import {
   Menu,
@@ -48,7 +56,8 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useContext} from 'react';
 import {HomeContext} from '../shared/homeFeedCotext';
 import {useCallback} from 'react';
-
+import {postLike} from '../services/homeFeed.service';
+const hobbies = ['Lyk World', 'My Connections', 'My Family', 'Selective Users'];
 export const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
@@ -375,6 +384,10 @@ export default function Home() {
     },
   });
   console.log('Feeds------------------', feeds);
+
+  const [user, setUser] = useState();
+  // console.log(feeds);
+  const [modalVisible, setModalVisible] = useState(false);
   const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
     setThreeDotData({type, feedId, title, imageUrl});
     setThreeDot(true);
@@ -393,6 +406,79 @@ export default function Home() {
         />
       )}
       <View style={globalStyles.innerPagesContainer}>
+        <View style={styles.centeredView}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+              setModalVisible(!modalVisible);
+            }}>
+            <View style={styles.centeredViewInner}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>
+                  Select from the people listed below with whom you can share
+                  this post
+                </Text>
+
+                <View style={styles.dropBox}>
+                  <SelectDropdown
+                    data={hobbies}
+                    defaultButtonText={user?.interested.join(',')}
+                    buttonStyle={styles.dropdown1BtnStyle}
+                    buttonTextStyle={styles.dropdown1BtnTxtStyle}
+                    renderDropdownIcon={isOpened => {
+                      return (
+                        <FontAwesome
+                          name={isOpened ? 'chevron-up' : 'chevron-down'}
+                          color={'#444'}
+                          size={18}
+                        />
+                      );
+                    }}
+                    dropdownIconPosition={'right'}
+                    dropdownStyle={styles.dropdown1DropdownStyle}
+                    rowStyle={styles.dropdown1RowStyle}
+                    rowTextStyle={styles.dropdown1RowTxtStyle}
+                    onSelect={(selectedItem, index) => {
+                      console.log(selectedItem, index);
+                    }}
+                    buttonTextAfterSelection={(selectedItem, index) => {
+                      // text represented after item is selected
+                      // if data array is an array of objects then return selectedItem.property to render after item is selected
+                      return selectedItem;
+                    }}
+                    rowTextForSelection={(item, index) => {
+                      // text represented for each item in dropdown
+                      // if data array is an array of objects then return item.property to represent item in dropdown
+                      return item;
+                    }}
+                  />
+                </View>
+                <Pressable
+                  style={{width: '90%', marginTop: 150}}
+                  onPress={() => setModalVisible(!modalVisible)}>
+                  <LinearGradient
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={['#037ee5', '#15a2e0', '#28cad9']}
+                    style={[globalStyles.linearGradient, {height: 38}]}>
+                    <Text style={globalStyles.buttonText}>
+                      Share on timeline
+                    </Text>
+                  </LinearGradient>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+          <Pressable
+            style={[styles.button, styles.buttonOpen]}
+            onPress={() => setModalVisible(true)}>
+            <Text style={styles.textStyle}>Show Modal</Text>
+          </Pressable>
+        </View>
+
         <Animated.ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
@@ -597,12 +683,32 @@ export default function Home() {
                           </View>
                         </View>
                       </MenuTrigger>
-                      <MenuOptions>
-                        <MenuOption value={1} text="One" />
-                        <MenuOption value={2}>
-                          <Text style={{color: 'red'}}>Two</Text>
+                      <MenuOptions style={styles.shareWrap}>
+                        <MenuOption
+                          value={1}
+                          style={styles.shareWrapInner}
+                          onPress={() => setModalVisible(true)}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/share-on-lyk.png')}
+                            style={[
+                              styles.likeShareImg,
+                              {width: 22, height: 18},
+                            ]}
+                          />
+                          <Text style={styles.shareText}>Share on LYK</Text>
                         </MenuOption>
-                        <MenuOption value={3} disabled={true} text="Three" />
+                        <MenuOption value={2} style={styles.shareWrapInner}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/external-share.png')}
+                            style={[
+                              styles.likeShareImg,
+                              {width: 18, height: 24},
+                            ]}
+                          />
+                          <Text style={styles.shareText}>External share</Text>
+                        </MenuOption>
                       </MenuOptions>
                     </Menu>
                   </View>
@@ -967,6 +1073,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: '88%',
     paddingHorizontal: 10,
+    position: 'relative',
+    zIndex: -1,
   },
   likeImg: {
     width: 34,
@@ -991,4 +1099,139 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '400',
   },
+  likeShareImg: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+  },
+  shareWrap: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    backgroundColor: '#fff',
+    width: 150,
+    padding: 10,
+    position: 'absolute',
+    bottom: -80,
+    right: 25,
+  },
+  shareText: {
+    color: '#b5b5b5',
+    fontSize: 12,
+  },
+  shareWrapInner: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+    position: 'absolute',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    zIndex: 9999,
+  },
+  centeredViewInner: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    height: '100%',
+    justifyContent: 'flex-end',
+  },
+  modalView: {
+    paddingTop: 30,
+    width: '100%',
+    height: 350,
+    paddingHorizontal: 55,
+    paddingBottom: 20,
+    backgroundColor: 'white',
+    borderRadius: 32,
+    borderBottomStartRadius: 0,
+    borderBottomEndRadius: 0,
+    overflow: 'hidden',
+    alignSelf: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  linearGradient: {
+    padding: 35,
+    width: '100%',
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
+  mSignupBt: {
+    backgroundColor: '#fff',
+    borderRadius: 100,
+    height: 31,
+    width: 114,
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  mSignupBttext: {
+    fontFamily: 'SFpro-Regular',
+    textAlign: 'center',
+    fontSize: 14,
+  },
+  modalText: {
+    fontFamily: 'SFpro-Regular',
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#2e2e2e',
+    marginBottom: 15,
+  },
+  modalOrText: {
+    fontFamily: 'SFpro-Regular',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    fontSize: 12,
+    color: '#fff',
+    marginBottom: 15,
+  },
+  modalClose: {
+    position: 'absolute',
+    right: 20,
+    top: 12,
+    zIndex: 999,
+  },
+
+  dropBox: {
+    marginHorizontal: 15,
+    width: '100%',
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  dropdown1BtnStyle: {
+    width: '50%',
+    height: 40,
+    backgroundColor: '#FFF',
+    borderRadius: 80,
+    borderWidth: 1,
+    borderColor: '#c1cad3',
+  },
+  dropdown1BtnTxtStyle: {color: '#444', textAlign: 'left', fontSize: 14},
 });
