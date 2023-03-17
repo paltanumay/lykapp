@@ -124,7 +124,12 @@ const CommentsDetails = () => {
       });
   };
 
-  const onSubmitComment = async (replyTo, replyToName) => {
+  const onSubmitComment = async (
+    replyTo,
+    replyToName,
+    createdBy,
+    ownerName,
+  ) => {
     let userDetails = await AsyncStorage.getItem('userId');
     userDetails = JSON.parse(userDetails);
     let token =
@@ -134,7 +139,7 @@ const CommentsDetails = () => {
       '-' +
       getEncTokenAnyUserId(userDetails.userId);
 
-    const res = saveCommentFeed({
+    saveCommentFeed({
       URL: POST_COMMENT_URL,
 
       data: {
@@ -144,25 +149,31 @@ const CommentsDetails = () => {
         itemType: type,
         isReply: false,
         isPrivate: false,
-        toUserId: getEncUserId(userDetails.userId),
-        // type === 'news'
-        //   ? getEncUserId(details.newsId)
-        //   : getEncUserId(details.postId),
+        // toUserId: getEncUserId(userDetails.userId),
+        // // type === 'news'
+        // //   ? getEncUserId(details.newsId)
+        // //   : getEncUserId(details.postId),
         commentor: {
           userId: getEncUserId(userDetails.userId),
           firstName: userDetails.firstName,
           imageUrl: userDetails.imageUrl,
         },
-        ownerName: userDetails.firstName,
+        mentions: [],
+        ownerName: ownerName,
         myName: userDetails.firstName,
-        creatorId: getEncUserId(userDetails.userId),
+        creatorId: getEncTokenAnyUserId(createdBy),
         replyTo: replyTo,
         replyToName: replyToName,
       },
       token: token,
-    });
-
-    // console.log(res, 'responsdf');
+    })
+      .then(response => {
+        setComments([...comments, response.data.response?.comment]);
+        setCommentText('');
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   moment.updateLocale('en', {
@@ -189,6 +200,7 @@ const CommentsDetails = () => {
     setThreeDot(true);
   };
   // console.log('Comments------------------', commentReplies);
+  console.log('Details----------', details);
   const handleOnClose = () => {
     setThreeDot(false);
   };
@@ -463,10 +475,10 @@ const CommentsDetails = () => {
                   </View>
                 </View>
               </View>
-              {details.commentCount > '0' &&
+              {/* {details.commentCount > '0' &&
                 details.allComments?.map((comment, ind) => (
                   <CommentComponents commentDetails={comment} key={ind} />
-                ))}
+                ))} */}
             </View>
             {comments > '0' &&
               comments?.map((comment, ind) => {
@@ -483,11 +495,11 @@ const CommentsDetails = () => {
                   </>
                 );
               })}
-            {details.commentCount === '0' && (
+            {/* {details.commentCount === '0' && (
               <View style={mainStyles.messageWrapper}>
                 <Text style={mainStyles.message}>Still no comments!</Text>
               </View>
-            )}
+            )} */}
           </ScrollView>
         )
       )}
@@ -499,15 +511,21 @@ const CommentsDetails = () => {
         <TextInput
           ref={inputRef}
           onChangeText={text => setCommentText(text)}
+          value={commentText}
           style={mainStyles.commentInput}
           placeholder="Type your comment here"
           placeholderTextColor="#9e9c9c"
         />
         <TouchableOpacity
           onPress={() => {
-            onSubmitComment('', '');
+            onSubmitComment(
+              '',
+              '',
+              details.createdBy.userId,
+              details.createdBy.firstName,
+            );
           }}>
-          <Image source={sendImg} />
+          <Image source={sendImg} style={mainStyles.send} />
         </TouchableOpacity>
       </View>
     </>
@@ -595,6 +613,10 @@ const mainStyles = StyleSheet.create({
     color: '#000',
     fontWeight: '700',
     fontFamily: 'SFpro-Bold',
+  },
+  send: {
+    width: 50,
+    height: 50,
   },
 });
 export default CommentsDetails;
