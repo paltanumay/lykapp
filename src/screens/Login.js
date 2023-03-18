@@ -272,13 +272,15 @@ export default function Login({navigation}) {
                 style={styles.passNShow}
                 onPress={() => setPasswordVisible(prev => !prev)}>
                 {!passwordVisible ? (
-                  <IonIcon name="eye-outline" size={20} color={COLORS.blue} />
+                  <Image
+                  style={{width:20, height:12}}
+                  source={require('../assets/images/eye.png')}
+                />
                 ) : (
-                  <IonIcon
-                    name="ios-eye-off-outline"
-                    size={20}
-                    color={COLORS.blue}
-                  />
+                  <Image
+                  style={{width:20, height:12}}
+                  source={require('../assets/images/eye-off.png')}
+                />
                 )}
               </TouchableOpacity>
             </View>

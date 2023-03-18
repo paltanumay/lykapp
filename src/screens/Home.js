@@ -408,33 +408,32 @@ export default function Home() {
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.push('Createpost');
-              }}>
+            {/* <TouchableOpacity
+              onPress={() => {navigation.push('Createpost');}}
+              > */}
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/create-post.png')}
                 style={[styles.postImg]}
               />
-            </TouchableOpacity>
-            <TouchableOpacity>
+            {/* </TouchableOpacity> */}
+            {/* <TouchableOpacity> */}
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/invited.png')}
                 style={[styles.postImg]}
               />
-            </TouchableOpacity>
-            <TouchableOpacity
+            {/* </TouchableOpacity> */}
+            {/* <TouchableOpacity
               onPress={() => {
                 navigation.push('network');
-              }}>
+              }}> */}
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/grow-network.png')}
                 style={[styles.postImg]}
               />
-            </TouchableOpacity>
+            {/* </TouchableOpacity> */}
           </View>
 
           <View style={styles.newsCardsWrap}>

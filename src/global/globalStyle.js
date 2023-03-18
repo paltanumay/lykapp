@@ -26,7 +26,7 @@ export const globalStyles = StyleSheet.create({
   },
   gradBt: {
     width: '60%',
-    marginTop: 11,
+    marginTop: 6,
   },
   lineBt: {
     borderRadius: 100,
