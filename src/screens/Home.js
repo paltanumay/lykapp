@@ -392,6 +392,11 @@ export default function Home() {
     setThreeDotData({type, feedId, title, imageUrl});
     setThreeDot(true);
   };
+
+  const handleShare = async () => {
+    console.log('hghj');
+  };
+
   return (
     <>
       <Header onSetRefresh={setRefresh} />
@@ -412,71 +417,71 @@ export default function Home() {
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
-              setModalVisible(!modalVisible);
+              setModalVisible(prev => !prev);
             }}>
-            <View style={styles.centeredViewInner}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalText}>
-                  Select from the people listed below with whom you can share
-                  this post
-                </Text>
+            <TouchableOpacity
+              activeOpacity={1}
+              onPressOut={() => {
+                setModalVisible(false);
+              }}>
+              <View style={styles.centeredViewInner}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>
+                    Select from the people listed below with whom you can share
+                    this post
+                  </Text>
 
-                <View style={styles.dropBox}>
-                  <SelectDropdown
-                    data={hobbies}
-                    defaultButtonText={user?.interested.join(',')}
-                    buttonStyle={styles.dropdown1BtnStyle}
-                    buttonTextStyle={styles.dropdown1BtnTxtStyle}
-                    renderDropdownIcon={isOpened => {
-                      return (
-                        <FontAwesome
-                          name={isOpened ? 'chevron-up' : 'chevron-down'}
-                          color={'#444'}
-                          size={18}
-                        />
-                      );
-                    }}
-                    dropdownIconPosition={'right'}
-                    dropdownStyle={styles.dropdown1DropdownStyle}
-                    rowStyle={styles.dropdown1RowStyle}
-                    rowTextStyle={styles.dropdown1RowTxtStyle}
-                    onSelect={(selectedItem, index) => {
-                      console.log(selectedItem, index);
-                    }}
-                    buttonTextAfterSelection={(selectedItem, index) => {
-                      // text represented after item is selected
-                      // if data array is an array of objects then return selectedItem.property to render after item is selected
-                      return selectedItem;
-                    }}
-                    rowTextForSelection={(item, index) => {
-                      // text represented for each item in dropdown
-                      // if data array is an array of objects then return item.property to represent item in dropdown
-                      return item;
-                    }}
-                  />
+                  <View style={styles.dropBox}>
+                    <SelectDropdown
+                      data={hobbies}
+                      defaultButtonText={user?.interested.join(',')}
+                      buttonStyle={styles.dropdown1BtnStyle}
+                      buttonTextStyle={styles.dropdown1BtnTxtStyle}
+                      renderDropdownIcon={isOpened => {
+                        return (
+                          <FontAwesome
+                            name={isOpened ? 'chevron-up' : 'chevron-down'}
+                            color={'#444'}
+                            size={18}
+                          />
+                        );
+                      }}
+                      dropdownIconPosition={'right'}
+                      dropdownStyle={styles.dropdown1DropdownStyle}
+                      rowStyle={styles.dropdown1RowStyle}
+                      rowTextStyle={styles.dropdown1RowTxtStyle}
+                      onSelect={(selectedItem, index) => {
+                        console.log(selectedItem, index);
+                      }}
+                      buttonTextAfterSelection={(selectedItem, index) => {
+                        // text represented after item is selected
+                        // if data array is an array of objects then return selectedItem.property to render after item is selected
+                        return selectedItem;
+                      }}
+                      rowTextForSelection={(item, index) => {
+                        // text represented for each item in dropdown
+                        // if data array is an array of objects then return item.property to represent item in dropdown
+                        return item;
+                      }}
+                    />
+                  </View>
+                  <Pressable
+                    style={{width: '90%', marginTop: 150}}
+                    onPress={() => setModalVisible(!modalVisible)}>
+                    <LinearGradient
+                      start={{x: 0, y: 0}}
+                      end={{x: 1, y: 0}}
+                      colors={['#037ee5', '#15a2e0', '#28cad9']}
+                      style={[globalStyles.linearGradient, {height: 38}]}>
+                      <Text style={globalStyles.buttonText}>
+                        Share on timeline
+                      </Text>
+                    </LinearGradient>
+                  </Pressable>
                 </View>
-                <Pressable
-                  style={{width: '90%', marginTop: 150}}
-                  onPress={() => setModalVisible(!modalVisible)}>
-                  <LinearGradient
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                    colors={['#037ee5', '#15a2e0', '#28cad9']}
-                    style={[globalStyles.linearGradient, {height: 38}]}>
-                    <Text style={globalStyles.buttonText}>
-                      Share on timeline
-                    </Text>
-                  </LinearGradient>
-                </Pressable>
               </View>
-            </View>
+            </TouchableOpacity>
           </Modal>
-          <Pressable
-            style={[styles.button, styles.buttonOpen]}
-            onPress={() => setModalVisible(true)}>
-            <Text style={styles.textStyle}>Show Modal</Text>
-          </Pressable>
         </View>
 
         <Animated.ScrollView
@@ -687,7 +692,7 @@ export default function Home() {
                         <MenuOption
                           value={1}
                           style={styles.shareWrapInner}
-                          onPress={() => setModalVisible(true)}>
+                          onSelect={() => setModalVisible(true)}>
                           <Image
                             resizeMode="contain"
                             source={require('../assets/images/share-on-lyk.png')}
@@ -698,7 +703,10 @@ export default function Home() {
                           />
                           <Text style={styles.shareText}>Share on LYK</Text>
                         </MenuOption>
-                        <MenuOption value={2} style={styles.shareWrapInner}>
+                        <MenuOption
+                          value={2}
+                          style={styles.shareWrapInner}
+                          onSelect={handleShare}>
                           <Image
                             resizeMode="contain"
                             source={require('../assets/images/external-share.png')}
