@@ -32,15 +32,35 @@ import ThreeDotComponent from '../components/threeDot';
 import {
   generalApiCallPost,
   saveCommentFeed,
+  shareOnLyk,
 } from '../services/homeFeed.service';
 import {useContext} from 'react';
 import {HomeContext} from '../shared/homeFeedCotext';
+import LinearGradient from 'react-native-linear-gradient';
+import {globalStyles} from '../global/globalStyle';
+import {Modal} from 'react-native';
+import SelectDropdown from 'react-native-select-dropdown';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+
+const SHARE_FEED_SHORT = 'saeed';
+const COMMENT_FEED_SHORT = 'bH3m8q';
+const POST_COMMENT_SHORT = 'g4QyL';
+const COMMENT_REPLY_SHORT = 'mS72Lc';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const COMMENT_URL = `${API_URL}/gtfdcmts`;
 export const POST_COMMENT_URL = `${API_URL}/svcmt`;
 export const COMMENT_REPLIES_URL = `${API_URL}/gtfdcmtrpls`;
+
 export const COMMENT_LIKE_URL = `${API_URL}/HomeFeed/likeFeedComment`;
+
+const hobbies = ['Lyk World', 'My Connections', 'My Family', 'Selective Users'];
 
 const CommentsDetails = () => {
   const route = useRoute();
@@ -48,15 +68,16 @@ const CommentsDetails = () => {
   const details = route.params.details;
   const styles = route.params.styles;
   const type = route.params.type;
-  const COMMENT_FEED_SHORT = 'bH3m8q';
-  const POST_COMMENT_SHORT = 'g4QyL';
-  const COMMENT_REPLY_SHORT = 'mS72Lc';
+
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([]);
   const [likeresponse, setLikeResponse] = useState({});
   const [threeDotData, setThreeDotData] = useState();
   const {feeds, setFeeds} = useContext(HomeContext);
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [shareModalData, setShareModalData] = useState({});
+  const [user, setUser] = useState();
 
   const inputRef = useRef();
   useEffect(() => {
@@ -204,6 +225,48 @@ const CommentsDetails = () => {
   const handleOnClose = () => {
     setThreeDot(false);
   };
+
+  const handleShare = async () => {
+    console.log(shareModalData, 'sharea --------------------->');
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      SHARE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    shareOnLyk(
+      {
+        userId: getEncUserId(userDetails.userId),
+        myName: userDetails.firstName,
+
+        feedId: shareModalData.newsId
+          ? parseInt(shareModalData.newsId)
+          : shareModalData.postId && parseInt(shareModalData.postId),
+        feedType: shareModalData.type,
+        country: userDetails.countryName,
+        city: userDetails.city,
+        userList: [],
+        selectionType: 1,
+      },
+      token,
+    )
+      .then(res => {
+        setShareModalData(res);
+        setModalVisible(false);
+        navigation.goBack();
+      })
+      .catch(err => {
+        console.log(err, '===>');
+      });
+  };
+
+  const handleShareOnLyk = (details, type) => {
+    setModalVisible(true);
+    setShareModalData({...details, type});
+  };
+
   return (
     <>
       <CommentHeader name={'Comments'} />
@@ -220,7 +283,80 @@ const CommentsDetails = () => {
       )}
 
       {type === 'news' ? (
-        <>
+        <View style={globalStyles.innerPagesContainer}>
+          <View style={styles.centeredView}>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                setModalVisible(prev => !prev);
+              }}>
+              <TouchableOpacity
+                activeOpacity={1}
+                onPressOut={() => {
+                  setModalVisible(false);
+                }}>
+                <View style={styles.centeredViewInner}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalText}>
+                      Select from the people listed below with whom you can
+                      share this post
+                    </Text>
+
+                    <View style={styles.dropBox}>
+                      <SelectDropdown
+                        data={hobbies}
+                        defaultValue={hobbies[0]}
+                        defaultButtonText={user?.interested.join(',')}
+                        buttonStyle={styles.dropdown1BtnStyle}
+                        buttonTextStyle={styles.dropdown1BtnTxtStyle}
+                        renderDropdownIcon={isOpened => {
+                          return (
+                            <FontAwesome
+                              name={isOpened ? 'chevron-up' : 'chevron-down'}
+                              color={'#444'}
+                              size={18}
+                            />
+                          );
+                        }}
+                        dropdownIconPosition={'right'}
+                        dropdownStyle={styles.dropdown1DropdownStyle}
+                        rowStyle={styles.dropdown1RowStyle}
+                        rowTextStyle={styles.dropdown1RowTxtStyle}
+                        onSelect={(selectedItem, index) => {
+                          console.log(selectedItem, index);
+                        }}
+                        buttonTextAfterSelection={(selectedItem, index) => {
+                          // text represented after item is selected
+                          // if data array is an array of objects then return selectedItem.property to render after item is selected
+                          return selectedItem;
+                        }}
+                        rowTextForSelection={(item, index) => {
+                          // text represented for each item in dropdown
+                          // if data array is an array of objects then return item.property to represent item in dropdown
+                          return item;
+                        }}
+                      />
+                    </View>
+                    <Pressable
+                      style={{width: '90%', marginTop: 150}}
+                      onPress={handleShare}>
+                      <LinearGradient
+                        start={{x: 0, y: 0}}
+                        end={{x: 1, y: 0}}
+                        colors={['#037ee5', '#15a2e0', '#28cad9']}
+                        style={[globalStyles.linearGradient, {height: 38}]}>
+                        <Text style={globalStyles.buttonText}>
+                          Share on timeline
+                        </Text>
+                      </LinearGradient>
+                    </Pressable>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </Modal>
+          </View>
           <ScrollView
             style={mainStyles.postFeed}
             scrollEnabled={true}
@@ -325,14 +461,45 @@ const CommentsDetails = () => {
 
                 <View style={styles.likeCommentShareBox}>
                   <View style={styles.likeCommentShareIconWrap}>
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="sharealt" size={22} color="#f8767a" />
-                      </TouchableOpacity> */}
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/share.png')}
-                      style={[styles.likeImg]}
-                    />
+                    <Menu>
+                      <MenuTrigger>
+                        <Image
+                          resizeMode="contain"
+                          source={require('../assets/images/share.png')}
+                          style={[styles.likeImg]}
+                        />
+                      </MenuTrigger>
+                      <MenuOptions style={styles.shareWrap}>
+                        <MenuOption
+                          value={1}
+                          style={styles.shareWrapInner}
+                          onSelect={() => handleShareOnLyk(details, type)}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/share-on-lyk.png')}
+                            style={[
+                              styles.likeShareImg,
+                              {width: 22, height: 18},
+                            ]}
+                          />
+                          <Text style={styles.shareText}>Share on LYK</Text>
+                        </MenuOption>
+                        <MenuOption
+                          value={2}
+                          style={styles.shareWrapInner}
+                          onSelect={handleShare}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/external-share.png')}
+                            style={[
+                              styles.likeShareImg,
+                              {width: 18, height: 24},
+                            ]}
+                          />
+                          <Text style={styles.shareText}>External share</Text>
+                        </MenuOption>
+                      </MenuOptions>
+                    </Menu>
 
                     <Text style={styles.iconText}>
                       {details.shareCount} Share
@@ -358,7 +525,7 @@ const CommentsDetails = () => {
                 );
               })}
           </ScrollView>
-        </>
+        </View>
       ) : (
         type === 'post' && (
           <ScrollView>
@@ -460,14 +627,45 @@ const CommentsDetails = () => {
                 </View>
                 <View style={styles.likeCommentShareBox}>
                   <View style={styles.likeCommentShareIconWrap}>
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name="sharealt" size={22} color="#f8767a" />
-                        </TouchableOpacity> */}
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/share.png')}
-                      style={[styles.likeImg]}
-                    />
+                    <Menu>
+                      <MenuTrigger>
+                        <Image
+                          resizeMode="contain"
+                          source={require('../assets/images/share.png')}
+                          style={[styles.likeImg]}
+                        />
+                      </MenuTrigger>
+                      <MenuOptions style={styles.shareWrap}>
+                        <MenuOption
+                          value={1}
+                          style={styles.shareWrapInner}
+                          onSelect={() => handleShareOnLyk(details, type)}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/share-on-lyk.png')}
+                            style={[
+                              styles.likeShareImg,
+                              {width: 22, height: 18},
+                            ]}
+                          />
+                          <Text style={styles.shareText}>Share on LYK</Text>
+                        </MenuOption>
+                        <MenuOption
+                          value={2}
+                          style={styles.shareWrapInner}
+                          onSelect={handleShare}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/external-share.png')}
+                            style={[
+                              styles.likeShareImg,
+                              {width: 18, height: 24},
+                            ]}
+                          />
+                          <Text style={styles.shareText}>External share</Text>
+                        </MenuOption>
+                      </MenuOptions>
+                    </Menu>
 
                     <Text style={styles.iconText}>
                       {details.shareCount} Share

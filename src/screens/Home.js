@@ -472,6 +472,7 @@ export default function Home() {
                   <View style={styles.dropBox}>
                     <SelectDropdown
                       data={hobbies}
+                      defaultValue={hobbies[0]}
                       defaultButtonText={user?.interested.join(',')}
                       buttonStyle={styles.dropdown1BtnStyle}
                       buttonTextStyle={styles.dropdown1BtnTxtStyle}
