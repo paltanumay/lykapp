@@ -25,17 +25,17 @@ export const globalStyles = StyleSheet.create({
    fontFamily: 'SFpro-Regular',
   },
   gradBt: {
-    width: '60%',
+    width:197,
     marginTop: 6,
   },
   lineBt: {
     borderRadius: 100,
-    height: 42,
+    height: 31,
     borderWidth: 1,
     borderColor: COLORS.blue,
     alignItems: 'center',
     justifyContent: 'center',
-    width: '30%',
+    width: 131,
   },
   lineBtText: {
     color: '#333',
