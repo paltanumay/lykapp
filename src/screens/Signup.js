@@ -364,9 +364,7 @@ export default function Signup({navigation}) {
 
               <TouchableOpacity
                 style={[
-                  globalStyles.lineBt,
-                  {height: 31, width: 131, marginBottom: 15},
-                ]}
+                  globalStyles.lineBt,{height: 31, width: 131, marginBottom: 15}]}
                 onPress={handleSubmit}
                 disabled={isSubmitting || !phone.current}>
                 <Text style={globalStyles.lineBtText}>Next</Text>
