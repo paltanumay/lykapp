@@ -910,14 +910,51 @@ export default function Home() {
                       </View>
                       <View style={styles.likeCommentShareBox}>
                         <View style={styles.likeCommentShareIconWrap}>
-                          {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name="sharealt" size={22} color="#f8767a" />
-                        </TouchableOpacity> */}
-                          <Image
-                            resizeMode="contain"
-                            source={require('../assets/images/share.png')}
-                            style={[styles.likeImg]}
-                          />
+                          <Menu>
+                            <MenuTrigger>
+                              <Image
+                                resizeMode="contain"
+                                source={require('../assets/images/share.png')}
+                                style={[styles.likeImg]}
+                              />
+                            </MenuTrigger>
+                            <MenuOptions style={styles.shareWrap}>
+                              <MenuOption
+                                value={1}
+                                style={styles.shareWrapInner}
+                                onSelect={() =>
+                                  handleShareOnLyk(details, type)
+                                }>
+                                <Image
+                                  resizeMode="contain"
+                                  source={require('../assets/images/share-on-lyk.png')}
+                                  style={[
+                                    styles.likeShareImg,
+                                    {width: 22, height: 18},
+                                  ]}
+                                />
+                                <Text style={styles.shareText}>
+                                  Share on LYK
+                                </Text>
+                              </MenuOption>
+                              <MenuOption
+                                value={2}
+                                style={styles.shareWrapInner}
+                                onSelect={handleShare}>
+                                <Image
+                                  resizeMode="contain"
+                                  source={require('../assets/images/external-share.png')}
+                                  style={[
+                                    styles.likeShareImg,
+                                    {width: 18, height: 24},
+                                  ]}
+                                />
+                                <Text style={styles.shareText}>
+                                  External share
+                                </Text>
+                              </MenuOption>
+                            </MenuOptions>
+                          </Menu>
 
                           <Text style={styles.iconText}>
                             {details.shareCount} Share
