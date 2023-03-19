@@ -10,6 +10,7 @@ import {
   ScrollView,
   Pressable,
   RefreshControl,
+  Linking,
   Alert,
   Modal,
 } from 'react-native';
@@ -55,15 +56,19 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useContext} from 'react';
 import {HomeContext} from '../shared/homeFeedCotext';
 import {useCallback} from 'react';
+import {postLike, shareOnLyk} from '../services/homeFeed.service';
 const hobbies = ['Lyk World', 'My Connections', 'My Family', 'Selective Users'];
 export const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
 export const INAPPROPRIATE_URL = `${API_URL}Analytical/reportItem`;
+export const SHARE_URL = `${API_URL}/Analytical/shareFeed`;
 
 export const INSERT_PUSH_SHORT = 'isrPs';
 const HOME_FEED_SHORT = 'gttmln';
+const LIKE_FEED_SHORT = 'lkPs';
+const SHARE_FEED_SHORT = 'saeed';
 const offset = 0,
   limit = 25,
   feedPosition = -1,
@@ -85,17 +90,24 @@ export default function Home() {
   const lastContentOffset = useSharedValue(0);
   const isScrolling = useSharedValue(false);
   const [refresh, setRefresh] = useState(false);
+  const [liked, setLiked] = useState(false);
   const [isScrollDown, setScrollDown] = useState(false);
   const [threeDot, setThreeDot] = useState(false);
   const [threeDotData, setThreeDotData] = useState({});
-  const {feeds, setFeeds} = useContext(HomeContext);
+  const {feeds, setFeeds, userInfo} = useContext(HomeContext);
+  const [user, setUser] = useState();
+  // console.log(feeds);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [shareModalData, setShareModalData] = useState({});
 
-  console.log(refresh, '------>');
+  console.log(feeds, '--------->feed');
+
   useFocusEffect(
     useCallback(() => {
       async function getHomeFeed() {
         let userDetails = await AsyncStorage.getItem('userId');
         userDetails = JSON.parse(userDetails);
+        // setUserDetailsInfo(userDetails);
         let token =
           (await AsyncStorage.getItem('token')) +
           '-' +
@@ -125,16 +137,12 @@ export default function Home() {
               },
             },
           )
-          .then(
-            res => {
-              //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
-              setFeeds(res.data.response.feeds);
-              setRefresh(false);
-            },
-            err => {
-              alert(err + userDetails.userId + token);
-            },
-          );
+          .then(res => {
+            //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
+            setFeeds(res.data.response.feeds);
+            setRefresh(false);
+          })
+          .catch(err => console.log(err));
       }
       getHomeFeed();
       const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -149,7 +157,7 @@ export default function Home() {
       });
 
       return unsubscribe;
-    }, [refresh]),
+    }, [refresh, liked, shareModalData]),
   );
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
@@ -239,6 +247,86 @@ export default function Home() {
   
       return unsubscribe; */
   }, []);
+
+  const onNewsLike = async newsId => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      LIKE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    postLike(
+      {
+        newsId: newsId,
+        userId: getEncUserId(userDetails.userId),
+        likerName: userDetails.firstName,
+        creatorId: '',
+      },
+      token,
+    )
+      .then(response => {
+        // const newState = feeds.map(obj => {
+        //   if (obj.postId === postId) {
+        //     if (response.data.response?.liked === 0) {
+        //       return {...obj, likeCount: 0};
+        //     }
+        //     return {...obj, likeCount: obj.likeCount + 1};
+        //   }
+        //   return obj;
+        // });
+        // setFeeds(newState);
+        if (response.data.response?.success) {
+          setLiked(!liked);
+        }
+      })
+      .catch(error => {
+        console.log('Error---------', error.response);
+      });
+  };
+
+  const onPressLike = async (postId, creatorId) => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    console.log(
+      `postId: ${postId} creatorId: ${creatorId} likerName: ${userDetails.firstName} userId: ${userDetails.userId}`,
+    );
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      LIKE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    postLike(
+      {
+        postId: postId,
+        userId: getEncUserId(userDetails.userId),
+        likerName: userDetails.firstName,
+        creatorId: getEncTokenAnyUserId(creatorId),
+      },
+      token,
+    )
+      .then(response => {
+        // const newState = feeds.map(obj => {
+        //   if (obj.postId === postId) {
+        //     if (response.data.response?.liked === 0) {
+        //       return {...obj, likeCount: 0};
+        //     }
+        //     return {...obj, likeCount: obj.likeCount + 1};
+        //   }
+        //   return obj;
+        // });
+        // setFeeds(newState);
+        if (response.data.response?.success) {
+          setLiked(!liked);
+        }
+      })
+      .catch(error => {
+        console.log('Error---------', error.response);
+      });
+  };
+
   const actionBarStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -302,13 +390,51 @@ export default function Home() {
     },
   });
 
-  const [user, setUser] = useState();
-  // console.log(feeds);
-  const [modalVisible, setModalVisible] = useState(false);
   const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
     setThreeDotData({type, feedId, title, imageUrl});
     setThreeDot(true);
   };
+
+  const handleShare = async () => {
+    console.log(shareModalData, 'sharea --------------------->');
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      SHARE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    shareOnLyk(
+      {
+        userId: getEncUserId(userDetails.userId),
+        myName: userDetails.firstName,
+
+        feedId: shareModalData.newsId
+          ? parseInt(shareModalData.newsId)
+          : shareModalData.postId && parseInt(shareModalData.postId),
+        feedType: shareModalData.type,
+        country: userDetails.countryName,
+        city: userDetails.city,
+        userList: [],
+        selectionType: 1,
+      },
+      token,
+    )
+      .then(res => {
+        setShareModalData(res);
+        setModalVisible(false);
+      })
+      .catch(err => {
+        console.log(err, '===>');
+      });
+  };
+
+  const handleShareOnLyk = (details, type) => {
+    setModalVisible(true);
+    setShareModalData({...details, type});
+  };
+
   return (
     <>
       <Header onSetRefresh={setRefresh} />
@@ -323,78 +449,77 @@ export default function Home() {
         />
       )}
       <View style={globalStyles.innerPagesContainer}>
-
         <View style={styles.centeredView}>
           <Modal
             animationType="slide"
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
-              setModalVisible(!modalVisible);
+              setModalVisible(prev => !prev);
             }}>
-            <View style={styles.centeredViewInner}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalText}>
-                  Select from the people listed below with whom you can share
-                  this post
-                </Text>
+            <TouchableOpacity
+              activeOpacity={1}
+              onPressOut={() => {
+                setModalVisible(false);
+              }}>
+              <View style={styles.centeredViewInner}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>
+                    Select from the people listed below with whom you can share
+                    this post
+                  </Text>
 
-                <View style={styles.dropBox}>
-                  <SelectDropdown
-                    data={hobbies}
-                    defaultButtonText={user?.interested.join(',')}
-                    buttonStyle={styles.dropdown1BtnStyle}
-                    buttonTextStyle={styles.dropdown1BtnTxtStyle}
-                    renderDropdownIcon={isOpened => {
-                      return (
-                        <FontAwesome
-                          name={isOpened ? 'chevron-up' : 'chevron-down'}
-                          color={'#444'}
-                          size={18}
-                        />
-                      );
-                    }}
-                    dropdownIconPosition={'right'}
-                    dropdownStyle={styles.dropdown1DropdownStyle}
-                    rowStyle={styles.dropdown1RowStyle}
-                    rowTextStyle={styles.dropdown1RowTxtStyle}
-                    onSelect={(selectedItem, index) => {
-                      console.log(selectedItem, index);
-                    }}
-                    buttonTextAfterSelection={(selectedItem, index) => {
-                      // text represented after item is selected
-                      // if data array is an array of objects then return selectedItem.property to render after item is selected
-                      return selectedItem;
-                    }}
-                    rowTextForSelection={(item, index) => {
-                      // text represented for each item in dropdown
-                      // if data array is an array of objects then return item.property to represent item in dropdown
-                      return item;
-                    }}
-                  />
+                  <View style={styles.dropBox}>
+                    <SelectDropdown
+                      data={hobbies}
+                      defaultButtonText={user?.interested.join(',')}
+                      buttonStyle={styles.dropdown1BtnStyle}
+                      buttonTextStyle={styles.dropdown1BtnTxtStyle}
+                      renderDropdownIcon={isOpened => {
+                        return (
+                          <FontAwesome
+                            name={isOpened ? 'chevron-up' : 'chevron-down'}
+                            color={'#444'}
+                            size={18}
+                          />
+                        );
+                      }}
+                      dropdownIconPosition={'right'}
+                      dropdownStyle={styles.dropdown1DropdownStyle}
+                      rowStyle={styles.dropdown1RowStyle}
+                      rowTextStyle={styles.dropdown1RowTxtStyle}
+                      onSelect={(selectedItem, index) => {
+                        console.log(selectedItem, index);
+                      }}
+                      buttonTextAfterSelection={(selectedItem, index) => {
+                        // text represented after item is selected
+                        // if data array is an array of objects then return selectedItem.property to render after item is selected
+                        return selectedItem;
+                      }}
+                      rowTextForSelection={(item, index) => {
+                        // text represented for each item in dropdown
+                        // if data array is an array of objects then return item.property to represent item in dropdown
+                        return item;
+                      }}
+                    />
+                  </View>
+                  <Pressable
+                    style={{width: '90%', marginTop: 150}}
+                    onPress={handleShare}>
+                    <LinearGradient
+                      start={{x: 0, y: 0}}
+                      end={{x: 1, y: 0}}
+                      colors={['#037ee5', '#15a2e0', '#28cad9']}
+                      style={[globalStyles.linearGradient, {height: 38}]}>
+                      <Text style={globalStyles.buttonText}>
+                        Share on timeline
+                      </Text>
+                    </LinearGradient>
+                  </Pressable>
                 </View>
-                <Pressable
-                  style={{width: '90%', marginTop: 150}}
-                  onPress={() => setModalVisible(!modalVisible)}>
-                  <LinearGradient
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                    colors={['#037ee5', '#15a2e0', '#28cad9']}
-                    style={[globalStyles.linearGradient, {height: 38}]}>
-                    <Text style={globalStyles.buttonText}>
-                      Share on timeline
-                    </Text>
-                  </LinearGradient>
-                </Pressable>
               </View>
-            </View>
+            </TouchableOpacity>
           </Modal>
-          <Pressable
-        style={[styles.button, styles.buttonOpen]}
-        onPress={() => setModalVisible(true)}>
-        <Text style={styles.textStyle}>Show Modal</Text>
-      </Pressable>
         </View>
 
         <Animated.ScrollView
@@ -408,32 +533,68 @@ export default function Home() {
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
-            {/* <TouchableOpacity
-              onPress={() => {navigation.push('Createpost');}}
-              > */}
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/create-post.png')}
-                style={[styles.postImg]}
-              />
-            {/* </TouchableOpacity> */}
-            {/* <TouchableOpacity> */}
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/invited.png')}
-                style={[styles.postImg]}
-              />
-            {/* </TouchableOpacity> */}
-            {/* <TouchableOpacity
-              onPress={() => {
-                navigation.push('network');
-              }}> */}
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/grow-network.png')}
-                style={[styles.postImg]}
-              />
-            {/* </TouchableOpacity> */}
+            {((!!userInfo && userInfo?.countryISO === 'IN') ||
+              userInfo.countryISO === 'US' ||
+              userInfo.countryISO === 'GB') && (
+              <TouchableOpacity
+              // onPress={() => {
+              //   navigation.push('Createpost');
+              // }}
+              >
+                <Image
+                  resizeMode="contain"
+                  source={require('../assets/images/wallet.jpg')}
+                  style={[styles.postImg]}
+                />
+              </TouchableOpacity>
+            )}
+            {feeds.map(({type, details}, ind) => {
+              if (type === 'card' && details.metaType === 'lessPosts') {
+                return (
+                  <TouchableOpacity
+                    key={ind}
+                    onPress={() => {
+                      navigation.push('Createpost');
+                    }}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/images/create-post.png')}
+                      style={[styles.postImg]}
+                    />
+                  </TouchableOpacity>
+                );
+              } else if (
+                type === 'card' &&
+                details.metaType === 'lessFriends'
+              ) {
+                return (
+                  <TouchableOpacity
+                    key={ind}
+                    onPress={() => {
+                      navigation.push('network');
+                    }}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/images/grow-network.png')}
+                      style={[styles.postImg]}
+                    />
+                  </TouchableOpacity>
+                );
+              } else if (
+                type === 'card' &&
+                details.metaType === 'lessPrivateCommentConversation'
+              ) {
+                return (
+                  <TouchableOpacity key={ind}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/images/invited.png')}
+                      style={[styles.postImg]}
+                    />
+                  </TouchableOpacity>
+                );
+              }
+            })}
           </View>
 
           <View style={styles.newsCardsWrap}>
@@ -495,21 +656,34 @@ export default function Home() {
                       }}
                       style={[styles.postImg]}
                     />
+                    <Pressable
+                      style={styles.newsLink}
+                      onPress={() => Linking.openURL(details.newsLink)}>
+                      <Text style={styles.newsTextSource}>
+                        Source : {details.newsSource}
+                      </Text>
+                    </Pressable>
                   </View>
                   <Text style={styles.secDesc}>{details.newsDescription}</Text>
 
                   <View style={styles.likeCommentShare}>
                     <View style={styles.likeCommentShareBox}>
                       <View style={styles.likeCommentShareIconWrap}>
-                        <Image
-                          resizeMode="contain"
-                          source={require('../assets/images/liked.png')}
-                          style={[styles.likeImg]}
-                        />
-                        {/* <TouchableOpacity style={styles.roundBase}>
+                        <TouchableOpacity
+                          style={styles.likeCommentShareIconWrap}
+                          onPress={() => {
+                            console.log('Details------------------', details);
+                            onNewsLike(details.newsId);
+                          }}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/liked.png')}
+                            style={[styles.likeImg]}
+                          />
+                          {/* <TouchableOpacity style={styles.roundBase}>
                         <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
                       </TouchableOpacity> */}
-
+                        </TouchableOpacity>
                         <Text style={styles.iconText}>
                           {details.likeCount} Like
                         </Text>
@@ -536,41 +710,56 @@ export default function Home() {
                         </Text>
                       </TouchableOpacity>
                     </View>
-                    <Menu>
-                      <MenuTrigger >
-                        <View style={styles.likeCommentShareBox}>
-                          <View style={styles.likeCommentShareIconWrap}>
+
+                    <View style={styles.likeCommentShareBox}>
+                      <View style={styles.likeCommentShareIconWrap}>
+                        <Menu>
+                          <MenuTrigger>
                             <Image
                               resizeMode="contain"
                               source={require('../assets/images/share.png')}
                               style={[styles.likeImg]}
                             />
+                          </MenuTrigger>
+                          <MenuOptions style={styles.shareWrap}>
+                            <MenuOption
+                              value={1}
+                              style={styles.shareWrapInner}
+                              onSelect={() => handleShareOnLyk(details, type)}>
+                              <Image
+                                resizeMode="contain"
+                                source={require('../assets/images/share-on-lyk.png')}
+                                style={[
+                                  styles.likeShareImg,
+                                  {width: 22, height: 18},
+                                ]}
+                              />
+                              <Text style={styles.shareText}>Share on LYK</Text>
+                            </MenuOption>
+                            <MenuOption
+                              value={2}
+                              style={styles.shareWrapInner}
+                              onSelect={handleShare}>
+                              <Image
+                                resizeMode="contain"
+                                source={require('../assets/images/external-share.png')}
+                                style={[
+                                  styles.likeShareImg,
+                                  {width: 18, height: 24},
+                                ]}
+                              />
+                              <Text style={styles.shareText}>
+                                External share
+                              </Text>
+                            </MenuOption>
+                          </MenuOptions>
+                        </Menu>
 
-                            <Text style={styles.iconText}>
-                              {details.shareCount} Share
-                            </Text>
-                          </View>
-                        </View>
-                      </MenuTrigger>
-                      <MenuOptions style={styles.shareWrap}>
-                        <MenuOption value={1} style={styles.shareWrapInner} onPress={() => setModalVisible(true)}>
-                          <Image
-                            resizeMode="contain"
-                            source={require('../assets/images/share-on-lyk.png')}
-                            style={[styles.likeShareImg, {width:22, height:18}]}
-                          />
-                          <Text style={styles.shareText}>Share on LYK</Text>
-                        </MenuOption>
-                        <MenuOption value={2} style={styles.shareWrapInner}>
-                          <Image
-                            resizeMode="contain"
-                            source={require('../assets/images/external-share.png')}
-                            style={[styles.likeShareImg, {width:18, height:24}]}
-                          />
-                          <Text style={styles.shareText}>External share</Text>
-                        </MenuOption>
-                      </MenuOptions>
-                    </Menu>
+                        <Text style={styles.iconText}>
+                          {details.shareCount} Share
+                        </Text>
+                      </View>
+                    </View>
                   </View>
                   {details.allComments?.map((comment, ind) => (
                     <HomeComments commentDetails={comment} key={ind} />
@@ -610,7 +799,11 @@ export default function Home() {
                       <View style={styles.cardProImg}>
                         <Image
                           resizeMode="contain"
-                          source={require('../assets/images/avatar.jpg')}
+                          source={
+                            details.createdBy.imageUrl
+                              ? {uri: details.createdBy.imageUrl}
+                              : require('../assets/images/avatar.jpg')
+                          }
                           style={[styles.logoImg]}
                         />
                       </View>
@@ -669,11 +862,21 @@ export default function Home() {
                     <View style={styles.likeCommentShare}>
                       <View style={styles.likeCommentShareBox}>
                         <View style={styles.likeCommentShareIconWrap}>
-                          <Image
-                            resizeMode="contain"
-                            source={require('../assets/images/liked.png')}
-                            style={[styles.likeImg]}
-                          />
+                          <TouchableOpacity
+                            onPress={() => {
+                              console.log('User details------------', details);
+                              onPressLike(
+                                details.postId,
+                                details.createdBy.userId,
+                              );
+                            }}
+                            style={styles.likeCommentShareIconWrap}>
+                            <Image
+                              resizeMode="contain"
+                              source={require('../assets/images/liked.png')}
+                              style={[styles.likeImg]}
+                            />
+                          </TouchableOpacity>
 
                           {/* <TouchableOpacity style={styles.roundBase}>
                           <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
@@ -739,6 +942,7 @@ export default function Home() {
                           onRedirectCommentScreen({details, type})
                         }>
                         <TextInput
+                          placeholder="Add comment"
                           placeholderTextColor="#AFAFAF"
                           style={styles.input}
                           editable={false}
@@ -924,6 +1128,25 @@ const styles = StyleSheet.create({
   likeImg: {
     width: 34,
     height: 34,
+  },
+  newsLink: {
+    position: 'absolute',
+    display: 'flex',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    alignItems: 'center',
+    right: 0,
+    bottom: 0,
+    height: 32,
+    borderRadius: 30,
+    backgroundColor: COLORS.blue,
+  },
+  newsTextSource: {
+    color: '#fff',
+    fontFamily: 'SFpro-Regular',
+    fontSize: 12,
+    fontWeight: '400',
   },
   likeShareImg: {
     width: 24,
