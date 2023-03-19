@@ -259,7 +259,9 @@ const App = () => {
           <Stack.Screen options={{headerShown: false}} name="comments">
             {() => (
               <HomeContextProvider>
-                <CommentsDetails />
+                <MenuProvider>
+                  <CommentsDetails />
+                </MenuProvider>
               </HomeContextProvider>
             )}
           </Stack.Screen>

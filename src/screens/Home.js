@@ -8,15 +8,21 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   Pressable,
   RefreshControl,
+  Linking,
+  Alert,
+  Modal,
 } from 'react-native';
 import React from 'react';
 import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 import messaging from '@react-native-firebase/messaging';
 import DeviceInfo from 'react-native-device-info';
+import LinearGradient from 'react-native-linear-gradient';
+import SelectDropdown from 'react-native-select-dropdown';
 
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import EnIcon from 'react-native-vector-icons/Entypo';
@@ -28,6 +34,8 @@ import {useState} from 'react';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
 import {postLike, newsLike} from '../services/homeFeed.service';
 import moment from 'moment';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+
 import Header from '../components/Header';
 import Animated, {
   Easing,
@@ -37,6 +45,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import HomeComments from '../components/HomeComments';
+
 import ThreeDotComponent from '../components/threeDot';
 import {
   Menu,
@@ -48,17 +57,20 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useContext} from 'react';
 import {HomeContext} from '../shared/homeFeedCotext';
 import {useCallback} from 'react';
-
+import {postLike, shareOnLyk} from '../services/homeFeed.service';
+const hobbies = ['Lyk World', 'My Connections', 'My Family', 'Selective Users'];
 export const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
 export const INAPPROPRIATE_URL = `${API_URL}Analytical/reportItem`;
+export const SHARE_URL = `${API_URL}/Analytical/shareFeed`;
 
 export const INSERT_PUSH_SHORT = 'isrPs';
 const HOME_FEED_SHORT = 'gttmln';
 const LIKE_FEED_SHORT = 'lkPs';
 const LIKE_NEWS_SHOT = 'lkFe';
+const SHARE_FEED_SHORT = 'saeed';
 const offset = 0,
   limit = 25,
   feedPosition = -1,
@@ -84,14 +96,20 @@ export default function Home() {
   const [isScrollDown, setScrollDown] = useState(false);
   const [threeDot, setThreeDot] = useState(false);
   const [threeDotData, setThreeDotData] = useState({});
-  const {feeds, setFeeds} = useContext(HomeContext);
+  const {feeds, setFeeds, userInfo} = useContext(HomeContext);
+  const [user, setUser] = useState();
+  // console.log(feeds);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [shareModalData, setShareModalData] = useState({});
 
-  console.log(refresh, '------>');
+  console.log(feeds, '--------->feed');
+
   useFocusEffect(
     useCallback(() => {
       async function getHomeFeed() {
         let userDetails = await AsyncStorage.getItem('userId');
         userDetails = JSON.parse(userDetails);
+        // setUserDetailsInfo(userDetails);
         let token =
           (await AsyncStorage.getItem('token')) +
           '-' +
@@ -121,16 +139,12 @@ export default function Home() {
               },
             },
           )
-          .then(
-            res => {
-              //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
-              setFeeds(res.data.response.feeds);
-              setRefresh(false);
-            },
-            err => {
-              alert(err + userDetails.userId + token);
-            },
-          );
+          .then(res => {
+            //alert(JSON.stringify(res.data.response.feeds) + token + userDetails.userId)
+            setFeeds(res.data.response.feeds);
+            setRefresh(false);
+          })
+          .catch(err => console.log(err));
       }
       getHomeFeed();
       const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -145,7 +159,7 @@ export default function Home() {
       });
 
       return unsubscribe;
-    }, [refresh, liked]),
+    }, [refresh, liked, shareModalData]),
   );
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
@@ -377,11 +391,52 @@ export default function Home() {
       yy: '%d years',
     },
   });
-  console.log('Feeds------------------', feeds);
+
   const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
     setThreeDotData({type, feedId, title, imageUrl});
     setThreeDot(true);
   };
+
+  const handleShare = async () => {
+    console.log(shareModalData, 'sharea --------------------->');
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      SHARE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    shareOnLyk(
+      {
+        userId: getEncUserId(userDetails.userId),
+        myName: userDetails.firstName,
+
+        feedId: shareModalData.newsId
+          ? parseInt(shareModalData.newsId)
+          : shareModalData.postId && parseInt(shareModalData.postId),
+        feedType: shareModalData.type,
+        country: userDetails.countryName,
+        city: userDetails.city,
+        userList: [],
+        selectionType: 1,
+      },
+      token,
+    )
+      .then(res => {
+        setShareModalData(res);
+        setModalVisible(false);
+      })
+      .catch(err => {
+        console.log(err, '===>');
+      });
+  };
+
+  const handleShareOnLyk = (details, type) => {
+    setModalVisible(true);
+    setShareModalData({...details, type});
+  };
+
   return (
     <>
       <Header onSetRefresh={setRefresh} />
@@ -396,6 +451,80 @@ export default function Home() {
         />
       )}
       <View style={globalStyles.innerPagesContainer}>
+        <View style={styles.centeredView}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(prev => !prev);
+            }}>
+            <TouchableOpacity
+              activeOpacity={1}
+              onPressOut={() => {
+                setModalVisible(false);
+              }}>
+              <View style={styles.centeredViewInner}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>
+                    Select from the people listed below with whom you can share
+                    this post
+                  </Text>
+
+                  <View style={styles.dropBox}>
+                    <SelectDropdown
+                      data={hobbies}
+                      defaultValue={hobbies[0]}
+                      defaultButtonText={user?.interested.join(',')}
+                      buttonStyle={styles.dropdown1BtnStyle}
+                      buttonTextStyle={styles.dropdown1BtnTxtStyle}
+                      renderDropdownIcon={isOpened => {
+                        return (
+                          <FontAwesome
+                            name={isOpened ? 'chevron-up' : 'chevron-down'}
+                            color={'#444'}
+                            size={18}
+                          />
+                        );
+                      }}
+                      dropdownIconPosition={'right'}
+                      dropdownStyle={styles.dropdown1DropdownStyle}
+                      rowStyle={styles.dropdown1RowStyle}
+                      rowTextStyle={styles.dropdown1RowTxtStyle}
+                      onSelect={(selectedItem, index) => {
+                        console.log(selectedItem, index);
+                      }}
+                      buttonTextAfterSelection={(selectedItem, index) => {
+                        // text represented after item is selected
+                        // if data array is an array of objects then return selectedItem.property to render after item is selected
+                        return selectedItem;
+                      }}
+                      rowTextForSelection={(item, index) => {
+                        // text represented for each item in dropdown
+                        // if data array is an array of objects then return item.property to represent item in dropdown
+                        return item;
+                      }}
+                    />
+                  </View>
+                  <Pressable
+                    style={{width: '90%', marginTop: 150}}
+                    onPress={handleShare}>
+                    <LinearGradient
+                      start={{x: 0, y: 0}}
+                      end={{x: 1, y: 0}}
+                      colors={['#037ee5', '#15a2e0', '#28cad9']}
+                      style={[globalStyles.linearGradient, {height: 38}]}>
+                      <Text style={globalStyles.buttonText}>
+                        Share on timeline
+                      </Text>
+                    </LinearGradient>
+                  </Pressable>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </Modal>
+        </View>
+
         <Animated.ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
@@ -407,33 +536,68 @@ export default function Home() {
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.push('Createpost');
-              }}>
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/create-post.png')}
-                style={[styles.postImg]}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/invited.png')}
-                style={[styles.postImg]}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.push('network');
-              }}>
-              <Image
-                resizeMode="contain"
-                source={require('../assets/images/grow-network.png')}
-                style={[styles.postImg]}
-              />
-            </TouchableOpacity>
+            {((!!userInfo && userInfo?.countryISO === 'IN') ||
+              userInfo.countryISO === 'US' ||
+              userInfo.countryISO === 'GB') && (
+              <TouchableOpacity
+              // onPress={() => {
+              //   navigation.push('Createpost');
+              // }}
+              >
+                <Image
+                  resizeMode="contain"
+                  source={require('../assets/images/wallet.jpg')}
+                  style={[styles.postImg]}
+                />
+              </TouchableOpacity>
+            )}
+            {feeds.map(({type, details}, ind) => {
+              if (type === 'card' && details.metaType === 'lessPosts') {
+                return (
+                  <TouchableOpacity
+                    key={ind}
+                    onPress={() => {
+                      navigation.push('Createpost');
+                    }}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/images/create-post.png')}
+                      style={[styles.postImg]}
+                    />
+                  </TouchableOpacity>
+                );
+              } else if (
+                type === 'card' &&
+                details.metaType === 'lessFriends'
+              ) {
+                return (
+                  <TouchableOpacity
+                    key={ind}
+                    onPress={() => {
+                      navigation.push('network');
+                    }}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/images/grow-network.png')}
+                      style={[styles.postImg]}
+                    />
+                  </TouchableOpacity>
+                );
+              } else if (
+                type === 'card' &&
+                details.metaType === 'lessPrivateCommentConversation'
+              ) {
+                return (
+                  <TouchableOpacity key={ind}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../assets/images/invited.png')}
+                      style={[styles.postImg]}
+                    />
+                  </TouchableOpacity>
+                );
+              }
+            })}
           </View>
 
           <View style={styles.newsCardsWrap}>
@@ -495,6 +659,13 @@ export default function Home() {
                       }}
                       style={[styles.postImg]}
                     />
+                    <Pressable
+                      style={styles.newsLink}
+                      onPress={() => Linking.openURL(details.newsLink)}>
+                      <Text style={styles.newsTextSource}>
+                        Source : {details.newsSource}
+                      </Text>
+                    </Pressable>
                   </View>
                   <Text style={styles.secDesc}>{details.newsDescription}</Text>
 
@@ -542,30 +713,56 @@ export default function Home() {
                         </Text>
                       </TouchableOpacity>
                     </View>
-                    <Menu>
-                      <MenuTrigger>
-                        <View style={styles.likeCommentShareBox}>
-                          <View style={styles.likeCommentShareIconWrap}>
+
+                    <View style={styles.likeCommentShareBox}>
+                      <View style={styles.likeCommentShareIconWrap}>
+                        <Menu>
+                          <MenuTrigger>
                             <Image
                               resizeMode="contain"
                               source={require('../assets/images/share.png')}
                               style={[styles.likeImg]}
                             />
+                          </MenuTrigger>
+                          <MenuOptions style={styles.shareWrap}>
+                            <MenuOption
+                              value={1}
+                              style={styles.shareWrapInner}
+                              onSelect={() => handleShareOnLyk(details, type)}>
+                              <Image
+                                resizeMode="contain"
+                                source={require('../assets/images/share-on-lyk.png')}
+                                style={[
+                                  styles.likeShareImg,
+                                  {width: 22, height: 18},
+                                ]}
+                              />
+                              <Text style={styles.shareText}>Share on LYK</Text>
+                            </MenuOption>
+                            <MenuOption
+                              value={2}
+                              style={styles.shareWrapInner}
+                              onSelect={handleShare}>
+                              <Image
+                                resizeMode="contain"
+                                source={require('../assets/images/external-share.png')}
+                                style={[
+                                  styles.likeShareImg,
+                                  {width: 18, height: 24},
+                                ]}
+                              />
+                              <Text style={styles.shareText}>
+                                External share
+                              </Text>
+                            </MenuOption>
+                          </MenuOptions>
+                        </Menu>
 
-                            <Text style={styles.iconText}>
-                              {details.shareCount} Share
-                            </Text>
-                          </View>
-                        </View>
-                      </MenuTrigger>
-                      <MenuOptions>
-                        <MenuOption value={1} text="One" />
-                        <MenuOption value={2}>
-                          <Text style={{color: 'red'}}>Two</Text>
-                        </MenuOption>
-                        <MenuOption value={3} disabled={true} text="Three" />
-                      </MenuOptions>
-                    </Menu>
+                        <Text style={styles.iconText}>
+                          {details.shareCount} Share
+                        </Text>
+                      </View>
+                    </View>
                   </View>
                   {details.allComments?.map((comment, ind) => (
                     <HomeComments commentDetails={comment} key={ind} />
@@ -605,7 +802,11 @@ export default function Home() {
                       <View style={styles.cardProImg}>
                         <Image
                           resizeMode="contain"
-                          source={require('../assets/images/avatar.jpg')}
+                          source={
+                            details.createdBy.imageUrl
+                              ? {uri: details.createdBy.imageUrl}
+                              : require('../assets/images/avatar.jpg')
+                          }
                           style={[styles.logoImg]}
                         />
                       </View>
@@ -924,9 +1125,165 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: '88%',
     paddingHorizontal: 10,
+    position: 'relative',
+    zIndex: -1,
   },
   likeImg: {
     width: 34,
     height: 34,
   },
+  newsLink: {
+    position: 'absolute',
+    display: 'flex',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    alignItems: 'center',
+    right: 0,
+    bottom: 0,
+    height: 32,
+    borderRadius: 30,
+    backgroundColor: COLORS.blue,
+  },
+  newsTextSource: {
+    color: '#fff',
+    fontFamily: 'SFpro-Regular',
+    fontSize: 12,
+    fontWeight: '400',
+  },
+  likeShareImg: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+  },
+  shareWrap: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    backgroundColor: '#fff',
+    width: 150,
+    padding: 10,
+    position: 'absolute',
+    bottom: -80,
+    right: 25,
+  },
+  shareText: {
+    color: '#b5b5b5',
+    fontSize: 12,
+  },
+  shareWrapInner: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+    position: 'absolute',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    zIndex: 9999,
+  },
+  centeredViewInner: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    height: '100%',
+    justifyContent: 'flex-end',
+  },
+  modalView: {
+    paddingTop: 30,
+    width: '100%',
+    height: 350,
+    paddingHorizontal: 55,
+    paddingBottom: 20,
+    backgroundColor: 'white',
+    borderRadius: 32,
+    borderBottomStartRadius: 0,
+    borderBottomEndRadius: 0,
+    overflow: 'hidden',
+    alignSelf: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  linearGradient: {
+    padding: 35,
+    width: '100%',
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
+  mSignupBt: {
+    backgroundColor: '#fff',
+    borderRadius: 100,
+    height: 31,
+    width: 114,
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  mSignupBttext: {
+    fontFamily: 'SFpro-Regular',
+    textAlign: 'center',
+    fontSize: 14,
+  },
+  modalText: {
+    fontFamily: 'SFpro-Regular',
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#2e2e2e',
+    marginBottom: 15,
+  },
+  modalOrText: {
+    fontFamily: 'SFpro-Regular',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    fontSize: 12,
+    color: '#fff',
+    marginBottom: 15,
+  },
+  modalClose: {
+    position: 'absolute',
+    right: 20,
+    top: 12,
+    zIndex: 999,
+  },
+
+  dropBox: {
+    marginHorizontal: 15,
+    width: '100%',
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  dropdown1BtnStyle: {
+    width: '50%',
+    height: 40,
+    backgroundColor: '#FFF',
+    borderRadius: 80,
+    borderWidth: 1,
+    borderColor: '#c1cad3',
+  },
+  dropdown1BtnTxtStyle: {color: '#444', textAlign: 'left', fontSize: 14},
 });
