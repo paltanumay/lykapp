@@ -543,7 +543,7 @@ export default function Home() {
               >
                 <Image
                   resizeMode="contain"
-                  source={require('../assets/images/wallet.jpg')}
+                  source={require('../assets/images/wallet_points.jpg')}
                   style={[styles.postImg]}
                 />
               </TouchableOpacity>
