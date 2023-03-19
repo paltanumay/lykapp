@@ -26,6 +26,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useState} from 'react';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
+import {postLike, newsLike} from '../services/homeFeed.service';
 import moment from 'moment';
 import Header from '../components/Header';
 import Animated, {
@@ -57,6 +58,7 @@ export const INAPPROPRIATE_URL = `${API_URL}Analytical/reportItem`;
 export const INSERT_PUSH_SHORT = 'isrPs';
 const HOME_FEED_SHORT = 'gttmln';
 const LIKE_FEED_SHORT = 'lkPs';
+const LIKE_NEWS_SHOT = 'lkFe';
 const offset = 0,
   limit = 25,
   feedPosition = -1,
@@ -240,15 +242,15 @@ export default function Home() {
     let token =
       (await AsyncStorage.getItem('token')) +
       '-' +
-      LIKE_FEED_SHORT +
+      LIKE_NEWS_SHOT +
       '-' +
       getEncTokenAnyUserId(userDetails.userId);
-    postLike(
+    newsLike(
       {
-        newsId: newsId,
+        itemId: newsId,
         userId: getEncUserId(userDetails.userId),
         likerName: userDetails.firstName,
-        creatorId: '',
+        type: 'news',
       },
       token,
     )

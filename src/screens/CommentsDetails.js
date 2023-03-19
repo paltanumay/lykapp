@@ -29,12 +29,15 @@ import {
 } from '../services/homeFeed.service';
 import {useContext} from 'react';
 import {HomeContext} from '../shared/homeFeedCotext';
+import {newsLike, postLike} from '../services/homeFeed.service';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const COMMENT_URL = `${API_URL}/gtfdcmts`;
 export const POST_COMMENT_URL = `${API_URL}/svcmt`;
 export const COMMENT_REPLIES_URL = `${API_URL}/gtfdcmtrpls`;
 export const COMMENT_LIKE_URL = `${API_URL}/HomeFeed/likeFeedComment`;
+const LIKE_FEED_SHORT = 'lkPs';
+const LIKE_NEWS_SHOT = 'lkFe';
 
 const CommentsDetails = () => {
   const route = useRoute();
@@ -45,14 +48,28 @@ const CommentsDetails = () => {
   const COMMENT_FEED_SHORT = 'bH3m8q';
   const POST_COMMENT_SHORT = 'g4QyL';
   const COMMENT_REPLY_SHORT = 'mS72Lc';
+  const COMMENT_LIKE_SHORT = 'lkFeCmet';
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([]);
   const [likeresponse, setLikeResponse] = useState({});
   const [threeDotData, setThreeDotData] = useState();
   const {feeds, setFeeds} = useContext(HomeContext);
   const navigation = useNavigation();
-
   const inputRef = useRef();
+  const [isReply, setIsReply] = useState(false);
+  const [whichComment, setWhichComment] = useState('');
+  const [parentId, setParentId] = useState('');
+  const [toUserId, setToUserId] = useState('');
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(details.likeCount);
+
+  useEffect(() => {
+    console.log('which Comment------', whichComment);
+    console.log('what---------', inputRef.current.focus());
+  }, [whichComment]);
+
+  console.log('Details--------------------', details);
+
   useEffect(() => {
     const getAllComments = async () => {
       let userDetails = await AsyncStorage.getItem('userId');
@@ -93,7 +110,7 @@ const CommentsDetails = () => {
     let token =
       (await AsyncStorage.getItem('token')) +
       '-' +
-      COMMENT_REPLY_SHORT +
+      COMMENT_LIKE_SHORT +
       '-' +
       getEncTokenAnyUserId(userDetails.userId);
 
@@ -103,7 +120,7 @@ const CommentsDetails = () => {
         userId: getEncUserId(userDetails.userId),
         likerName: userDetails.firstName,
         commentId: commentId,
-        commentUserId: getEncUserId(commentUserId),
+        commentUserId: getEncTokenAnyUserId(commentUserId),
         feedId:
           type === 'news' ? parseInt(details.newsId) : parseInt(details.postId),
         feedType: type,
@@ -118,11 +135,102 @@ const CommentsDetails = () => {
       });
   };
 
+  const onNewsLike = async newsId => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      LIKE_NEWS_SHOT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    newsLike(
+      {
+        itemId: newsId,
+        userId: getEncUserId(userDetails.userId),
+        likerName: userDetails.firstName,
+        type: 'news',
+      },
+      token,
+    )
+      .then(response => {
+        // const newState = feeds.map(obj => {
+        //   if (obj.postId === postId) {
+        //     if (response.data.response?.liked === 0) {
+        //       return {...obj, likeCount: 0};
+        //     }
+        //     return {...obj, likeCount: obj.likeCount + 1};
+        //   }
+        //   return obj;
+        // });
+        // setFeeds(newState);
+        if (response.data.response?.success) {
+          setLiked(!liked);
+          if (response.data.response?.like === 1) {
+            setLikes(likes + 1);
+          } else {
+            setLikes(likes - 1);
+          }
+        }
+      })
+      .catch(error => {
+        console.log('Error---------', error.response);
+      });
+  };
+
+  const onPressLike = async (postId, creatorId) => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    console.log(
+      `postId: ${postId} creatorId: ${creatorId} likerName: ${userDetails.firstName} userId: ${userDetails.userId}`,
+    );
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      LIKE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    postLike(
+      {
+        postId: postId,
+        userId: getEncUserId(userDetails.userId),
+        likerName: userDetails.firstName,
+        creatorId: getEncTokenAnyUserId(creatorId),
+      },
+      token,
+    )
+      .then(response => {
+        // const newState = feeds.map(obj => {
+        //   if (obj.postId === postId) {
+        //     if (response.data.response?.liked === 0) {
+        //       return {...obj, likeCount: 0};
+        //     }
+        //     return {...obj, likeCount: obj.likeCount + 1};
+        //   }
+        //   return obj;
+        // });
+        // setFeeds(newState);
+        if (response.data.response?.success) {
+          setLiked(!liked);
+          if (response.data.response?.liked === 1) {
+            setLikes(likes + 1);
+          } else {
+            setLikes(likes - 1);
+          }
+        }
+      })
+      .catch(error => {
+        console.log('Error---------', error.response);
+      });
+  };
+
   const onSubmitComment = async (
     replyTo,
     replyToName,
     createdBy,
     ownerName,
+    parentId,
+    toUserId,
   ) => {
     let userDetails = await AsyncStorage.getItem('userId');
     userDetails = JSON.parse(userDetails);
@@ -136,34 +244,99 @@ const CommentsDetails = () => {
     saveCommentFeed({
       URL: POST_COMMENT_URL,
 
-      data: {
-        feedId:
-          type === 'news' ? parseInt(details.newsId) : parseInt(details.postId),
-        commentText: commentText,
-        itemType: type,
-        isReply: false,
-        isPrivate: false,
-        // toUserId: getEncUserId(userDetails.userId),
-        // // type === 'news'
-        // //   ? getEncUserId(details.newsId)
-        // //   : getEncUserId(details.postId),
-        commentor: {
-          userId: getEncUserId(userDetails.userId),
-          firstName: userDetails.firstName,
-          imageUrl: userDetails.imageUrl,
-        },
-        mentions: [],
-        ownerName: ownerName,
-        myName: userDetails.firstName,
-        creatorId: getEncTokenAnyUserId(createdBy),
-        replyTo: replyTo,
-        replyToName: replyToName,
-      },
+      data: isReply
+        ? type === 'news'
+          ? {
+              feedId:
+                type === 'news'
+                  ? parseInt(details.newsId)
+                  : parseInt(details.postId),
+              commentText: commentText,
+              itemType: type,
+              isReply: true,
+              isPrivate: false,
+              parentId: parentId,
+              toUserId: getEncUserId(userDetails.userId),
+              commentor: {
+                userId: getEncUserId(userDetails.userId),
+                firstName: userDetails.firstName,
+                imageUrl: userDetails.imageUrl,
+              },
+              mentions: [],
+              myName: userDetails.firstName,
+              replyTo: getEncTokenAnyUserId(replyTo),
+              replyToName: replyToName,
+            }
+          : {
+              feedId:
+                type === 'news'
+                  ? parseInt(details.newsId)
+                  : parseInt(details.postId),
+              commentText: commentText,
+              itemType: type,
+              isReply: true,
+              isPrivate: false,
+              parentId: parentId,
+              toUserId: getEncUserId(userDetails.userId),
+              commentor: {
+                userId: getEncUserId(userDetails.userId),
+                firstName: userDetails.firstName,
+                imageUrl: userDetails.imageUrl,
+              },
+              mentions: [],
+              ownerName: ownerName,
+              myName: userDetails.firstName,
+              creatorId: getEncTokenAnyUserId(createdBy),
+              replyTo: getEncTokenAnyUserId(replyTo),
+              replyToName: replyToName,
+            }
+        : type === 'news'
+        ? {
+            feedId:
+              type === 'news'
+                ? parseInt(details.newsId)
+                : parseInt(details.postId),
+            commentText: commentText,
+            itemType: type,
+            isReply: false,
+            isPrivate: false,
+            commentor: {
+              userId: getEncUserId(userDetails.userId),
+              firstName: userDetails.firstName,
+              imageUrl: userDetails.imageUrl,
+            },
+            mentions: [],
+            myName: userDetails.firstName,
+            replyTo: getEncTokenAnyUserId(replyTo),
+            replyToName: replyToName,
+          }
+        : {
+            feedId:
+              type === 'news'
+                ? parseInt(details.newsId)
+                : parseInt(details.postId),
+            commentText: commentText,
+            itemType: type,
+            isReply: false,
+            isPrivate: false,
+            commentor: {
+              userId: getEncUserId(userDetails.userId),
+              firstName: userDetails.firstName,
+              imageUrl: userDetails.imageUrl,
+            },
+            mentions: [],
+            ownerName: ownerName,
+            myName: userDetails.firstName,
+            creatorId: getEncTokenAnyUserId(createdBy),
+            replyTo: getEncTokenAnyUserId(replyTo),
+            replyToName: replyToName,
+          },
       token: token,
     })
       .then(response => {
         setComments([...comments, response.data.response?.comment]);
         setCommentText('');
+        setIsReply(false);
       })
       .catch(error => {
         console.log(error);
@@ -275,18 +448,20 @@ const CommentsDetails = () => {
               <View style={mainStyles.likeCommentShare}>
                 <View style={styles.likeCommentShareBox}>
                   <View style={styles.likeCommentShareIconWrap}>
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/liked.png')}
-                      style={[styles.likeImg]}
-                    />
+                    <TouchableOpacity
+                      onPress={() => {
+                        onNewsLike(details.newsId);
+                      }}>
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/liked.png')}
+                        style={[styles.likeImg]}
+                      />
+                    </TouchableOpacity>
                     {/* <TouchableOpacity style={styles.roundBase}>
                         <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
                       </TouchableOpacity> */}
-
-                    <Text style={styles.iconText}>
-                      {details.likeCount} Like
-                    </Text>
+                    <Text style={styles.iconText}>{likes} Like</Text>
                   </View>
                 </View>
 
@@ -337,9 +512,20 @@ const CommentsDetails = () => {
                       // replyCall={getFeedCommentReplies}
                       type={type}
                       details={details}
-                      isChield={false}
+                      isChield={comment.isReply}
                       setLike={onLikeComment}
                       key={ind}
+                      pressEvent={() => {
+                        inputRef.current.focus();
+                        setIsReply(true);
+                        setWhichComment(comment.commentId);
+                      }}
+                      isReply={isReply}
+                      setIsReply={setIsReply}
+                      parentId={parentId}
+                      setParentId={setParentId}
+                      toUserId={toUserId}
+                      setToUserId={setToUserId}
                     />
                   </>
                 );
@@ -413,19 +599,20 @@ const CommentsDetails = () => {
               <View style={[mainStyles.likeCommentShare]}>
                 <View style={styles.likeCommentShareBox}>
                   <View style={styles.likeCommentShareIconWrap}>
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/liked.png')}
-                      style={[styles.likeImg]}
-                    />
-
+                    <TouchableOpacity
+                      onPress={() => {
+                        onPressLike(details.postId, details.createdBy.userId);
+                      }}>
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/liked.png')}
+                        style={[styles.likeImg]}
+                      />
+                    </TouchableOpacity>
                     {/* <TouchableOpacity style={styles.roundBase}>
                           <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
                         </TouchableOpacity> */}
-
-                    <Text style={styles.iconText}>
-                      {details.likeCount} Like
-                    </Text>
+                    <Text style={styles.iconText}>{likes} Like</Text>
                   </View>
                 </View>
 
@@ -476,8 +663,19 @@ const CommentsDetails = () => {
                       // replyCall={getFeedCommentReplies}
                       type={type}
                       details={details}
-                      isChield={false}
+                      isChield={comment.isReply}
                       key={ind}
+                      pressEvent={() => {
+                        inputRef.current.focus();
+                        setIsReply(true);
+                        setWhichComment(comment.commentId);
+                      }}
+                      isReply={isReply}
+                      setIsReply={setIsReply}
+                      parentId={parentId}
+                      setParentId={setParentId}
+                      toUserId={toUserId}
+                      setToUserId={setToUserId}
                     />
                   </>
                 );
@@ -506,10 +704,19 @@ const CommentsDetails = () => {
         <TouchableOpacity
           onPress={() => {
             onSubmitComment(
-              '',
-              '',
-              details.createdBy.userId,
-              details.createdBy.firstName,
+              isReply ? whichComment : '',
+              isReply
+                ? comments.find(val => val?.commentId === whichComment)
+                    .commentor?.firstName
+                : '',
+              type === 'news' ? '' : details.createdBy.userId,
+              type === 'news' ? '' : details.createdBy.firstName,
+              isReply
+                ? comments.find(val => val?.commentId === whichComment)._id
+                : '',
+              isReply
+                ? comments.find(val => val?.commentId === whichComment).toUserId
+                : '',
             );
           }}>
           <Image source={sendImg} style={mainStyles.send} />
