@@ -231,9 +231,11 @@ const App = () => {
           <Stack.Screen options={{headerShown: false}} name="Chatnpost">
             {() => {
               return (
-                <SocketProvider>
-                  <Chatnpost />
-                </SocketProvider>
+                <HomeContextProvider>
+                  <SocketProvider>
+                    <Chatnpost />
+                  </SocketProvider>
+                </HomeContextProvider>
               );
             }}
           </Stack.Screen>

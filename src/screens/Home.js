@@ -94,19 +94,18 @@ export default function Home() {
   const [isScrollDown, setScrollDown] = useState(false);
   const [threeDot, setThreeDot] = useState(false);
   const [threeDotData, setThreeDotData] = useState({});
-  const {feeds, setFeeds, userInfo} = useContext(HomeContext);
+  const {feeds, setFeeds, userInfo, setUserInfo} = useContext(HomeContext);
   const [user, setUser] = useState();
   // console.log(feeds);
   const [modalVisible, setModalVisible] = useState(false);
   const [shareModalData, setShareModalData] = useState({});
-
-  console.log(feeds, '--------->feed');
 
   useFocusEffect(
     useCallback(() => {
       async function getHomeFeed() {
         let userDetails = await AsyncStorage.getItem('userId');
         userDetails = JSON.parse(userDetails);
+        setUserInfo(userDetails);
         // setUserDetailsInfo(userDetails);
         let token =
           (await AsyncStorage.getItem('token')) +
@@ -178,7 +177,7 @@ export default function Home() {
     // wait(2000).then(() => setRefresh(false));
   }, []);
   useEffect(() => {
-    async function userInfo() {
+    async function userInformation() {
       let userDetails = await AsyncStorage.getItem('userId');
       userDetails = JSON.parse(userDetails);
       if (userDetails) {
@@ -213,7 +212,7 @@ export default function Home() {
         }
       }
     }
-    userInfo();
+    userInformation();
 
     // Assume a message-notification contains a "type" property in the data payload of the screen to open
 
@@ -534,9 +533,9 @@ export default function Home() {
           onScroll={scrollHandler}>
           <View style={styles.blueBar} />
           <View style={styles.postInvitedNetwork}>
-            {((!!userInfo && userInfo?.countryISO === 'IN') ||
-              userInfo.countryISO === 'US' ||
-              userInfo.countryISO === 'GB') && (
+            {((userInfo && userInfo?.countryISO === 'IN') ||
+              userInfo?.countryISO === 'US' ||
+              userInfo?.countryISO === 'GB') && (
               <TouchableOpacity
               // onPress={() => {
               //   navigation.push('Createpost');
