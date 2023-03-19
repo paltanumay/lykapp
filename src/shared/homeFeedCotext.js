@@ -5,7 +5,7 @@ export const HomeContext = createContext();
 
 const HomeContextProvider = ({children}) => {
   const [feeds, setFeeds] = useState([]);
-  const [userInfo, setUserInfo] = useState('');
+  const [userInfo, setUserInfo] = useState(undefined);
 
   return (
     <HomeContext.Provider value={{feeds, setFeeds, userInfo, setUserInfo}}>
