@@ -56,17 +56,19 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useContext} from 'react';
 import {HomeContext} from '../shared/homeFeedCotext';
 import {useCallback} from 'react';
-import {postLike} from '../services/homeFeed.service';
+import {postLike, shareOnLyk} from '../services/homeFeed.service';
 const hobbies = ['Lyk World', 'My Connections', 'My Family', 'Selective Users'];
 export const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
 export const HOME_FEED = `${API_URL}/TimelineNew/getFeed_V_2`;
 export const INSERT_PUSH = `${API_URL}/LYKPush/insertPush`;
 export const INAPPROPRIATE_URL = `${API_URL}Analytical/reportItem`;
+export const SHARE_URL = `${API_URL}/Analytical/shareFeed`;
 
 export const INSERT_PUSH_SHORT = 'isrPs';
 const HOME_FEED_SHORT = 'gttmln';
 const LIKE_FEED_SHORT = 'lkPs';
+const SHARE_FEED_SHORT = 'saeed';
 const offset = 0,
   limit = 25,
   feedPosition = -1,
@@ -93,6 +95,10 @@ export default function Home() {
   const [threeDot, setThreeDot] = useState(false);
   const [threeDotData, setThreeDotData] = useState({});
   const {feeds, setFeeds, userInfo} = useContext(HomeContext);
+  const [user, setUser] = useState();
+  // console.log(feeds);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [shareModalData, setShareModalData] = useState({});
 
   console.log(feeds, '--------->feed');
 
@@ -151,7 +157,7 @@ export default function Home() {
       });
 
       return unsubscribe;
-    }, [refresh, liked]),
+    }, [refresh, liked, shareModalData]),
   );
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
@@ -383,18 +389,50 @@ export default function Home() {
       yy: '%d years',
     },
   });
-  console.log('Feeds------------------', feeds);
 
-  const [user, setUser] = useState();
-  // console.log(feeds);
-  const [modalVisible, setModalVisible] = useState(false);
   const onPressThreeDot = ({type, feedId, title, imageUrl}) => {
     setThreeDotData({type, feedId, title, imageUrl});
     setThreeDot(true);
   };
 
   const handleShare = async () => {
-    console.log('hghj');
+    console.log(shareModalData, 'sharea --------------------->');
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      SHARE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    shareOnLyk(
+      {
+        userId: getEncUserId(userDetails.userId),
+        myName: userDetails.firstName,
+
+        feedId: shareModalData.newsId
+          ? parseInt(shareModalData.newsId)
+          : shareModalData.postId && parseInt(shareModalData.postId),
+        feedType: shareModalData.type,
+        country: userDetails.countryName,
+        city: userDetails.city,
+        userList: [],
+        selectionType: 1,
+      },
+      token,
+    )
+      .then(res => {
+        setShareModalData(res);
+        setModalVisible(false);
+      })
+      .catch(err => {
+        console.log(err, '===>');
+      });
+  };
+
+  const handleShareOnLyk = (details, type) => {
+    setModalVisible(true);
+    setShareModalData({...details, type});
   };
 
   return (
@@ -467,7 +505,7 @@ export default function Home() {
                   </View>
                   <Pressable
                     style={{width: '90%', marginTop: 150}}
-                    onPress={() => setModalVisible(!modalVisible)}>
+                    onPress={handleShare}>
                     <LinearGradient
                       start={{x: 0, y: 0}}
                       end={{x: 1, y: 0}}
@@ -672,53 +710,56 @@ export default function Home() {
                         </Text>
                       </TouchableOpacity>
                     </View>
-                    <Menu>
-                      <MenuTrigger>
-                        <View style={styles.likeCommentShareBox}>
-                          <View style={styles.likeCommentShareIconWrap}>
+
+                    <View style={styles.likeCommentShareBox}>
+                      <View style={styles.likeCommentShareIconWrap}>
+                        <Menu>
+                          <MenuTrigger>
                             <Image
                               resizeMode="contain"
                               source={require('../assets/images/share.png')}
                               style={[styles.likeImg]}
                             />
+                          </MenuTrigger>
+                          <MenuOptions style={styles.shareWrap}>
+                            <MenuOption
+                              value={1}
+                              style={styles.shareWrapInner}
+                              onSelect={() => handleShareOnLyk(details, type)}>
+                              <Image
+                                resizeMode="contain"
+                                source={require('../assets/images/share-on-lyk.png')}
+                                style={[
+                                  styles.likeShareImg,
+                                  {width: 22, height: 18},
+                                ]}
+                              />
+                              <Text style={styles.shareText}>Share on LYK</Text>
+                            </MenuOption>
+                            <MenuOption
+                              value={2}
+                              style={styles.shareWrapInner}
+                              onSelect={handleShare}>
+                              <Image
+                                resizeMode="contain"
+                                source={require('../assets/images/external-share.png')}
+                                style={[
+                                  styles.likeShareImg,
+                                  {width: 18, height: 24},
+                                ]}
+                              />
+                              <Text style={styles.shareText}>
+                                External share
+                              </Text>
+                            </MenuOption>
+                          </MenuOptions>
+                        </Menu>
 
-                            <Text style={styles.iconText}>
-                              {details.shareCount} Share
-                            </Text>
-                          </View>
-                        </View>
-                      </MenuTrigger>
-                      <MenuOptions style={styles.shareWrap}>
-                        <MenuOption
-                          value={1}
-                          style={styles.shareWrapInner}
-                          onSelect={() => setModalVisible(true)}>
-                          <Image
-                            resizeMode="contain"
-                            source={require('../assets/images/share-on-lyk.png')}
-                            style={[
-                              styles.likeShareImg,
-                              {width: 22, height: 18},
-                            ]}
-                          />
-                          <Text style={styles.shareText}>Share on LYK</Text>
-                        </MenuOption>
-                        <MenuOption
-                          value={2}
-                          style={styles.shareWrapInner}
-                          onSelect={handleShare}>
-                          <Image
-                            resizeMode="contain"
-                            source={require('../assets/images/external-share.png')}
-                            style={[
-                              styles.likeShareImg,
-                              {width: 18, height: 24},
-                            ]}
-                          />
-                          <Text style={styles.shareText}>External share</Text>
-                        </MenuOption>
-                      </MenuOptions>
-                    </Menu>
+                        <Text style={styles.iconText}>
+                          {details.shareCount} Share
+                        </Text>
+                      </View>
+                    </View>
                   </View>
                   {details.allComments?.map((comment, ind) => (
                     <HomeComments commentDetails={comment} key={ind} />
