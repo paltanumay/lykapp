@@ -411,9 +411,7 @@ export default function Chatdetails() {
           onEmojiSelected={this._emojiSelected}/>
       </View> */}
 
-          <TouchableOpacity style={styles.chatTypeTool}>
-            <OctIcon name="smiley" size={24} color="#8e8f91" />
-          </TouchableOpacity>
+         
 
           <TextInput
             placeholderTextColor="#AFAFAF"
@@ -449,6 +447,14 @@ export default function Chatdetails() {
                       style={[styles.incognitoIcon]}
                     />
             {/* <MatIcon name="incognito" size={27} color="#8e8f91" /> */}
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.chatTypeTool, { position:'absolute', right:48,}]}>
+          <Image
+                      resizeMode="cover"
+                      source={require('../assets/images/gif.png')}
+                      style={{width:22, height:22,}}
+                    />
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={sendMsg}>
@@ -623,9 +629,9 @@ const styles = StyleSheet.create({
     width: '90%',
 
   },
-  chatTypeTool: {
-    marginRight: 15,
-  },
+  // chatTypeTool: {
+  //   marginRight: 15,
+  // },
   input: {
     width: '68%',
     color: '#333',

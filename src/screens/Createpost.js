@@ -456,10 +456,19 @@ const styles = StyleSheet.create({
   active: {
     color: COLORS.blue,
   },
+  myPostsWrap:{
+    backgroundColor:'#e6ebf5',
+    padding: 0,
+  },
   postBox: {
-    backgroundColor: '#fff',
+     backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 15,
+    margin: 15,
+    padding:12,
+    marginBottom:0,
+    width:'93%',
+    borderBottomStartRadius:0,
+    borderBottomEndRadius:0
   },
   postBoxImgWrap: {
     width: 50,
