@@ -16,6 +16,13 @@ const CommentComponents = ({
   details,
   isChield = false,
   setLike = () => {},
+  pressEvent = () => {},
+  isReply = false,
+  setIsReply = () => {},
+  parentId = '',
+  setParentId = () => {},
+  toUserId = '',
+  setToUserId = () => {},
 }) => {
   console.log('Comment count----------', commentDetails);
   const [commentReplies, setCommentReplies] = useState([]);
@@ -62,7 +69,10 @@ const CommentComponents = ({
   console.log('Comment replies-------------', commentReplies);
 
   return (
-    <>
+    <Pressable
+      onPress={() => {
+        setIsReply(false);
+      }}>
       <View
         style={[
           styles.addCommentWrap,
@@ -101,6 +111,10 @@ const CommentComponents = ({
             <View style={styles.socialInfo}>
               <Pressable
                 onPress={() => {
+                  console.log(
+                    'CommentDetails------------------',
+                    commentDetails,
+                  );
                   setLike(
                     commentDetails.commentId,
                     commentDetails.commentor.userId,
@@ -113,10 +127,18 @@ const CommentComponents = ({
                 />
               </Pressable>
               <Text style={styles.like}>{'Like'}</Text>
-              <Text style={styles.reply}>{'Reply'}</Text>
+              <Pressable
+                onPress={e => {
+                  e.stopPropagation;
+                  pressEvent();
+                  setParentId(commentDetails._id);
+                  setToUserId(commentDetails.toUserId);
+                }}>
+                <Text style={styles.reply}>{'Reply'}</Text>
+              </Pressable>
             </View>
           </View>
-          {commentDetails.commentCount > 0 ? (
+          {commentDetails?.commentCount > 0 ? (
             expand ? null : (
               <Pressable
                 onPress={() => {
@@ -132,7 +154,7 @@ const CommentComponents = ({
           ) : null}
         </View>
       </View>
-      {commentDetails.commentCount > 0
+      {commentDetails?.commentCount > 0
         ? expand
           ? commentReplies.map((replies, inx) => {
               if (replies.parentId === commentDetails.commentId) {
@@ -145,13 +167,20 @@ const CommentComponents = ({
                     isChield={true}
                     setLike={setLike}
                     key={inx}
+                    pressEvent={pressEvent}
+                    isReply={isReply}
+                    setIsReply={setIsReply}
+                    parentId={parentId}
+                    setParentId={setParentId}
+                    toUserId={toUserId}
+                    setToUserId={setToUserId}
                   />
                 );
               }
             })
           : null
         : null}
-    </>
+    </Pressable>
   );
 };
 
