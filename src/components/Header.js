@@ -100,7 +100,11 @@ export default function Header(props) {
               <AuthButtons />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.user}>
+            <TouchableOpacity
+              style={styles.user}
+              onPress={() => {
+                navigation.navigate('Search');
+              }}>
               <Image
                 resizeMode="contain"
                 source={require('../assets/images/search.png')}

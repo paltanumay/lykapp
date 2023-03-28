@@ -51,6 +51,7 @@ import ChangePassword from './src/screens/ChangePassword';
 import BlockedUser from './src/screens/BlockedUser';
 import {MenuProvider} from 'react-native-popup-menu';
 import HomeContextProvider from './src/shared/homeFeedCotext';
+import SearchPage from './src/screens/SearchPage';
 
 const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -174,7 +175,11 @@ const App = () => {
             name="Login"
             component={Login}
           />
-
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Search"
+            component={SearchPage}
+          />
           <Stack.Screen
             options={{headerShown: false}}
             name="Intro"

@@ -61,6 +61,18 @@ export const shareOnLyk = async (params, token) => {
   return await axios(config);
 };
 
+export const search = async (params, token) => {
+  const config = {
+    method: 'post',
+    url: `${API_URL}/LS_sa/AS_V2`,
+    data: params,
+    headers: {
+      token: token,
+    },
+  };
+  return await axios(config);
+};
+
 export const setMarkAsInAppropriate = async ({URL, data, token}) => {
   console.log(URL, token);
   try {
