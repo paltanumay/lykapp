@@ -20,9 +20,9 @@ const RadioButton = ({onRadioButtonPress, checked, size}) => {
 const styles = StyleSheet.create({
   radioButton: {
     borderRadius: 50,
-    borderColor: '#000',
+    borderColor: '#b7b7b7',
     borderWidth: 1,
-    backgroundColor: '#fff',
+    //backgroundColor: '#fff',
   },
   selectedRadioButton: {
     borderRadius: 50,
