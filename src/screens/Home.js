@@ -17,7 +17,7 @@ import {
 import React from 'react';
 import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
 
 import messaging from '@react-native-firebase/messaging';
 import DeviceInfo from 'react-native-device-info';
@@ -477,10 +477,10 @@ export default function Home() {
                       buttonTextStyle={styles.dropdown1BtnTxtStyle}
                       renderDropdownIcon={isOpened => {
                         return (
-                          <FontAwesome
+                          <EvilIcons
                             name={isOpened ? 'chevron-up' : 'chevron-down'}
-                            color={'#444'}
-                            size={18}
+                            color={'#0a89e2'}
+                            size={30}
                           />
                         );
                       }}
@@ -503,14 +503,31 @@ export default function Home() {
                       }}
                     />
                   </View>
+
+                  <View style={styles.searchBox}>
+                    <Image
+                      style={{width: 22, height: 22, position:'relative', top:12,}}
+                      source={require('../assets/images/icon-search-grey.png')}
+                    />
+                    <View style={styles.phoneInputWrap}>
+                      <TextInput
+                        placeholderTextColor="#000"
+                        placeholder="Search"
+                        style={styles.input}
+                        textContentType="username"
+                        underlineColorAndroid="transparent"
+                      />
+                    </View>
+                  </View>
+
                   <Pressable
-                    style={{width: '90%', marginTop: 150}}
+                    style={{width: '100%', position: 'absolute', bottom: 25}}
                     onPress={handleShare}>
                     <LinearGradient
                       start={{x: 0, y: 0}}
                       end={{x: 1, y: 0}}
                       colors={['#037ee5', '#15a2e0', '#28cad9']}
-                      style={[globalStyles.linearGradient, {height: 38}]}>
+                      style={[globalStyles.linearGradient, {height: 50}]}>
                       <Text style={globalStyles.buttonText}>
                         Share on timeline
                       </Text>
@@ -1192,7 +1209,7 @@ const styles = StyleSheet.create({
   modalView: {
     paddingTop: 30,
     width: '100%',
-    height: 350,
+    height: 500,
     paddingHorizontal: 55,
     paddingBottom: 20,
     backgroundColor: 'white',
@@ -1282,5 +1299,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#c1cad3',
   },
-  dropdown1BtnTxtStyle: {color: '#444', textAlign: 'left', fontSize: 14},
+  dropdown1BtnTxtStyle: {color: COLORS.blue, textAlign: 'left', fontSize: 14},
+  searchBox:{
+    flexDirection:'row',
+    borderBottomWidth:1,
+    borderBottomColor:'#f5f5f5',
+    width:'100%'
+  },
+  phoneInputWrap:{
+   paddingLeft:8
+  }
+
 });
