@@ -32,15 +32,38 @@ import ThreeDotComponent from '../components/threeDot';
 import {
   generalApiCallPost,
   saveCommentFeed,
+  shareOnLyk,
 } from '../services/homeFeed.service';
 import {useContext} from 'react';
 import {HomeContext} from '../shared/homeFeedCotext';
+import {newsLike, postLike} from '../services/homeFeed.service';
+import LinearGradient from 'react-native-linear-gradient';
+import {globalStyles} from '../global/globalStyle';
+import {Modal} from 'react-native';
+import SelectDropdown from 'react-native-select-dropdown';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+
+const SHARE_FEED_SHORT = 'saeed';
+const COMMENT_FEED_SHORT = 'bH3m8q';
+const POST_COMMENT_SHORT = 'g4QyL';
+const COMMENT_REPLY_SHORT = 'mS72Lc';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const COMMENT_URL = `${API_URL}/gtfdcmts`;
 export const POST_COMMENT_URL = `${API_URL}/svcmt`;
 export const COMMENT_REPLIES_URL = `${API_URL}/gtfdcmtrpls`;
+
 export const COMMENT_LIKE_URL = `${API_URL}/HomeFeed/likeFeedComment`;
+const LIKE_FEED_SHORT = 'lkPs';
+const LIKE_NEWS_SHOT = 'lkFe';
+
+const hobbies = ['Lyk World', 'My Connections', 'My Family', 'Selective Users'];
 
 const CommentsDetails = () => {
   const route = useRoute();
@@ -51,14 +74,32 @@ const CommentsDetails = () => {
   const COMMENT_FEED_SHORT = 'bH3m8q';
   const POST_COMMENT_SHORT = 'g4QyL';
   const COMMENT_REPLY_SHORT = 'mS72Lc';
+  const COMMENT_LIKE_SHORT = 'lkFeCmet';
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([]);
   const [likeresponse, setLikeResponse] = useState({});
   const [threeDotData, setThreeDotData] = useState();
   const {feeds, setFeeds} = useContext(HomeContext);
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [shareModalData, setShareModalData] = useState({});
+  const [user, setUser] = useState();
 
   const inputRef = useRef();
+  const [isReply, setIsReply] = useState(false);
+  const [whichComment, setWhichComment] = useState('');
+  const [parentId, setParentId] = useState('');
+  const [toUserId, setToUserId] = useState('');
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(details.likeCount);
+
+  useEffect(() => {
+    console.log('which Comment------', whichComment);
+    console.log('what---------', inputRef.current.focus());
+  }, [whichComment]);
+
+  console.log('Details--------------------', details);
+
   useEffect(() => {
     const getAllComments = async () => {
       let userDetails = await AsyncStorage.getItem('userId');
@@ -99,7 +140,7 @@ const CommentsDetails = () => {
     let token =
       (await AsyncStorage.getItem('token')) +
       '-' +
-      COMMENT_REPLY_SHORT +
+      COMMENT_LIKE_SHORT +
       '-' +
       getEncTokenAnyUserId(userDetails.userId);
 
@@ -109,7 +150,7 @@ const CommentsDetails = () => {
         userId: getEncUserId(userDetails.userId),
         likerName: userDetails.firstName,
         commentId: commentId,
-        commentUserId: getEncUserId(commentUserId),
+        commentUserId: getEncTokenAnyUserId(commentUserId),
         feedId:
           type === 'news' ? parseInt(details.newsId) : parseInt(details.postId),
         feedType: type,
@@ -124,11 +165,102 @@ const CommentsDetails = () => {
       });
   };
 
+  const onNewsLike = async newsId => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      LIKE_NEWS_SHOT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    newsLike(
+      {
+        itemId: newsId,
+        userId: getEncUserId(userDetails.userId),
+        likerName: userDetails.firstName,
+        type: 'news',
+      },
+      token,
+    )
+      .then(response => {
+        // const newState = feeds.map(obj => {
+        //   if (obj.postId === postId) {
+        //     if (response.data.response?.liked === 0) {
+        //       return {...obj, likeCount: 0};
+        //     }
+        //     return {...obj, likeCount: obj.likeCount + 1};
+        //   }
+        //   return obj;
+        // });
+        // setFeeds(newState);
+        if (response.data.response?.success) {
+          setLiked(!liked);
+          if (response.data.response?.like === 1) {
+            setLikes(likes + 1);
+          } else {
+            setLikes(likes - 1);
+          }
+        }
+      })
+      .catch(error => {
+        console.log('Error---------', error.response);
+      });
+  };
+
+  const onPressLike = async (postId, creatorId) => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    console.log(
+      `postId: ${postId} creatorId: ${creatorId} likerName: ${userDetails.firstName} userId: ${userDetails.userId}`,
+    );
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      LIKE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    postLike(
+      {
+        postId: postId,
+        userId: getEncUserId(userDetails.userId),
+        likerName: userDetails.firstName,
+        creatorId: getEncTokenAnyUserId(creatorId),
+      },
+      token,
+    )
+      .then(response => {
+        // const newState = feeds.map(obj => {
+        //   if (obj.postId === postId) {
+        //     if (response.data.response?.liked === 0) {
+        //       return {...obj, likeCount: 0};
+        //     }
+        //     return {...obj, likeCount: obj.likeCount + 1};
+        //   }
+        //   return obj;
+        // });
+        // setFeeds(newState);
+        if (response.data.response?.success) {
+          setLiked(!liked);
+          if (response.data.response?.liked === 1) {
+            setLikes(likes + 1);
+          } else {
+            setLikes(likes - 1);
+          }
+        }
+      })
+      .catch(error => {
+        console.log('Error---------', error.response);
+      });
+  };
+
   const onSubmitComment = async (
     replyTo,
     replyToName,
     createdBy,
     ownerName,
+    parentId,
+    toUserId,
   ) => {
     let userDetails = await AsyncStorage.getItem('userId');
     userDetails = JSON.parse(userDetails);
@@ -142,34 +274,99 @@ const CommentsDetails = () => {
     saveCommentFeed({
       URL: POST_COMMENT_URL,
 
-      data: {
-        feedId:
-          type === 'news' ? parseInt(details.newsId) : parseInt(details.postId),
-        commentText: commentText,
-        itemType: type,
-        isReply: false,
-        isPrivate: false,
-        // toUserId: getEncUserId(userDetails.userId),
-        // // type === 'news'
-        // //   ? getEncUserId(details.newsId)
-        // //   : getEncUserId(details.postId),
-        commentor: {
-          userId: getEncUserId(userDetails.userId),
-          firstName: userDetails.firstName,
-          imageUrl: userDetails.imageUrl,
-        },
-        mentions: [],
-        ownerName: ownerName,
-        myName: userDetails.firstName,
-        creatorId: getEncTokenAnyUserId(createdBy),
-        replyTo: replyTo,
-        replyToName: replyToName,
-      },
+      data: isReply
+        ? type === 'news'
+          ? {
+              feedId:
+                type === 'news'
+                  ? parseInt(details.newsId)
+                  : parseInt(details.postId),
+              commentText: commentText,
+              itemType: type,
+              isReply: true,
+              isPrivate: false,
+              parentId: parentId,
+              toUserId: getEncUserId(userDetails.userId),
+              commentor: {
+                userId: getEncUserId(userDetails.userId),
+                firstName: userDetails.firstName,
+                imageUrl: userDetails.imageUrl,
+              },
+              mentions: [],
+              myName: userDetails.firstName,
+              replyTo: getEncTokenAnyUserId(replyTo),
+              replyToName: replyToName,
+            }
+          : {
+              feedId:
+                type === 'news'
+                  ? parseInt(details.newsId)
+                  : parseInt(details.postId),
+              commentText: commentText,
+              itemType: type,
+              isReply: true,
+              isPrivate: false,
+              parentId: parentId,
+              toUserId: getEncUserId(userDetails.userId),
+              commentor: {
+                userId: getEncUserId(userDetails.userId),
+                firstName: userDetails.firstName,
+                imageUrl: userDetails.imageUrl,
+              },
+              mentions: [],
+              ownerName: ownerName,
+              myName: userDetails.firstName,
+              creatorId: getEncTokenAnyUserId(createdBy),
+              replyTo: getEncTokenAnyUserId(replyTo),
+              replyToName: replyToName,
+            }
+        : type === 'news'
+        ? {
+            feedId:
+              type === 'news'
+                ? parseInt(details.newsId)
+                : parseInt(details.postId),
+            commentText: commentText,
+            itemType: type,
+            isReply: false,
+            isPrivate: false,
+            commentor: {
+              userId: getEncUserId(userDetails.userId),
+              firstName: userDetails.firstName,
+              imageUrl: userDetails.imageUrl,
+            },
+            mentions: [],
+            myName: userDetails.firstName,
+            replyTo: getEncTokenAnyUserId(replyTo),
+            replyToName: replyToName,
+          }
+        : {
+            feedId:
+              type === 'news'
+                ? parseInt(details.newsId)
+                : parseInt(details.postId),
+            commentText: commentText,
+            itemType: type,
+            isReply: false,
+            isPrivate: false,
+            commentor: {
+              userId: getEncUserId(userDetails.userId),
+              firstName: userDetails.firstName,
+              imageUrl: userDetails.imageUrl,
+            },
+            mentions: [],
+            ownerName: ownerName,
+            myName: userDetails.firstName,
+            creatorId: getEncTokenAnyUserId(createdBy),
+            replyTo: getEncTokenAnyUserId(replyTo),
+            replyToName: replyToName,
+          },
       token: token,
     })
       .then(response => {
         setComments([...comments, response.data.response?.comment]);
         setCommentText('');
+        setIsReply(false);
       })
       .catch(error => {
         console.log(error);
@@ -204,6 +401,48 @@ const CommentsDetails = () => {
   const handleOnClose = () => {
     setThreeDot(false);
   };
+
+  const handleShare = async () => {
+    console.log(shareModalData, 'sharea --------------------->');
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      SHARE_FEED_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    shareOnLyk(
+      {
+        userId: getEncUserId(userDetails.userId),
+        myName: userDetails.firstName,
+
+        feedId: shareModalData.newsId
+          ? parseInt(shareModalData.newsId)
+          : shareModalData.postId && parseInt(shareModalData.postId),
+        feedType: shareModalData.type,
+        country: userDetails.countryName,
+        city: userDetails.city,
+        userList: [],
+        selectionType: 1,
+      },
+      token,
+    )
+      .then(res => {
+        setShareModalData(res);
+        setModalVisible(false);
+        navigation.goBack();
+      })
+      .catch(err => {
+        console.log(err, '===>');
+      });
+  };
+
+  const handleShareOnLyk = (details, type) => {
+    setModalVisible(true);
+    setShareModalData({...details, type});
+  };
+
   return (
     <>
       <CommentHeader name={'Comments'} />
@@ -220,7 +459,80 @@ const CommentsDetails = () => {
       )}
 
       {type === 'news' ? (
-        <>
+        <View style={globalStyles.innerPagesContainer}>
+          <View style={styles.centeredView}>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                setModalVisible(prev => !prev);
+              }}>
+              <TouchableOpacity
+                activeOpacity={1}
+                onPressOut={() => {
+                  setModalVisible(false);
+                }}>
+                <View style={styles.centeredViewInner}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalText}>
+                      Select from the people listed below with whom you can
+                      share this post
+                    </Text>
+
+                    <View style={styles.dropBox}>
+                      <SelectDropdown
+                        data={hobbies}
+                        defaultValue={hobbies[0]}
+                        defaultButtonText={user?.interested.join(',')}
+                        buttonStyle={styles.dropdown1BtnStyle}
+                        buttonTextStyle={styles.dropdown1BtnTxtStyle}
+                        renderDropdownIcon={isOpened => {
+                          return (
+                            <FontAwesome
+                              name={isOpened ? 'chevron-up' : 'chevron-down'}
+                              color={'#444'}
+                              size={18}
+                            />
+                          );
+                        }}
+                        dropdownIconPosition={'right'}
+                        dropdownStyle={styles.dropdown1DropdownStyle}
+                        rowStyle={styles.dropdown1RowStyle}
+                        rowTextStyle={styles.dropdown1RowTxtStyle}
+                        onSelect={(selectedItem, index) => {
+                          console.log(selectedItem, index);
+                        }}
+                        buttonTextAfterSelection={(selectedItem, index) => {
+                          // text represented after item is selected
+                          // if data array is an array of objects then return selectedItem.property to render after item is selected
+                          return selectedItem;
+                        }}
+                        rowTextForSelection={(item, index) => {
+                          // text represented for each item in dropdown
+                          // if data array is an array of objects then return item.property to represent item in dropdown
+                          return item;
+                        }}
+                      />
+                    </View>
+                    <Pressable
+                      style={{width: '90%', marginTop: 150}}
+                      onPress={handleShare}>
+                      <LinearGradient
+                        start={{x: 0, y: 0}}
+                        end={{x: 1, y: 0}}
+                        colors={['#037ee5', '#15a2e0', '#28cad9']}
+                        style={[globalStyles.linearGradient, {height: 38}]}>
+                        <Text style={globalStyles.buttonText}>
+                          Share on timeline
+                        </Text>
+                      </LinearGradient>
+                    </Pressable>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </Modal>
+          </View>
           <ScrollView
             style={mainStyles.postFeed}
             scrollEnabled={true}
@@ -288,18 +600,20 @@ const CommentsDetails = () => {
               <View style={mainStyles.likeCommentShare}>
                 <View style={styles.likeCommentShareBox}>
                   <View style={styles.likeCommentShareIconWrap}>
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/liked.png')}
-                      style={[styles.likeImg]}
-                    />
+                    <TouchableOpacity
+                      onPress={() => {
+                        onNewsLike(details.newsId);
+                      }}>
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/liked.png')}
+                        style={[styles.likeImg]}
+                      />
+                    </TouchableOpacity>
                     {/* <TouchableOpacity style={styles.roundBase}>
                         <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
                       </TouchableOpacity> */}
-
-                    <Text style={styles.iconText}>
-                      {details.likeCount} Like
-                    </Text>
+                    <Text style={styles.iconText}>{likes} Like</Text>
                   </View>
                 </View>
 
@@ -325,14 +639,45 @@ const CommentsDetails = () => {
 
                 <View style={styles.likeCommentShareBox}>
                   <View style={styles.likeCommentShareIconWrap}>
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="sharealt" size={22} color="#f8767a" />
-                      </TouchableOpacity> */}
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/share.png')}
-                      style={[styles.likeImg]}
-                    />
+                    <Menu>
+                      <MenuTrigger>
+                        <Image
+                          resizeMode="contain"
+                          source={require('../assets/images/share.png')}
+                          style={[styles.likeImg]}
+                        />
+                      </MenuTrigger>
+                      <MenuOptions style={styles.shareWrap}>
+                        <MenuOption
+                          value={1}
+                          style={styles.shareWrapInner}
+                          onSelect={() => handleShareOnLyk(details, type)}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/share-on-lyk.png')}
+                            style={[
+                              styles.likeShareImg,
+                              {width: 22, height: 18},
+                            ]}
+                          />
+                          <Text style={styles.shareText}>Share on LYK</Text>
+                        </MenuOption>
+                        <MenuOption
+                          value={2}
+                          style={styles.shareWrapInner}
+                          onSelect={handleShare}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/external-share.png')}
+                            style={[
+                              styles.likeShareImg,
+                              {width: 18, height: 24},
+                            ]}
+                          />
+                          <Text style={styles.shareText}>External share</Text>
+                        </MenuOption>
+                      </MenuOptions>
+                    </Menu>
 
                     <Text style={styles.iconText}>
                       {details.shareCount} Share
@@ -350,15 +695,26 @@ const CommentsDetails = () => {
                       // replyCall={getFeedCommentReplies}
                       type={type}
                       details={details}
-                      isChield={false}
+                      isChield={comment.isReply}
                       setLike={onLikeComment}
                       key={ind}
+                      pressEvent={() => {
+                        inputRef.current.focus();
+                        setIsReply(true);
+                        setWhichComment(comment.commentId);
+                      }}
+                      isReply={isReply}
+                      setIsReply={setIsReply}
+                      parentId={parentId}
+                      setParentId={setParentId}
+                      toUserId={toUserId}
+                      setToUserId={setToUserId}
                     />
                   </>
                 );
               })}
           </ScrollView>
-        </>
+        </View>
       ) : (
         type === 'post' && (
           <ScrollView>
@@ -426,19 +782,20 @@ const CommentsDetails = () => {
               <View style={[mainStyles.likeCommentShare]}>
                 <View style={styles.likeCommentShareBox}>
                   <View style={styles.likeCommentShareIconWrap}>
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/liked.png')}
-                      style={[styles.likeImg]}
-                    />
-
+                    <TouchableOpacity
+                      onPress={() => {
+                        onPressLike(details.postId, details.createdBy.userId);
+                      }}>
+                      <Image
+                        resizeMode="contain"
+                        source={require('../assets/images/liked.png')}
+                        style={[styles.likeImg]}
+                      />
+                    </TouchableOpacity>
                     {/* <TouchableOpacity style={styles.roundBase}>
                           <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
                         </TouchableOpacity> */}
-
-                    <Text style={styles.iconText}>
-                      {details.likeCount} Like
-                    </Text>
+                    <Text style={styles.iconText}>{likes} Like</Text>
                   </View>
                 </View>
 
@@ -460,14 +817,45 @@ const CommentsDetails = () => {
                 </View>
                 <View style={styles.likeCommentShareBox}>
                   <View style={styles.likeCommentShareIconWrap}>
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name="sharealt" size={22} color="#f8767a" />
-                        </TouchableOpacity> */}
-                    <Image
-                      resizeMode="contain"
-                      source={require('../assets/images/share.png')}
-                      style={[styles.likeImg]}
-                    />
+                    <Menu>
+                      <MenuTrigger>
+                        <Image
+                          resizeMode="contain"
+                          source={require('../assets/images/share.png')}
+                          style={[styles.likeImg]}
+                        />
+                      </MenuTrigger>
+                      <MenuOptions style={styles.shareWrap}>
+                        <MenuOption
+                          value={1}
+                          style={styles.shareWrapInner}
+                          onSelect={() => handleShareOnLyk(details, type)}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/share-on-lyk.png')}
+                            style={[
+                              styles.likeShareImg,
+                              {width: 22, height: 18},
+                            ]}
+                          />
+                          <Text style={styles.shareText}>Share on LYK</Text>
+                        </MenuOption>
+                        <MenuOption
+                          value={2}
+                          style={styles.shareWrapInner}
+                          onSelect={handleShare}>
+                          <Image
+                            resizeMode="contain"
+                            source={require('../assets/images/external-share.png')}
+                            style={[
+                              styles.likeShareImg,
+                              {width: 18, height: 24},
+                            ]}
+                          />
+                          <Text style={styles.shareText}>External share</Text>
+                        </MenuOption>
+                      </MenuOptions>
+                    </Menu>
 
                     <Text style={styles.iconText}>
                       {details.shareCount} Share
@@ -489,8 +877,19 @@ const CommentsDetails = () => {
                       // replyCall={getFeedCommentReplies}
                       type={type}
                       details={details}
-                      isChield={false}
+                      isChield={comment.isReply}
                       key={ind}
+                      pressEvent={() => {
+                        inputRef.current.focus();
+                        setIsReply(true);
+                        setWhichComment(comment.commentId);
+                      }}
+                      isReply={isReply}
+                      setIsReply={setIsReply}
+                      parentId={parentId}
+                      setParentId={setParentId}
+                      toUserId={toUserId}
+                      setToUserId={setToUserId}
                     />
                   </>
                 );
@@ -519,10 +918,19 @@ const CommentsDetails = () => {
         <TouchableOpacity
           onPress={() => {
             onSubmitComment(
-              '',
-              '',
-              details.createdBy.userId,
-              details.createdBy.firstName,
+              isReply ? whichComment : '',
+              isReply
+                ? comments.find(val => val?.commentId === whichComment)
+                    .commentor?.firstName
+                : '',
+              type === 'news' ? '' : details.createdBy.userId,
+              type === 'news' ? '' : details.createdBy.firstName,
+              isReply
+                ? comments.find(val => val?.commentId === whichComment)._id
+                : '',
+              isReply
+                ? comments.find(val => val?.commentId === whichComment).toUserId
+                : '',
             );
           }}>
           <Image source={sendImg} style={mainStyles.send} />

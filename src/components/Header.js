@@ -21,14 +21,14 @@ import {HomeContext} from '../shared/homeFeedCotext';
 export default function Header(props) {
   const navigation = useNavigation();
   const {userInfo, setUserInfo} = useContext(HomeContext);
-  console.log(userInfo);
-  useEffect(() => {
-    (async () => {
-      let userDetails = await AsyncStorage.getItem('userId');
-      userDetails = JSON.parse(userDetails);
-      setUserInfo(userDetails);
-    })();
-  }, []);
+  console.log(userInfo, '=====>');
+  // useEffect(() => {
+  //   (async () => {
+  //     let userDetails = await AsyncStorage.getItem('userId');
+  //     userDetails = JSON.parse(userDetails);
+  //     setUserInfo(userDetails);
+  //   })();
+  // }, []);
   return (
     <>
       {props.isBack ? (
@@ -95,7 +95,7 @@ export default function Header(props) {
         
         </TouchableOpacity> */}
 
-          {userInfo === null ? (
+          {userInfo === undefined ? (
             <TouchableOpacity style={styles.user}>
               <AuthButtons />
             </TouchableOpacity>
