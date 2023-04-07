@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
   textWrap: {
     display: 'flex',
     width: '85%',
+   
   },
   mainHeading: {
     paddingTop: 20,
@@ -157,16 +158,12 @@ const styles = StyleSheet.create({
   radioButtonView: {
     display: 'flex',
     flexDirection: 'row',
+   
   },
   fromContainer: {
     marginTop: 20,
     display: 'flex',
     width: '83%',
-    backgroundColor:'#fff',
-    height:250,
-    position:'absolute',
-    top:0,
-    zIndex:999
     
   },
   buttonText: {
