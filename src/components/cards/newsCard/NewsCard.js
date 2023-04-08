@@ -22,8 +22,38 @@ import {
   MenuOptions,
   MenuTrigger,
 } from 'react-native-popup-menu';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import HomeComments from '../../HomeComments';
 
-const NewsCard = ({details}) => {
+const NewsCard = ({
+  details = {},
+  onRedirectCommentScreen = () => {},
+  onPressThreeDot = () => {},
+  handleShare = () => {},
+  handleShareOnLyk = () => {},
+  type = '',
+}) => {
+  // const navigation = useNavigation();
+
+  moment.updateLocale('en', {
+    relativeTime: {
+      future: 'in %s',
+      past: '%s ago',
+      s: 'a few seconds',
+      ss: '%d seconds',
+      m: 'a minute',
+      mm: '%d minutes',
+      h: '1 hrs ago',
+      hh: '%d hrs ago',
+      d: 'a day',
+      dd: '%d days',
+      M: 'a month',
+      MM: '%d months',
+      y: 'a year',
+      yy: '%d years',
+    },
+  });
+
   return (
     <Pressable
       style={styles.newsCard}
@@ -41,11 +71,11 @@ const NewsCard = ({details}) => {
           <Text style={styles.newsTitletext}>News & Stories</Text>
           <Text style={styles.newsSubTitletext}>
             {moment(new Date()).diff(
-              moment(details.addedOn.replace(' ', 'T') + 'Z'),
+              moment(details.feedTime.replace(' ', 'T') + 'Z'),
               'days',
             ) < 1
-              ? moment(details.addedOn.replace(' ', 'T') + 'Z').fromNow('past')
-              : moment(details.addedOn.replace(' ', 'T') + 'Z').format(
+              ? moment(details.feedTime.replace(' ', 'T') + 'Z').fromNow('past')
+              : moment(details.feedTime.replace(' ', 'T') + 'Z').format(
                   'DD MMM YYYY, h:mm a',
                 )}
           </Text>
@@ -55,9 +85,9 @@ const NewsCard = ({details}) => {
           onPress={() =>
             onPressThreeDot({
               type,
-              feedId: details.typeId,
-              title: details.typeTitle,
-              imageUrl: details.typeImageUrl,
+              feedId: details.newsId,
+              title: details.newsTitle,
+              imageUrl: details.newsImageUrl,
               setFeeds: setFeeds,
             })
           }>
@@ -65,21 +95,21 @@ const NewsCard = ({details}) => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.mainDesc}>{details.typeTitle}</Text>
+      <Text style={styles.mainDesc}>{details.newsTitle}</Text>
 
       <View style={styles.newsCoverImg}>
         <Image
           resizeMode="stretch"
           source={{
-            uri: details.typeImageUrl,
+            uri: details.newsImageUrl,
           }}
           style={[styles.postImg]}
         />
         <Pressable
           style={styles.newsLink}
-          onPress={() => Linking.openURL(details.typeUrl)}>
+          onPress={() => Linking.openURL(details.newsLink)}>
           <Text style={styles.newsTextSource}>
-            Source : {details.typeSource}
+            Source : {details.newsSource}
           </Text>
         </Pressable>
       </View>
@@ -92,7 +122,7 @@ const NewsCard = ({details}) => {
               style={styles.likeCommentShareIconWrap}
               onPress={() => {
                 console.log('Details------------------', details);
-                onNewsLike(details.typeId);
+                onNewsLike(details.newsId);
               }}>
               <Image
                 resizeMode="contain"
@@ -138,8 +168,7 @@ const NewsCard = ({details}) => {
                 <MenuOption
                   value={1}
                   style={styles.shareWrapInner}
-                  //   onSelect={() => handleShareOnLyk(details, type)}
-                >
+                  onSelect={() => handleShareOnLyk(details, type)}>
                   <Image
                     resizeMode="contain"
                     source={require('../../../assets/images/share-on-lyk.png')}
@@ -150,8 +179,7 @@ const NewsCard = ({details}) => {
                 <MenuOption
                   value={2}
                   style={styles.shareWrapInner}
-                  //   onSelect={handleShare}
-                >
+                  onSelect={handleShare}>
                   <Image
                     resizeMode="contain"
                     source={require('../../../assets/images/external-share.png')}
