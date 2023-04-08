@@ -364,9 +364,7 @@ export default function Signup({navigation}) {
 
               <TouchableOpacity
                 style={[
-                  globalStyles.lineBt,
-                  {height: 31, width: 131, marginBottom: 15},
-                ]}
+                  globalStyles.lineBt,{height: 31, width: 131, marginBottom: 15}]}
                 onPress={handleSubmit}
                 disabled={isSubmitting || !phone.current}>
                 <Text style={globalStyles.lineBtText}>Next</Text>
@@ -451,7 +449,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf2fe',
     borderWidth: 1,
     borderColor: '#488bb4',
-    width: 220,
+    width: 260,
     borderRadius: 100,
     height: 45,
     alignItems: 'center',
@@ -464,7 +462,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#434343',
     borderWidth: 1,
     borderColor: '#434343',
-    width: 220,
+    width: 260,
     borderRadius: 100,
     height: 45,
     alignItems: 'center',
@@ -523,7 +521,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
     marginBottom: 20,
-    width: '50%',
+    width: '55%',
     alignItems: 'center',
   },
   lbimg: {

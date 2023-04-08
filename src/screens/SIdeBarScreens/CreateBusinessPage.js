@@ -16,7 +16,7 @@ const CreateBusinessPage = () => {
       <View style={styles.bodyWrap}>
         <View style={styles.headingWrap}>
           <Text style={styles.mainHeading}>
-            Are you an authorized representative of this business ?
+            Are you an authorized representative of this business?
           </Text>
         </View>
         <View style={styles.container}>
@@ -35,7 +35,7 @@ const CreateBusinessPage = () => {
                       ? [styles.buttonText, {color: COLORS.blue}]
                       : styles.buttonText
                   }>
-                  Yes,I am an authorized representative of this business
+                  Yes, I am an authorized representative of this business
                 </Text>
               </View>
             </View>
@@ -63,7 +63,7 @@ const CreateBusinessPage = () => {
                       ? [styles.buttonText, {color: COLORS.blue}]
                       : styles.buttonText
                   }>
-                  No i am helping to create Business page
+                  No, I am helping to create the Business Page
                 </Text>
               </View>
             </View>
@@ -78,28 +78,24 @@ const CreateBusinessPage = () => {
 
         <View style={styles.buttons}>
           <TouchableOpacity
-            style={[globalStyles.gradBt, {width: '47%'}]}
+            style={[globalStyles.gradBt, {width: 328}]}
             // onPress={() => navigation.push('Country')}
           >
             <LinearGradient
               start={{x: 0, y: 0}}
               end={{x: 1, y: 0}}
               colors={['#037ee5', '#15a2e0', '#28cad9']}
-              style={[globalStyles.linearGradient, {height: 42}]}>
-              <Text style={globalStyles.buttonText}>Submit</Text>
+              style={[globalStyles.linearGradient, {height:44}]}>
+              <Text style={globalStyles.buttonText}>Confirm</Text>
             </LinearGradient>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[globalStyles.gradBt, {width: '47%'}]}
+            style={[globalStyles.gradBt, {width: 328, marginTop:15}]}
             // onPress={() => navigation.push('Country')}
           >
-            <LinearGradient
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              colors={['#037ee5', '#15a2e0', '#28cad9']}
-              style={[globalStyles.linearGradient, {height: 42}]}>
-              <Text style={globalStyles.buttonText}>Cancel</Text>
-            </LinearGradient>
+         
+              <Text style={[globalStyles.buttonText, {color:'#1d80e2'}]}>Cancel</Text>
+          
           </TouchableOpacity>
         </View>
       </View>
@@ -112,11 +108,13 @@ const styles = StyleSheet.create({
     height: '100%',
     display: 'flex',
     paddingHorizontal: 15,
+    backgroundColor:'#fff'
   },
   buttons: {
     display: 'flex',
     width: '100%',
     alignItems: 'center',
+    marginTop:35
   },
   container: {
     display: 'flex',
@@ -133,6 +131,7 @@ const styles = StyleSheet.create({
   textWrap: {
     display: 'flex',
     width: '85%',
+   
   },
   mainHeading: {
     paddingTop: 20,
@@ -144,10 +143,11 @@ const styles = StyleSheet.create({
   radioButtonWrap: {
     display: 'flex',
     alignItems: 'center',
+   
     width: '100%',
-    backgroundColor: COLORS.lightBlue,
+   // backgroundColor: '#fff',
 
-    borderColor: COLORS.gray,
+    borderColor: '#dae0e6',
     borderRadius: 5,
     // justifyContent: 'space-between',
     borderWidth: 1,
@@ -158,11 +158,13 @@ const styles = StyleSheet.create({
   radioButtonView: {
     display: 'flex',
     flexDirection: 'row',
+   
   },
   fromContainer: {
     marginTop: 20,
     display: 'flex',
     width: '83%',
+    
   },
   buttonText: {
     width: '100%',

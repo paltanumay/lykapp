@@ -15,21 +15,21 @@ import AppIntroSlider from 'react-native-app-intro-slider';
 const slides = [
   {
     key: 1,
-    title: 'Get rewarded for\n your activities\n on LYK',
-    text: 'Increase your engagement\n and earn rewards',
+    title: 'Get rewarded\n foryour activities\n on LYK',
+    text: 'Increase your engagement \n and earn rewards',
     image: require('../assets/images/intro-5.png'),
     backgroundColor: '#22bcb5',
   },
   {
     key: 2,
-    title: 'An app with\n invisible\n connections',
-    text: 'Create invisible connections\n that no one else can see!\n Any activity between you and\n invisible connections is only\n seen by you',
+    title: 'An app with \ninvisible \nconnections',
+    text: 'Create invisible connections that no one \n else can see! Any activity between you and\n invisible connections is only seen by you',
     image: require('../assets/images/intro-3.png'),
     backgroundColor: '#22bcb5',
   },
   {
     key: 3,
-    title: 'Sharing\n disappearing\n messages with\n private chat',
+    title: 'Sharing disappearing\n messages with\n private chat',
     text: 'Use disappearing messages to\n control the privacy on your\n social network!',
     image: require('../assets/images/intro-4.png'),
     backgroundColor: '#22bcb5',
@@ -37,14 +37,14 @@ const slides = [
   {
     key: 4,
     title: 'Private comments\n over group chat\n conversation',
-    text: 'Private comments give\n your social network\n more privacy!\n Privately comment on\n group chat',
+    text: 'Private comments give your \n social network more privacy!\n Privately comment on group chat',
     image: require('../assets/images/intro-2.png'),
     backgroundColor: '#febe29',
   },
   {
     key: 5,
     title: 'Private comments\n over\n public posts',
-    text: 'Private comments give\n your social network\n more privacy!\n Privately comment on\n public posts',
+    text: 'Private comments give\n your social network more privacy!\n Privately comment on public posts',
     image: require('../assets/images/intro-1.png'),
     backgroundColor: '#59b2ab',
   },
@@ -122,20 +122,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 55,
     paddingHorizontal: 10,
+    
   },
   slideMainText: {
     fontSize: 30,
     textAlign: 'center',
     fontFamily: 'Helvetica-Bold',
     color: COLORS.blue,
+    textAlignVertical:'center',
+   
+   
   },
   slideSecText: {
     textAlign: 'center',
     fontSize: 16,
+    lineHeight:27,
+  //  position:'relative',
+  //  top:-7,
     // textAlign: 'center',
     color: COLORS.blue,
-    marginTop: 15,
+    marginTop: 18,
     fontFamily: 'Helvetica-Bold',
+   
+    marginBottom:50
   },
   btWraps: {
     alignItems: 'center',

@@ -17,6 +17,7 @@ const ThreeDotComponent = ({
   type,
   feedId,
   title,
+  details,
   imageUrl,
   setFeeds,
   isHome,

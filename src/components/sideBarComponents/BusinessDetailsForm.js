@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
   businessDetailsWrap: {
     display: 'flex',
     width: '100%',
+
   },
   phoneInputWrap: {
     position: 'relative',

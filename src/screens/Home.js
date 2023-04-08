@@ -17,7 +17,7 @@ import {
 import React from 'react';
 import {globalStyles} from '../global/globalStyle';
 import COLORS from '../global/globalColors';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
 
 import messaging from '@react-native-firebase/messaging';
 import DeviceInfo from 'react-native-device-info';
@@ -58,6 +58,9 @@ import {useContext} from 'react';
 import {HomeContext} from '../shared/homeFeedCotext';
 import {useCallback} from 'react';
 import {postLike, shareOnLyk} from '../services/homeFeed.service';
+import OtherPostThreeDot from '../components/otherPostThreeDot';
+import PopUpModalWrap from '../components/popUpModalWrap';
+import PopUpModalContainer from '../components/popUpModalContainer';
 const hobbies = ['Lyk World', 'My Connections', 'My Family', 'Selective Users'];
 export const API_URL =
   process.env.API_URL || 'https://api.lykapp.com/lykjwt/index.php?/';
@@ -101,6 +104,7 @@ export default function Home() {
   // console.log(feeds);
   const [modalVisible, setModalVisible] = useState(false);
   const [shareModalData, setShareModalData] = useState({});
+  const [popUpOpen, setPopUpOpen] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -445,11 +449,16 @@ export default function Home() {
           type={threeDotData.type}
           feedId={threeDotData.feedId}
           imageUrl={threeDotData.imageUrl}
+          details={threeDotData.details}
           title={threeDotData.title}
           setFeeds={setFeeds}
         />
       )}
       <View style={globalStyles.innerPagesContainer}>
+        <PopUpModalContainer
+          popUpOpen={popUpOpen}
+          setPopUpOpen={setPopUpOpen}
+        />
         <View style={styles.centeredView}>
           <Modal
             animationType="slide"
@@ -479,10 +488,10 @@ export default function Home() {
                       buttonTextStyle={styles.dropdown1BtnTxtStyle}
                       renderDropdownIcon={isOpened => {
                         return (
-                          <FontAwesome
+                          <EvilIcons
                             name={isOpened ? 'chevron-up' : 'chevron-down'}
-                            color={'#444'}
-                            size={18}
+                            color={'#0a89e2'}
+                            size={30}
                           />
                         );
                       }}
@@ -505,14 +514,36 @@ export default function Home() {
                       }}
                     />
                   </View>
+
+                  <View style={styles.searchBox}>
+                    <Image
+                      style={{
+                        width: 22,
+                        height: 22,
+                        position: 'relative',
+                        top: 12,
+                      }}
+                      source={require('../assets/images/icon-search-grey.png')}
+                    />
+                    <View style={styles.phoneInputWrap}>
+                      <TextInput
+                        placeholderTextColor="#000"
+                        placeholder="Search"
+                        style={styles.input}
+                        textContentType="username"
+                        underlineColorAndroid="transparent"
+                      />
+                    </View>
+                  </View>
+
                   <Pressable
-                    style={{width: '90%', marginTop: 150}}
+                    style={{width: '100%', position: 'absolute', bottom: 25}}
                     onPress={handleShare}>
                     <LinearGradient
                       start={{x: 0, y: 0}}
                       end={{x: 1, y: 0}}
                       colors={['#037ee5', '#15a2e0', '#28cad9']}
-                      style={[globalStyles.linearGradient, {height: 38}]}>
+                      style={[globalStyles.linearGradient, {height: 50}]}>
                       <Text style={globalStyles.buttonText}>
                         Share on timeline
                       </Text>
@@ -545,7 +576,7 @@ export default function Home() {
               >
                 <Image
                   resizeMode="contain"
-                  source={require('../assets/images/wallet.jpg')}
+                  source={require('../assets/images/wallet_points.jpg')}
                   style={[styles.postImg]}
                 />
               </TouchableOpacity>
@@ -1073,23 +1104,44 @@ export default function Home() {
                               ).format('DD MMM YYYY, h:mm a')}
                         </Text>
                       </View>
-                      <TouchableOpacity
-                        style={styles.options}
-                        onPress={() =>
-                          onPressThreeDot({
-                            type,
-                            title: details.title,
-
-                            feedId: details.postId,
-                            imageUrl: details.imageUrl,
-                          })
-                        }>
-                        <EnIcon
-                          name="dots-three-horizontal"
-                          size={25}
-                          color="#333"
-                        />
-                      </TouchableOpacity>
+                      {type === 'post' &&
+                      details.createdBy.userId !== userInfo.userId ? (
+                        <>
+                          <Menu style={styles.options}>
+                            <MenuTrigger>
+                              <EnIcon
+                                name="dots-three-horizontal"
+                                size={25}
+                                color="#333"
+                              />
+                            </MenuTrigger>
+                            <MenuOptions style={styles.menuOptionsWrapper}>
+                              <OtherPostThreeDot
+                                popUpOpen={popUpOpen}
+                                setPopUpOpen={setPopUpOpen}
+                              />
+                            </MenuOptions>
+                          </Menu>
+                        </>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.options}
+                          onPress={() =>
+                            onPressThreeDot({
+                              type,
+                              title: details.title,
+                              details: details,
+                              feedId: details.postId,
+                              imageUrl: details.imageUrl,
+                            })
+                          }>
+                          <EnIcon
+                            name="dots-three-horizontal"
+                            size={25}
+                            color="#333"
+                          />
+                        </TouchableOpacity>
+                      )}
                     </View>
                     {/* <Text style={styles.mainDesc}>
                   {details.title}
@@ -1272,6 +1324,10 @@ const styles = StyleSheet.create({
   newsCardsWrap: {
     padding: 15,
   },
+  menuOptionsWrapper: {
+    display: 'flex',
+    padding: 10,
+  },
   cardProImg: {
     width: 50,
     height: 50,
@@ -1452,7 +1508,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   shareWrap: {
-    borderRadius: 10,
+    borderRadius: 15,
     borderWidth: 1,
     borderColor: '#e5e5e5',
     backgroundColor: '#fff',
@@ -1490,7 +1546,7 @@ const styles = StyleSheet.create({
   modalView: {
     paddingTop: 30,
     width: '100%',
-    height: 350,
+    height: 500,
     paddingHorizontal: 55,
     paddingBottom: 20,
     backgroundColor: 'white',
@@ -1580,5 +1636,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#c1cad3',
   },
-  dropdown1BtnTxtStyle: {color: '#444', textAlign: 'left', fontSize: 14},
+  dropdown1BtnTxtStyle: {color: COLORS.blue, textAlign: 'left', fontSize: 14},
+  searchBox: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f5f5f5',
+    width: '100%',
+  },
+  phoneInputWrap: {
+    paddingLeft: 8,
+  },
 });

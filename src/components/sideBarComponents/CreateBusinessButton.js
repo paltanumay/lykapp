@@ -40,9 +40,8 @@ const styles = StyleSheet.create({
   },
   cardName: {
     paddingHorizontal: 10,
-    fontSize: 15,
-    fontWeight: '600',
-    fontFamily: 'SFpro-Regular',
+    fontSize: 14,
+    fontFamily: 'SFpro-Medium',
     color: COLORS.blue,
   },
   createBusinessPageIcon:{
