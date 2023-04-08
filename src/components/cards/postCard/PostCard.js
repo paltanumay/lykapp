@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Text,
   View,
@@ -24,16 +24,20 @@ import {
 } from 'react-native-popup-menu';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import HomeComments from '../../HomeComments';
+import OtherPostThreeDot from '../../otherPostThreeDot';
 
-const NewsCard = ({
+const PostCard = ({
   details = {},
   onRedirectCommentScreen = () => {},
   onPressThreeDot = () => {},
   handleShare = () => {},
   handleShareOnLyk = () => {},
+  onPressLike = () => {},
   type = '',
+  userInfo = {},
 }) => {
   // const navigation = useNavigation();
+  const [popUpOpen, setPopUpOpen] = useState(false);
 
   moment.updateLocale('en', {
     relativeTime: {
@@ -57,146 +61,114 @@ const NewsCard = ({
   return (
     <Pressable
       style={styles.newsCard}
-      key={details.newsId}
+      key={details.postId}
       onPress={() => onRedirectCommentScreen({details, type})}>
-      {type === 'sharenews' ? (
-        <View style={styles.shareTitle}>
-          <View style={styles.cardProImg}>
-            <Image
-              resizeMode="contain"
-              source={require('../../../assets/images/logo.png')}
-              style={[styles.logoImg]}
-            />
-          </View>
-          <View style={styles.newstext}>
-            <Text style={styles.newsTitletext}>
-              <Text style={styles.sharedText}>
-                {details.sharedByUser.firstName}
-              </Text>{' '}
-              shared
-            </Text>
-            <Text style={styles.newsSubTitletext}>
-              {moment(new Date()).diff(
-                moment(
-                  details.sharedByUser.lastUpdatedTime.replace(' ', 'T') + 'Z',
-                ),
-                'days',
-              ) < 1
-                ? moment(
-                    details.sharedByUser.lastUpdatedTime.replace(' ', 'T') +
-                      'Z',
-                  ).fromNow('past')
-                : moment(
-                    details.sharedByUser.lastUpdatedTime.replace(' ', 'T') +
-                      'Z',
-                  ).format('DD MMM YYYY, h:mm a')}
-            </Text>
-          </View>
-          {/* <TouchableOpacity
-                      style={styles.options}
-                      onPress={() =>
-                        onPressThreeDot({
-                          type,
-                          feedId: details.newsId,
-                          title: details.newsTitle,
-                          imageUrl: details.newsImageUrl,
-                          setFeeds: setFeeds,
-                        })
-                      }>
-                      <EnIcon
-                        name="dots-three-horizontal"
-                        size={25}
-                        color="#333"
-                      />
-                    </TouchableOpacity> */}
-        </View>
-      ) : null}
-
       <View style={styles.cardTitle}>
         <View style={styles.cardProImg}>
           <Image
             resizeMode="contain"
-            source={require('../../../assets/images/logo.png')}
+            source={
+              details.createdBy.imageUrl
+                ? {uri: details.createdBy.imageUrl}
+                : require('../../../assets/images/avatar.jpg')
+            }
             style={[styles.logoImg]}
           />
         </View>
         <View style={styles.newstext}>
-          <Text style={styles.newsTitletext}>News & Stories</Text>
+          <Text style={styles.newsTitletext}>
+            {details.createdBy.firstName}
+          </Text>
           <Text style={styles.newsSubTitletext}>
             {moment(new Date()).diff(
-              moment(details.feedTime.replace(' ', 'T') + 'Z'),
+              moment(details.createdOn.replace(' ', 'T') + 'Z'),
               'days',
             ) < 1
-              ? moment(details.feedTime.replace(' ', 'T') + 'Z').fromNow('past')
-              : moment(details.feedTime.replace(' ', 'T') + 'Z').format(
+              ? moment(details.createdOn.replace(' ', 'T') + 'Z').fromNow(
+                  'past',
+                )
+              : moment(details.createdOn.replace(' ', 'T') + 'Z').format(
                   'DD MMM YYYY, h:mm a',
                 )}
           </Text>
         </View>
-        <TouchableOpacity
-          style={styles.options}
-          onPress={() =>
-            onPressThreeDot({
-              type,
-              feedId: details.newsId,
-              title: details.newsTitle,
-              imageUrl: details.newsImageUrl,
-              setFeeds: setFeeds,
-            })
-          }>
-          <EnIcon name="dots-three-horizontal" size={25} color="#333" />
-        </TouchableOpacity>
+        {type === 'post' && details.createdBy.userId !== userInfo.userId ? (
+          <>
+            <Menu style={styles.options}>
+              <MenuTrigger>
+                <EnIcon name="dots-three-horizontal" size={25} color="#333" />
+              </MenuTrigger>
+              <MenuOptions style={styles.menuOptionsWrapper}>
+                <OtherPostThreeDot
+                  popUpOpen={popUpOpen}
+                  setPopUpOpen={setPopUpOpen}
+                />
+              </MenuOptions>
+            </Menu>
+          </>
+        ) : (
+          <TouchableOpacity
+            style={styles.options}
+            onPress={() =>
+              onPressThreeDot({
+                type,
+                title: details.title,
+                details: details,
+                feedId: details.postId,
+                imageUrl: details.imageUrl,
+              })
+            }>
+            <EnIcon name="dots-three-horizontal" size={25} color="#333" />
+          </TouchableOpacity>
+        )}
       </View>
-
-      <Text style={styles.mainDesc}>{details.newsTitle}</Text>
-
-      <View style={styles.newsCoverImg}>
-        <Image
-          resizeMode="stretch"
-          source={{
-            uri: details.newsImageUrl,
-          }}
-          style={[styles.postImg]}
-        />
-        <Pressable
-          style={styles.newsLink}
-          onPress={() => Linking.openURL(details.newsLink)}>
-          <Text style={styles.newsTextSource}>
-            Source : {details.newsSource}
-          </Text>
-        </Pressable>
-      </View>
-      <Text style={styles.secDesc}>{details.newsDescription}</Text>
-
+      {/* <Text style={styles.mainDesc}>
+                  {details.title}
+                </Text> */}
+      {details.imageUrl && (
+        <View style={styles.newsCoverImg}>
+          <Image
+            resizeMode="stretch"
+            source={{
+              uri:
+                'https://cdn.lykapp.com/newsImages/images/' + details.imageUrl,
+            }}
+            style={[styles.postImg]}
+          />
+        </View>
+      )}
+      <Text style={styles.secDesc}>{details.title}</Text>
       <View style={styles.likeCommentShare}>
         <View style={styles.likeCommentShareBox}>
           <View style={styles.likeCommentShareIconWrap}>
             <TouchableOpacity
-              style={styles.likeCommentShareIconWrap}
               onPress={() => {
-                console.log('Details------------------', details);
-                onNewsLike(details.newsId);
-              }}>
+                console.log('User details------------', details);
+                onPressLike(details.postId, details.createdBy.userId);
+              }}
+              style={styles.likeCommentShareIconWrap}>
               <Image
                 resizeMode="contain"
                 source={require('../../../assets/images/liked.png')}
                 style={[styles.likeImg]}
               />
-              {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
-                      </TouchableOpacity> */}
             </TouchableOpacity>
+
+            {/* <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
+                        </TouchableOpacity> */}
+
             <Text style={styles.iconText}>{details.likeCount} Like</Text>
           </View>
         </View>
 
         <View style={styles.likeCommentShareBox}>
           <TouchableOpacity
-            style={styles.likeCommentShareIconWrap}
-            onPress={() => onRedirectCommentScreen({details, type})}>
+            onPress={() => onRedirectCommentScreen({details, type})}
+            style={styles.likeCommentShareIconWrap}>
             {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="message1" size={22} color="#c1cb99" />
-                      </TouchableOpacity> */}
+                          <AntIcon name="message1" size={22} color="#c1cb99" />
+                        </TouchableOpacity> */}
             <Image
               resizeMode="contain"
               source={require('../../../assets/images/comment.png')}
@@ -206,7 +178,6 @@ const NewsCard = ({
             <Text style={styles.iconText}>{details.commentCount} Comment</Text>
           </TouchableOpacity>
         </View>
-
         <View style={styles.likeCommentShareBox}>
           <View style={styles.likeCommentShareIconWrap}>
             <Menu>
@@ -250,7 +221,6 @@ const NewsCard = ({
       {details.allComments?.map((comment, ind) => (
         <HomeComments commentDetails={comment} key={ind} />
       ))}
-
       <View style={styles.addCommentWrap}>
         <View style={styles.addCommentImgWrap}>
           <Image
@@ -261,16 +231,13 @@ const NewsCard = ({
         </View>
         <TouchableOpacity
           style={styles.addCommentField}
-          onPress={() => onRedirectCommentScreen({type, details})}>
+          onPress={() => onRedirectCommentScreen({details, type})}>
           <TextInput
+            placeholder="Add comment"
             placeholderTextColor="#AFAFAF"
             style={styles.input}
             editable={false}
-            placeholder="Add comment"
-            textContentType="username"
-            underlineColorAndroid="transparent"
-            keyboardType="email-address"
-            autoCapitalize="none"
+            disableFullscreenUI={true}
           />
         </TouchableOpacity>
       </View>
@@ -278,7 +245,7 @@ const NewsCard = ({
   );
 };
 
-export default NewsCard;
+export default PostCard;
 
 const styles = StyleSheet.create({
   blueBar: {
