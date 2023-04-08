@@ -5,9 +5,19 @@ import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {LinearGradient} from 'react-native-svg';
 import {globalStyles} from '../global/globalStyle';
 
-const PopUpModalWrap = ({modalVisible, setModalVisible, children}) => {
+const PopUpModalWrap = ({
+  modalVisible,
+  setModalVisible,
+  children,
+  hasBackDropColor,
+}) => {
   return (
-    <View style={styles.centeredView}>
+    <View
+      style={
+        !hasBackDropColor
+          ? styles.centeredView
+          : [styles.centeredView, styles.backDropColor]
+      }>
       <Modal
         animationType="slide"
         transparent={true}
@@ -20,7 +30,17 @@ const PopUpModalWrap = ({modalVisible, setModalVisible, children}) => {
           onPressOut={() => {
             setModalVisible(false);
           }}>
-          <View style={styles.centeredViewInner}>{children}</View>
+          <View
+            style={
+              !hasBackDropColor
+                ? styles.centeredViewInner
+                : [
+                    styles.centeredViewInner,
+                    {backgroundColor: 'rgba(0, 0, 0, 0.8)'},
+                  ]
+            }>
+            {children}
+          </View>
         </TouchableOpacity>
       </Modal>
     </View>
@@ -34,12 +54,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 22,
     position: 'absolute',
-    // backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+
     zIndex: 9999,
   },
+  backDropColor: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+  },
   centeredViewInner: {
-    // backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    marginTop: 60,
+    paddingTop: 60,
     width: '100%',
     height: '100%',
     alignItems: 'center',

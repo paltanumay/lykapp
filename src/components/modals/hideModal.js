@@ -4,18 +4,16 @@ import {TouchableOpacity} from 'react-native';
 import {Text, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {globalStyles} from '../../global/globalStyle';
-import AuthButtons from '../buttons/AuthButtons';
 import PopUpModalWrap from '../popUpModalWrap';
 
-const MuteModal = ({modalVisible, setModalVisible}) => {
+const HideModal = ({modalVisible, setModalVisible}) => {
   return (
     <PopUpModalWrap
       modalVisible={modalVisible}
       setModalVisible={setModalVisible}>
       <View style={styles.modalView}>
         <Text style={styles.modalText}>
-          <Text style={styles.textSpan}>Pooja Sanyal</Text> has been muted.You
-          won't be able to see any post further from this user
+          You won't see this post in your feed
         </Text>
         <TouchableOpacity
           style={[globalStyles.gradBt, {alignItems: 'center'}]}
@@ -26,7 +24,7 @@ const MuteModal = ({modalVisible, setModalVisible}) => {
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             colors={['#037ee5', '#15a2e0', '#28cad9']}
-            style={[globalStyles.linearGradient, {width: 180, height: 38}]}>
+            style={[globalStyles.linearGradient, {width: 180, height: 42}]}>
             <Text style={globalStyles.buttonText}>Undo</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -61,6 +59,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalText: {
+    color: '#000',
     fontSize: 16,
     paddingVertical: 20,
     lineHeight: 35,
@@ -70,4 +69,4 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
-export default MuteModal;
+export default HideModal;
