@@ -1,40 +1,138 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {Pressable, StyleSheet} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {Text, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {globalStyles} from '../../global/globalStyle';
 import BlackBorderButton from '../buttons/blackBorderButton';
 import PopUpModalWrap from '../popUpModalWrap';
+import FaIcon from 'react-native-vector-icons/Feather';
+import {useState} from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
+import {getEncTokenAnyUserId, getEncUserId} from '../../shared/encryption';
+import {reportPost} from '../../services/homeFeed.service';
+import {useContext} from 'react';
+import {HomeContext} from '../../shared/homeFeedCotext';
+import DeviceInfo from 'react-native-device-info';
+
+const REPORT_POST_SHORT = 'bokotrao';
 
 const ReportPostModal = ({modalVisible, setModalVisible}) => {
+  const [selectedValue, setSelectedValue] = useState('');
+  const {postDetails} = useContext(HomeContext);
+  console.log(postDetails.deviceType, '===========>');
+  const handleSubmitingPost = async () => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    let token =
+      (await AsyncStorage.getItem('token')) +
+      '-' +
+      REPORT_POST_SHORT +
+      '-' +
+      getEncTokenAnyUserId(userDetails.userId);
+    reportPost(
+      {
+        userId: getEncUserId(userDetails.userId),
+        feedId: postDetails.postId,
+        feedType: 'post',
+        reason: selectedValue,
+        block: false,
+        deviceId: DeviceInfo.getDeviceId(),
+        deviceType: postDetails.deviceId,
+        title: postDetails.title,
+      },
+      token,
+    )
+      .then(res => {
+        console.log(res, '========>');
+        setModalVisible(false);
+      })
+      .catch(error => {
+        console.log(error, '=======>');
+      });
+  };
   return (
     <PopUpModalWrap
       modalVisible={modalVisible}
       setModalVisible={setModalVisible}
       hasBackDropColor={true}>
       <View style={styles.modalView}>
-        <Text style={styles.modalText}>
-          Are you sure you want to unfriend
-          <Text style={styles.textSpan}> Pooja Sanyal</Text> as your friend
-        </Text>
+        <View style={styles.modalTitle}>
+          <Text style={styles.modalText}>Report Post</Text>
+          <Pressable onPress={() => setModalVisible(false)}>
+            <FaIcon style={styles.closeIcon} name="x" size={24} color="#000" />
+          </Pressable>
+        </View>
+        <Text style={styles.modalInfo}>Help us understand the problem</Text>
+        <View style={styles.formBtn}>
+          <BlackBorderButton
+            textColor={'#000'}
+            selectedValue={selectedValue}
+            isSelection={true}
+            borderColor="#a8a49c"
+            width={300}
+            btnText="Adult Sexual Content"
+            handleSubmit={() => setSelectedValue('Adult Sexual Content')}
+          />
+          <BlackBorderButton
+            textColor={'#000'}
+            selectedValue={selectedValue}
+            borderColor="#a8a49c"
+            width={300}
+            btnText="Violence"
+            isSelection={true}
+            handleSubmit={() => setSelectedValue('Violence')}
+          />
+          <BlackBorderButton
+            textColor={'#000'}
+            borderColor="#a8a49c"
+            selectedValue={selectedValue}
+            width={300}
+            btnText="Hate Speech"
+            isSelection={true}
+            handleSubmit={() => setSelectedValue('Hate Speech')}
+          />
+          <BlackBorderButton
+            textColor={'#000'}
+            selectedValue={selectedValue}
+            borderColor="#a8a49c"
+            width={300}
+            btnText="Terrorism"
+            isSelection={true}
+            handleSubmit={() => setSelectedValue('Terrorism')}
+          />
+          <BlackBorderButton
+            textColor={'#000'}
+            borderColor="#a8a49c"
+            selectedValue={selectedValue}
+            width={300}
+            btnText="Child Abuse"
+            isSelection={true}
+            handleSubmit={() => setSelectedValue('Child Abuse')}
+          />
+        </View>
         <TouchableOpacity
           style={[
             globalStyles.gradBt,
             {alignItems: 'center', marginBottom: 10},
           ]}
-          //   onPress={handleSubmit}
+          onPress={handleSubmitingPost}
           //   disabled={isSubmitting}
         >
           <LinearGradient
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             colors={['#037ee5', '#15a2e0', '#28cad9']}
-            style={[globalStyles.linearGradient, {width: 250, height: 40}]}>
-            <Text style={globalStyles.buttonText}>Undo</Text>
+            style={[globalStyles.linearGradient, {width: 300, height: 40}]}>
+            <Text style={globalStyles.buttonText}>Submit</Text>
           </LinearGradient>
         </TouchableOpacity>
-        <BlackBorderButton />
+        <BlackBorderButton
+          textColor={'#000'}
+          borderColor="#000"
+          width={300}
+          handleSubmit={() => setModalVisible(false)}
+        />
       </View>
     </PopUpModalWrap>
   );
@@ -67,14 +165,29 @@ const styles = StyleSheet.create({
   },
   modalText: {
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 20,
+    marginLeft: 80,
     paddingHorizontal: 30,
-    paddingVertical: 20,
     lineHeight: 35,
-    fontWeight: '400',
+    color: '#000',
+    fontWeight: '600',
   },
   textSpan: {
     color: '#000',
+  },
+  modalTitle: {
+    display: 'flex',
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  closeIcon: {
+    paddingLeft: 60,
+  },
+  modalInfo: {
+    fontSize: 15,
+    marginBottom: 10,
+    marginVertical: 5,
   },
 });
 export default ReportPostModal;

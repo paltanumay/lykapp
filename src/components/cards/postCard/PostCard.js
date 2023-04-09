@@ -33,11 +33,12 @@ const PostCard = ({
   handleShare = () => {},
   handleShareOnLyk = () => {},
   onPressLike = () => {},
+  setPopUpOpen = () => {},
+  popUpOpen,
   type = '',
   userInfo = {},
 }) => {
   // const navigation = useNavigation();
-  const [popUpOpen, setPopUpOpen] = useState(false);
 
   moment.updateLocale('en', {
     relativeTime: {
@@ -100,6 +101,7 @@ const PostCard = ({
               </MenuTrigger>
               <MenuOptions style={styles.menuOptionsWrapper}>
                 <OtherPostThreeDot
+                  details={details}
                   popUpOpen={popUpOpen}
                   setPopUpOpen={setPopUpOpen}
                 />

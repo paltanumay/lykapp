@@ -1,17 +1,47 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import React from 'react';
+import {useContext} from 'react';
 import {StyleSheet} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {Text, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {globalStyles} from '../../global/globalStyle';
+import {mutePost} from '../../services/homeFeed.service';
+import {getEncTokenAnyUserId, getEncUserId} from '../../shared/encryption';
+import {HomeContext} from '../../shared/homeFeedCotext';
 import AuthButtons from '../buttons/AuthButtons';
 import PopUpModalWrap from '../popUpModalWrap';
 
 const MuteModal = ({modalVisible, setModalVisible}) => {
+  const {postDetails} = useContext(HomeContext);
+
+  const handleClose = async () => {
+    let userDetails = await AsyncStorage.getItem('userId');
+    userDetails = JSON.parse(userDetails);
+    // let token =
+    //   (await AsyncStorage.getItem('token')) +
+    //   '-' +
+    //   HIDE_POST_SHORT +
+    //   '-' +
+    //   getEncTokenAnyUserId(userDetails.userId);
+    mutePost(
+      {
+        userId: userDetails.userId,
+        muteUserId: postDetails.createdBy.userId,
+        status: '0',
+      },
+      // token,
+    )
+      .then(res => {
+        console.log(res, '========>');
+        setModalVisible(prev => !prev);
+      })
+      .catch(error => {
+        console.log(error, '=======>');
+      });
+  };
   return (
-    <PopUpModalWrap
-      modalVisible={modalVisible}
-      setModalVisible={setModalVisible}>
+    <PopUpModalWrap modalVisible={modalVisible} setModalVisible={handleClose}>
       <View style={styles.modalView}>
         <Text style={styles.modalText}>
           <Text style={styles.textSpan}>Pooja Sanyal</Text> has been muted.You
@@ -19,7 +49,8 @@ const MuteModal = ({modalVisible, setModalVisible}) => {
         </Text>
         <TouchableOpacity
           style={[globalStyles.gradBt, {alignItems: 'center'}]}
-          //   onPress={handleSubmit}
+          onPress={() => setModalVisible(prev => !prev)}
+
           //   disabled={isSubmitting}
         >
           <LinearGradient

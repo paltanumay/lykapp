@@ -24,6 +24,8 @@ import {
 } from 'react-native-popup-menu';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import HomeComments from '../../HomeComments';
+import {useContext} from 'react';
+import {HomeContext} from '../../../shared/homeFeedCotext';
 
 const NewsCard = ({
   details = {},
@@ -34,6 +36,7 @@ const NewsCard = ({
   type = '',
 }) => {
   // const navigation = useNavigation();
+  const {setFeeds} = useContext(HomeContext);
 
   moment.updateLocale('en', {
     relativeTime: {

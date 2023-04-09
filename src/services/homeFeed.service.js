@@ -86,3 +86,48 @@ export const setMarkAsInAppropriate = async ({URL, data, token}) => {
     console.log(e, 'error');
   }
 };
+
+export const hidePost = async (params, token) => {
+  const config = {
+    method: 'post',
+    url: `${API_URL}/Analytical/reportItem`,
+    data: params,
+    headers: {
+      token: token,
+    },
+  };
+  return await axios(config);
+};
+export const mutePost = async (params, token) => {
+  const config = {
+    method: 'post',
+    url: `${API_URL}/Analytical/muteAndUnmuteByUser`,
+    data: params,
+    headers: {
+      token: token,
+    },
+  };
+  return await axios(config);
+};
+export const blockUser = async (params, token) => {
+  const config = {
+    method: 'post',
+    url: `${API_URL}/Analytical/blockandReportUserByUser`,
+    data: params,
+    headers: {
+      token: token,
+    },
+  };
+  return await axios(config);
+};
+export const reportPost = async (params, token) => {
+  const config = {
+    method: 'post',
+    url: `${API_URL}/Postchat/blockPostCreator`,
+    data: params,
+    headers: {
+      token: token,
+    },
+  };
+  return await axios(config);
+};

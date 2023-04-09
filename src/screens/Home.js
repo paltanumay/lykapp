@@ -295,9 +295,7 @@ export default function Home() {
   const onPressLike = async (postId, creatorId) => {
     let userDetails = await AsyncStorage.getItem('userId');
     userDetails = JSON.parse(userDetails);
-    console.log(
-      `postId: ${postId} creatorId: ${creatorId} likerName: ${userDetails.firstName} userId: ${userDetails.userId}`,
-    );
+
     let token =
       (await AsyncStorage.getItem('token')) +
       '-' +
@@ -661,6 +659,8 @@ export default function Home() {
                     handleShareOnLyk={handleShareOnLyk}
                     onPressLike={onPressLike}
                     type={type}
+                    popUpOpen={popUpOpen}
+                    setPopUpOpen={setPopUpOpen}
                     userInfo={userInfo}
                   />
                 )
