@@ -15,7 +15,7 @@ const OtherPostThreeDot = ({popUpOpen, setPopUpOpen, details}) => {
   const {setPostDetails} = useContext(HomeContext);
   return (
     <>
-      {details.createdBy.isFriend ? (
+      {details?.createdBy?.isFriend ? (
         <MenuOption
           value={1}
           style={styles.shareWrapInner}

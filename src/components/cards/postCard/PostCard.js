@@ -117,46 +117,39 @@ const PostCard = ({
                   ).format('DD MMM YYYY, h:mm a')}
             </Text>
           </View>
-          {type === 'post' ? (
-            details.createdBy ? (
-              details.createdBy.userId !== userInfo.userId
-            ) : details.typeCreatorDetails.userId !== userInfo.userId ? (
-              <>
-                <Menu style={styles.options}>
-                  <MenuTrigger>
-                    <EnIcon
-                      name="dots-three-horizontal"
-                      size={25}
-                      color="#333"
-                    />
-                  </MenuTrigger>
-                  <MenuOptions style={styles.menuOptionsWrapper}>
-                    <OtherPostThreeDot
-                      details={details}
-                      popUpOpen={popUpOpen}
-                      setPopUpOpen={setPopUpOpen}
-                    />
-                  </MenuOptions>
-                </Menu>
-              </>
-            ) : (
-              <TouchableOpacity
-                style={styles.options}
-                onPress={() =>
-                  onPressThreeDot({
-                    type,
-                    title: details.title ? details.title : details.typeTitle,
-                    details: details,
-                    feedId: details.postId ? details.postId : details.typeId,
-                    imageUrl: details.imageUrl
-                      ? details.imageUrl
-                      : details.typeUrl,
-                  })
-                }>
-                <EnIcon name="dots-three-horizontal" size={25} color="#333" />
-              </TouchableOpacity>
-            )
-          ) : null}
+          {details?.createdBy &&
+          details?.createdBy?.userId !== userInfo.userId ? (
+            <>
+              <Menu style={styles.options}>
+                <MenuTrigger>
+                  <EnIcon name="dots-three-horizontal" size={25} color="#333" />
+                </MenuTrigger>
+                <MenuOptions style={styles.menuOptionsWrapper}>
+                  <OtherPostThreeDot
+                    details={details}
+                    popUpOpen={popUpOpen}
+                    setPopUpOpen={setPopUpOpen}
+                  />
+                </MenuOptions>
+              </Menu>
+            </>
+          ) : (
+            <TouchableOpacity
+              style={styles.options}
+              onPress={() =>
+                onPressThreeDot({
+                  type,
+                  title: details.title ? details.title : details.typeTitle,
+                  details: details,
+                  feedId: details.postId ? details.postId : details.typeId,
+                  imageUrl: details.imageUrl
+                    ? details.imageUrl
+                    : details.typeUrl,
+                })
+              }>
+              <EnIcon name="dots-three-horizontal" size={25} color="#333" />
+            </TouchableOpacity>
+          )}
         </View>
         <Text style={styles.mainDesc}>
           {details.title ? details.title : details.typeTitle}
