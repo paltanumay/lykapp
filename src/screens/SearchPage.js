@@ -69,7 +69,7 @@ const {width, height} = Dimensions.get('window');
 const SearchPage = () => {
   const navigation = useNavigation();
   const translateY = useSharedValue(0);
-  const [tabs, setTabs] = useState('all');
+  const [tabs, setTabs] = useState('post');
   const [data, setData] = useState({});
   const SEARCH_SHORT = 'txsrh';
   const lastContentOffset = useSharedValue(0);
