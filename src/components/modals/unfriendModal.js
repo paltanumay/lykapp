@@ -1,13 +1,15 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {StyleSheet} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {Text, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {globalStyles} from '../../global/globalStyle';
+import {HomeContext} from '../../shared/homeFeedCotext';
 import BlackBorderButton from '../buttons/blackBorderButton';
 import PopUpModalWrap from '../popUpModalWrap';
 
 const UnfriendModal = ({modalVisible, setModalVisible}) => {
+  const {postDetails} = useContext(HomeContext);
   return (
     <PopUpModalWrap
       modalVisible={modalVisible}
@@ -15,7 +17,10 @@ const UnfriendModal = ({modalVisible, setModalVisible}) => {
       <View style={styles.modalView}>
         <Text style={styles.modalText}>
           Are you sure you want to unfriend
-          <Text style={styles.textSpan}> Pooja Sanyal</Text> as your friend
+          <Text style={styles.textSpan}>
+            {postDetails?.createdBy?.firstName}
+          </Text>
+          as your friend
         </Text>
         <TouchableOpacity
           style={[
@@ -30,7 +35,7 @@ const UnfriendModal = ({modalVisible, setModalVisible}) => {
             end={{x: 1, y: 0}}
             colors={['#037ee5', '#15a2e0', '#28cad9']}
             style={[globalStyles.linearGradient, {width: 250, height: 40}]}>
-            <Text style={globalStyles.buttonText}>Undo</Text>
+            <Text style={globalStyles.buttonText}>Confirm</Text>
           </LinearGradient>
         </TouchableOpacity>
         <BlackBorderButton borderColor="#a8a49c" />

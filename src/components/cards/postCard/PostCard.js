@@ -38,7 +38,6 @@ const PostCard = ({
   userInfo = {},
 }) => {
   // const navigation = useNavigation();
-  const [popUpOpen, setPopUpOpen] = useState(false);
   const navigation = useNavigation();
 
   const onRedirectCommentScreen = ({details, type}) => {

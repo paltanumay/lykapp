@@ -15,17 +15,34 @@ const OtherPostThreeDot = ({popUpOpen, setPopUpOpen, details}) => {
   const {setPostDetails} = useContext(HomeContext);
   return (
     <>
-      <MenuOption
-        value={1}
-        style={styles.shareWrapInner}
-        onSelect={() => setPopUpOpen('connect')}>
-        <Image
-          resizeMode="contain"
-          source={require('../assets/images/connect.png')}
-          style={styles.likeShareImg}
-        />
-        <Text style={styles.shareText}>Connect</Text>
-      </MenuOption>
+      {details.createdBy.isFriend ? (
+        <MenuOption
+          value={1}
+          style={styles.shareWrapInner}
+          onSelect={() => setPopUpOpen('unfriend')}>
+          <Image
+            resizeMode="contain"
+            source={require('../assets/images/unfriend.png')}
+            style={styles.likeShareImg}
+          />
+          <Text style={styles.shareText}>Unfriend</Text>
+        </MenuOption>
+      ) : (
+        <MenuOption
+          value={1}
+          style={styles.shareWrapInner}
+          onSelect={() => {
+            setPopUpOpen('connect');
+            setPostDetails(details);
+          }}>
+          <Image
+            resizeMode="contain"
+            source={require('../assets/images/connect.png')}
+            style={styles.likeShareImg}
+          />
+          <Text style={styles.shareText}>Connect</Text>
+        </MenuOption>
+      )}
       <MenuOption
         value={2}
         style={styles.shareWrapInner}

@@ -27,10 +27,21 @@ const ViolentThreatsModal = ({
           </Pressable>
         </View>
         <View style={styles.modalInfo}>
-          <Text>
+          <Text style={styles.commonText}>
             We maintain a safe and successful online community by only allowing
             contain that follows our Terms of Service and privacy. we don't
             allow thing such as
+          </Text>
+          <Text style={styles.textPoints}>
+            • Targeting or impersonating & mention of specific weapon
+          </Text>
+          <Text style={styles.textPoints}>
+            • Any acts of Terrorism, mention or reference of any criminal
+            organization
+          </Text>
+          <Text style={styles.textPoints}>
+            {' '}
+            • Graphics of extreme violence or glorifying violence.
           </Text>
         </View>
 
@@ -109,6 +120,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginBottom: 10,
     marginVertical: 5,
+  },
+  textPoints: {
+    paddingVertical: 10,
+    color: '#353535',
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  commonText: {
+    color: '#000',
+    lineHeight: 20,
   },
 });
 export default ViolentThreatsModal;
