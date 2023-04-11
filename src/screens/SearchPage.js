@@ -303,7 +303,7 @@ const SearchPage = () => {
           />
         </View>
         <View style={styles.tab}>
-          <Pressable
+          {/* <Pressable
             onPress={() => {
               setTabs('all');
             }}
@@ -312,7 +312,7 @@ const SearchPage = () => {
               {borderBottomColor: tabs === 'all' ? COLORS.blue : 'transparent'},
             ]}>
             <Text style={styles.tabText}>ALL</Text>
-          </Pressable>
+          </Pressable> */}
           <Pressable
             onPress={() => {
               setTabs('post');
@@ -397,11 +397,7 @@ const SearchPage = () => {
         <FlatList
           data={data.users}
           renderItem={({item}) => {
-            return (
-              <View style={styles.cardWrapperContainer}>
-                <PeopleCard />
-              </View>
-            );
+            return <PeopleCard name={item.typeTitle} img={item.typeUrl} />;
           }}
           keyExtractor={item => item.typeId}
         />
