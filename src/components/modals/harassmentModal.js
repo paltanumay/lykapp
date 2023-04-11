@@ -23,10 +23,20 @@ const HarassmentModal = ({modalVisible, setModalVisible, setSelectedValue}) => {
           </Pressable>
         </View>
         <View style={styles.modalInfo}>
-          <Text>
+          <Text style={styles.commonText}>
             We maintain a safe and successful online community by only allowing
             contain that follows our Terms of Service and privacy. we don't
             allow thing such as
+          </Text>
+          <Text style={styles.textPoints}>
+            • Demeaning or disgracing someone
+          </Text>
+          <Text style={styles.textPoints}>
+            • Trying to repeatedly contacting someone who doesn&apos;t want to
+            be bothered.
+          </Text>
+          <Text style={styles.textPoints}>
+            • Malicious Behavior or Sexual assault.
           </Text>
         </View>
 
@@ -105,6 +115,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginBottom: 10,
     marginVertical: 5,
+  },
+  textPoints: {
+    paddingVertical: 10,
+    color: '#353535',
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  commonText: {
+    color: '#000',
+    lineHeight: 20,
   },
 });
 export default HarassmentModal;

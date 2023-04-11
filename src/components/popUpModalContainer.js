@@ -12,6 +12,10 @@ import PopUpModalWrap from './popUpModalWrap';
 const PopUpModalContainer = ({popUpOpen, setPopUpOpen}) => {
   return (
     <>
+      <UnfriendModal
+        modalVisible={popUpOpen === 'unfriend' ? true : false}
+        setModalVisible={setPopUpOpen}
+      />
       <MuteModal
         modalVisible={popUpOpen === 'mute' ? true : false}
         setModalVisible={setPopUpOpen}

@@ -23,11 +23,18 @@ const NudityModal = ({modalVisible, setModalVisible, setSelectedValue}) => {
           </Pressable>
         </View>
         <View style={styles.modalInfo}>
-          <Text>
+          <Text style={styles.commonText}>
             We maintain a safe and successful online community by only allowing
             contain that follows our Terms of Service and privacy. we don't
             allow thing such as
           </Text>
+          <Text style={styles.textPoints}>
+            • Obscene activity • Request for sexual activity
+          </Text>
+          <Text style={styles.textPoints}>
+            • Use of explicit sexual language
+          </Text>
+          <Text style={styles.textPoints}>• Request for sexual activity</Text>
         </View>
 
         <TouchableOpacity
@@ -105,6 +112,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginBottom: 10,
     marginVertical: 5,
+  },
+  textPoints: {
+    paddingVertical: 10,
+    color: '#353535',
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  commonText: {
+    color: '#000',
+    lineHeight: 20,
   },
 });
 export default NudityModal;
