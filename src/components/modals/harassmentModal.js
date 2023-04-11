@@ -1,28 +1,41 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {Pressable, StyleSheet} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {Text, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {globalStyles} from '../../global/globalStyle';
 import BlackBorderButton from '../buttons/blackBorderButton';
 import PopUpModalWrap from '../popUpModalWrap';
+import FaIcon from 'react-native-vector-icons/Feather';
 
-const UnfriendModal = ({modalVisible, setModalVisible}) => {
+const HarassmentModal = ({modalVisible, setModalVisible, setSelectedValue}) => {
   return (
     <PopUpModalWrap
       modalVisible={modalVisible}
-      setModalVisible={setModalVisible}>
+      setModalVisible={setModalVisible}
+      hasBackDropColor={true}>
       <View style={styles.modalView}>
-        <Text style={styles.modalText}>
-          Are you sure you want to unfriend
-          <Text style={styles.textSpan}> Pooja Sanyal</Text> as your friend
-        </Text>
+        <View style={styles.modalTitle}>
+          <Text style={styles.modalText}>Harassments</Text>
+          <Pressable onPress={() => setModalVisible(false)}>
+            <FaIcon style={styles.closeIcon} name="x" size={24} color="#000" />
+          </Pressable>
+        </View>
+        <View style={styles.modalInfo}>
+          <Text>
+            We maintain a safe and successful online community by only allowing
+            contain that follows our Terms of Service and privacy. we don't
+            allow thing such as
+          </Text>
+        </View>
+
         <TouchableOpacity
           style={[
             globalStyles.gradBt,
             {alignItems: 'center', marginBottom: 10},
           ]}
-          //   onPress={handleSubmit}
+          onPress={() => setSelectedValue('Harassment')}
           //   disabled={isSubmitting}
         >
           <LinearGradient
@@ -30,10 +43,13 @@ const UnfriendModal = ({modalVisible, setModalVisible}) => {
             end={{x: 1, y: 0}}
             colors={['#037ee5', '#15a2e0', '#28cad9']}
             style={[globalStyles.linearGradient, {width: 250, height: 40}]}>
-            <Text style={globalStyles.buttonText}>Undo</Text>
+            <Text style={globalStyles.buttonText}>Submit</Text>
           </LinearGradient>
         </TouchableOpacity>
-        <BlackBorderButton borderColor="#a8a49c" />
+        <BlackBorderButton
+          borderColor="#a8a49c"
+          handleSubmit={() => setModalVisible(false)}
+        />
       </View>
     </PopUpModalWrap>
   );
@@ -66,14 +82,29 @@ const styles = StyleSheet.create({
   },
   modalText: {
     textAlign: 'center',
-    fontSize: 16,
-    paddingHorizontal: 30,
-    paddingVertical: 20,
+    fontSize: 20,
+    // marginLeft: 80,
+    // paddingHorizontal: 30,
     lineHeight: 35,
-    fontWeight: '400',
+    color: '#000',
+    fontWeight: '600',
   },
   textSpan: {
     color: '#000',
   },
+  modalTitle: {
+    display: 'flex',
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  closeIcon: {
+    paddingLeft: 60,
+  },
+  modalInfo: {
+    fontSize: 15,
+    marginBottom: 10,
+    marginVertical: 5,
+  },
 });
-export default UnfriendModal;
+export default HarassmentModal;

@@ -8,14 +8,17 @@ import {
 import {Image} from 'react-native';
 import {Text} from 'react-native';
 import {StyleSheet} from 'react-native';
+import {useContext} from 'react';
+import {HomeContext} from '../shared/homeFeedCotext';
 
-const OtherPostThreeDot = ({popUpOpen, setPopUpOpen}) => {
+const OtherPostThreeDot = ({popUpOpen, setPopUpOpen, details}) => {
+  const {setPostDetails} = useContext(HomeContext);
   return (
     <>
       <MenuOption
         value={1}
         style={styles.shareWrapInner}
-        onSelect={() => setPopUpOpen(prev => !prev)}>
+        onSelect={() => setPopUpOpen('connect')}>
         <Image
           resizeMode="contain"
           source={require('../assets/images/connect.png')}
@@ -26,8 +29,10 @@ const OtherPostThreeDot = ({popUpOpen, setPopUpOpen}) => {
       <MenuOption
         value={2}
         style={styles.shareWrapInner}
-        // onSelect={handleShare}
-      >
+        onSelect={() => {
+          setPopUpOpen('mute');
+          setPostDetails(details);
+        }}>
         <Image
           resizeMode="contain"
           source={require('../assets/images/mute.png')}
@@ -38,8 +43,10 @@ const OtherPostThreeDot = ({popUpOpen, setPopUpOpen}) => {
       <MenuOption
         value={2}
         style={styles.shareWrapInner}
-        // onSelect={handleShare}
-      >
+        onSelect={() => {
+          setPopUpOpen('hide');
+          setPostDetails(details);
+        }}>
         <Image
           resizeMode="contain"
           source={require('../assets/images/hide.png')}
@@ -50,8 +57,10 @@ const OtherPostThreeDot = ({popUpOpen, setPopUpOpen}) => {
       <MenuOption
         value={2}
         style={styles.shareWrapInner}
-        // onSelect={handleShare}
-      >
+        onSelect={() => {
+          setPopUpOpen('block');
+          setPostDetails(details);
+        }}>
         <Image
           resizeMode="contain"
           source={require('../assets/images/block_user.png')}
@@ -62,8 +71,7 @@ const OtherPostThreeDot = ({popUpOpen, setPopUpOpen}) => {
       <MenuOption
         value={2}
         style={styles.shareWrapInner}
-        // onSelect={handleShare}
-      >
+        onSelect={() => setPopUpOpen('report')}>
         <Image
           resizeMode="contain"
           source={require('../assets/images/report.png')}

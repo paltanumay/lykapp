@@ -22,9 +22,7 @@ const PopUpModalWrap = ({
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(prev => !prev);
-        }}>
+        onRequestClose={setModalVisible}>
         <TouchableOpacity
           activeOpacity={1}
           onPressOut={() => {

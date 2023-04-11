@@ -32,6 +32,8 @@ const PostCard = ({
   handleShare = () => {},
   handleShareOnLyk = () => {},
   onPressLike = () => {},
+  setPopUpOpen = () => {},
+  popUpOpen,
   type = '',
   userInfo = {},
 }) => {
@@ -108,6 +110,7 @@ const PostCard = ({
               </MenuTrigger>
               <MenuOptions style={styles.menuOptionsWrapper}>
                 <OtherPostThreeDot
+                  details={details}
                   popUpOpen={popUpOpen}
                   setPopUpOpen={setPopUpOpen}
                 />
