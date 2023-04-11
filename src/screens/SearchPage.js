@@ -33,6 +33,7 @@ import moment from 'moment';
 import {postLike, shareOnLyk, newsLike} from '../services/homeFeed.service';
 import {HomeContext} from '../shared/homeFeedCotext';
 import {logProfileData} from 'react-native-calendars/src/Profiler';
+import PeopleCard from '../components/cards/peopleCard/PeopleCard';
 
 const hobbies = ['Lyk World', 'My Connections', 'My Family', 'Selective Users'];
 export const API_URL =
@@ -387,6 +388,18 @@ const SearchPage = () => {
                   type={tabs}
                   userInfo={userInfo}
                 />
+              </View>
+            );
+          }}
+          keyExtractor={item => item.typeId}
+        />
+      ) : tabs === 'users' ? (
+        <FlatList
+          data={data.users}
+          renderItem={({item}) => {
+            return (
+              <View style={styles.cardWrapperContainer}>
+                <PeopleCard />
               </View>
             );
           }}

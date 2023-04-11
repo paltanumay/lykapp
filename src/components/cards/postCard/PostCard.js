@@ -25,6 +25,7 @@ import {
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import HomeComments from '../../HomeComments';
 import OtherPostThreeDot from '../../otherPostThreeDot';
+import {MenuProvider} from 'react-native-popup-menu';
 
 const PostCard = ({
   details = {},
@@ -38,7 +39,7 @@ const PostCard = ({
   userInfo = {},
 }) => {
   // const navigation = useNavigation();
-  const [popUpOpen, setPopUpOpen] = useState(false);
+  // const [popUpOpen, setPopUpOpen] = useState(false);
   const navigation = useNavigation();
 
   const onRedirectCommentScreen = ({details, type}) => {
@@ -69,189 +70,222 @@ const PostCard = ({
   });
 
   return (
-    <Pressable
-      style={styles.newsCard}
-      key={details.postId}
-      onPress={() => onRedirectCommentScreen({details, type})}>
-      <View style={styles.cardTitle}>
-        <View style={styles.cardProImg}>
-          <Image
-            resizeMode="contain"
-            source={
-              details.createdBy.imageUrl
-                ? {uri: details.createdBy.imageUrl}
-                : require('../../../assets/images/avatar.jpg')
-            }
-            style={[styles.logoImg]}
-          />
-        </View>
-        <View style={styles.newstext}>
-          <Text style={styles.newsTitletext}>
-            {details.createdBy.firstName}
-          </Text>
-          <Text style={styles.newsSubTitletext}>
-            {moment(new Date()).diff(
-              moment(details.createdOn.replace(' ', 'T') + 'Z'),
-              'days',
-            ) < 1
-              ? moment(details.createdOn.replace(' ', 'T') + 'Z').fromNow(
-                  'past',
-                )
-              : moment(details.createdOn.replace(' ', 'T') + 'Z').format(
-                  'DD MMM YYYY, h:mm a',
-                )}
-          </Text>
-        </View>
-        {type === 'post' && details.createdBy.userId !== userInfo.userId ? (
-          <>
-            <Menu style={styles.options}>
-              <MenuTrigger>
-                <EnIcon name="dots-three-horizontal" size={25} color="#333" />
-              </MenuTrigger>
-              <MenuOptions style={styles.menuOptionsWrapper}>
-                <OtherPostThreeDot
-                  details={details}
-                  popUpOpen={popUpOpen}
-                  setPopUpOpen={setPopUpOpen}
-                />
-              </MenuOptions>
-            </Menu>
-          </>
-        ) : (
-          <TouchableOpacity
-            style={styles.options}
-            onPress={() =>
-              onPressThreeDot({
-                type,
-                title: details.title,
-                details: details,
-                feedId: details.postId,
-                imageUrl: details.imageUrl,
-              })
-            }>
-            <EnIcon name="dots-three-horizontal" size={25} color="#333" />
-          </TouchableOpacity>
-        )}
-      </View>
-      <Text style={styles.mainDesc}>
-        {details.title ? details.title : details.typeTitle}
-      </Text>
-      {details.imageUrl ? (
-        <View style={styles.newsCoverImg}>
-          <Image
-            resizeMode="stretch"
-            source={{
-              uri: `https://cdn.lykapp.com/newsImages/images/${details.imageUrl}`,
-            }}
-            style={styles.postImg}
-          />
-        </View>
-      ) : null}
-      <Text style={styles.secDesc}>{details.title}</Text>
-      <View style={styles.likeCommentShare}>
-        <View style={styles.likeCommentShareBox}>
-          <View style={styles.likeCommentShareIconWrap}>
-            <TouchableOpacity
-              onPress={() => {
-                console.log('User details------------', details);
-                onPressLike(details.postId, details.createdBy.userId);
-              }}
-              style={styles.likeCommentShareIconWrap}>
-              <Image
-                resizeMode="contain"
-                source={require('../../../assets/images/liked.png')}
-                style={[styles.likeImg]}
-              />
-            </TouchableOpacity>
-
-            {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
-                        </TouchableOpacity> */}
-
-            <Text style={styles.iconText}>{details.likeCount} Like</Text>
-          </View>
-        </View>
-
-        <View style={styles.likeCommentShareBox}>
-          <TouchableOpacity
-            onPress={() => onRedirectCommentScreen({details, type})}
-            style={styles.likeCommentShareIconWrap}>
-            {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name="message1" size={22} color="#c1cb99" />
-                        </TouchableOpacity> */}
+    <MenuProvider>
+      <Pressable
+        style={styles.newsCard}
+        key={details.postId ? details.postId : details.typeTitle}
+        onPress={() => onRedirectCommentScreen({details, type})}>
+        <View style={styles.cardTitle}>
+          <View style={styles.cardProImg}>
             <Image
               resizeMode="contain"
-              source={require('../../../assets/images/comment.png')}
-              style={[styles.likeImg]}
+              source={
+                details.createdBy
+                  ? details.createdBy.imageUrl
+                    ? {uri: details.createdBy.imageUrl}
+                    : require('../../../assets/images/avatar.jpg')
+                  : details.typeCreatorDetails.imageUrl
+                  ? {uri: details.typeCreatorDetails.imageUrl}
+                  : require('../../../assets/images/avatar.jpg')
+              }
+              style={[styles.logoImg]}
             />
-
-            <Text style={styles.iconText}>{details.commentCount} Comment</Text>
-          </TouchableOpacity>
+          </View>
+          <View style={styles.newstext}>
+            <Text style={styles.newsTitletext}>
+              {details.createdBy
+                ? details.createdBy.firstName
+                : details.typeCreatorDetails.firstName}
+            </Text>
+            <Text style={styles.newsSubTitletext}>
+              {moment(new Date()).diff(
+                moment(
+                  details.feedTime
+                    ? details.feedTime.replace(' ', 'T') + 'Z'
+                    : details.createdOn.replace(' ', 'T') + 'Z',
+                ),
+                'days',
+              ) < 1
+                ? moment(
+                    details.feedTime
+                      ? details.feedTime.replace(' ', 'T') + 'Z'
+                      : details.createdOn.replace(' ', 'T') + 'Z',
+                  ).fromNow('past')
+                : moment(
+                    details.feedTime
+                      ? details.feedTime.replace(' ', 'T') + 'Z'
+                      : details.createdOn.replace(' ', 'T') + 'Z',
+                  ).format('DD MMM YYYY, h:mm a')}
+            </Text>
+          </View>
+          {type === 'post' ? (
+            details.createdBy ? (
+              details.createdBy.userId !== userInfo.userId
+            ) : details.typeCreatorDetails.userId !== userInfo.userId ? (
+              <>
+                <Menu style={styles.options}>
+                  <MenuTrigger>
+                    <EnIcon
+                      name="dots-three-horizontal"
+                      size={25}
+                      color="#333"
+                    />
+                  </MenuTrigger>
+                  <MenuOptions style={styles.menuOptionsWrapper}>
+                    <OtherPostThreeDot
+                      details={details}
+                      popUpOpen={popUpOpen}
+                      setPopUpOpen={setPopUpOpen}
+                    />
+                  </MenuOptions>
+                </Menu>
+              </>
+            ) : (
+              <TouchableOpacity
+                style={styles.options}
+                onPress={() =>
+                  onPressThreeDot({
+                    type,
+                    title: details.title ? details.title : details.typeTitle,
+                    details: details,
+                    feedId: details.postId ? details.postId : details.typeId,
+                    imageUrl: details.imageUrl
+                      ? details.imageUrl
+                      : details.typeUrl,
+                  })
+                }>
+                <EnIcon name="dots-three-horizontal" size={25} color="#333" />
+              </TouchableOpacity>
+            )
+          ) : null}
         </View>
-        <View style={styles.likeCommentShareBox}>
-          <View style={styles.likeCommentShareIconWrap}>
-            <Menu>
-              <MenuTrigger>
+        <Text style={styles.mainDesc}>
+          {details.title ? details.title : details.typeTitle}
+        </Text>
+        {details.imageUrl ? (
+          <View style={styles.newsCoverImg}>
+            <Image
+              resizeMode="stretch"
+              source={{
+                uri: `https://cdn.lykapp.com/newsImages/images/${
+                  details.imageUrl ? details.imageUrl : details.typeUrl
+                }`,
+              }}
+              style={styles.postImg}
+            />
+          </View>
+        ) : null}
+        <Text style={styles.secDesc}>
+          {details.title ? details.title : details.typeTitle}
+        </Text>
+        <View style={styles.likeCommentShare}>
+          <View style={styles.likeCommentShareBox}>
+            <View style={styles.likeCommentShareIconWrap}>
+              <TouchableOpacity
+                onPress={() => {
+                  console.log('User details------------', details);
+                  onPressLike(
+                    details.postId ? details.postId : details.typeId,
+                    details.createdBy
+                      ? details.createdBy.userId
+                      : details.typeCreatorDetails.userId,
+                  );
+                }}
+                style={styles.likeCommentShareIconWrap}>
                 <Image
                   resizeMode="contain"
-                  source={require('../../../assets/images/share.png')}
+                  source={require('../../../assets/images/liked.png')}
                   style={[styles.likeImg]}
                 />
-              </MenuTrigger>
-              <MenuOptions style={styles.shareWrap}>
-                <MenuOption
-                  value={1}
-                  style={styles.shareWrapInner}
-                  onSelect={() => handleShareOnLyk(details, type)}>
-                  <Image
-                    resizeMode="contain"
-                    source={require('../../../assets/images/share-on-lyk.png')}
-                    style={[styles.likeShareImg, {width: 22, height: 18}]}
-                  />
-                  <Text style={styles.shareText}>Share on LYK</Text>
-                </MenuOption>
-                <MenuOption
-                  value={2}
-                  style={styles.shareWrapInner}
-                  onSelect={handleShare}>
-                  <Image
-                    resizeMode="contain"
-                    source={require('../../../assets/images/external-share.png')}
-                    style={[styles.likeShareImg, {width: 18, height: 24}]}
-                  />
-                  <Text style={styles.shareText}>External share</Text>
-                </MenuOption>
-              </MenuOptions>
-            </Menu>
+              </TouchableOpacity>
 
-            <Text style={styles.iconText}>{details.shareCount} Share</Text>
+              <Text style={styles.iconText}>{details.likeCount} Like</Text>
+            </View>
+          </View>
+
+          <View style={styles.likeCommentShareBox}>
+            <TouchableOpacity
+              onPress={() => onRedirectCommentScreen({details, type})}
+              style={styles.likeCommentShareIconWrap}>
+              {/* <TouchableOpacity style={styles.roundBase}>
+                          <AntIcon name="message1" size={22} color="#c1cb99" />
+                        </TouchableOpacity> */}
+              <Image
+                resizeMode="contain"
+                source={require('../../../assets/images/comment.png')}
+                style={[styles.likeImg]}
+              />
+
+              <Text style={styles.iconText}>
+                {details.commentCount} Comment
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.likeCommentShareBox}>
+            <View style={styles.likeCommentShareIconWrap}>
+              <Menu>
+                <MenuTrigger>
+                  <Image
+                    resizeMode="contain"
+                    source={require('../../../assets/images/share.png')}
+                    style={[styles.likeImg]}
+                  />
+                </MenuTrigger>
+                <MenuOptions style={styles.shareWrap}>
+                  <MenuOption
+                    value={1}
+                    style={styles.shareWrapInner}
+                    onSelect={() => handleShareOnLyk(details, type)}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../../../assets/images/share-on-lyk.png')}
+                      style={[styles.likeShareImg, {width: 22, height: 18}]}
+                    />
+                    <Text style={styles.shareText}>Share on LYK</Text>
+                  </MenuOption>
+                  <MenuOption
+                    value={2}
+                    style={styles.shareWrapInner}
+                    onSelect={handleShare}>
+                    <Image
+                      resizeMode="contain"
+                      source={require('../../../assets/images/external-share.png')}
+                      style={[styles.likeShareImg, {width: 18, height: 24}]}
+                    />
+                    <Text style={styles.shareText}>External share</Text>
+                  </MenuOption>
+                </MenuOptions>
+              </Menu>
+
+              <Text style={styles.iconText}>{details.shareCount} Share</Text>
+            </View>
           </View>
         </View>
-      </View>
-      {details.allComments?.map((comment, ind) => (
-        <HomeComments commentDetails={comment} key={ind} />
-      ))}
-      <View style={styles.addCommentWrap}>
-        <View style={styles.addCommentImgWrap}>
-          <Image
-            resizeMode="stretch"
-            source={require('../../../assets/images/avatar.jpg')}
-            style={[styles.addCommentImg]}
-          />
+        {details.allComments?.map((comment, ind) => (
+          <HomeComments commentDetails={comment} key={ind} />
+        ))}
+        <View style={styles.addCommentWrap}>
+          <View style={styles.addCommentImgWrap}>
+            <Image
+              resizeMode="stretch"
+              source={require('../../../assets/images/avatar.jpg')}
+              style={[styles.addCommentImg]}
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.addCommentField}
+            onPress={() => onRedirectCommentScreen({details, type})}>
+            <TextInput
+              placeholder="Add comment"
+              placeholderTextColor="#AFAFAF"
+              style={styles.input}
+              editable={false}
+              disableFullscreenUI={true}
+            />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.addCommentField}
-          onPress={() => onRedirectCommentScreen({details, type})}>
-          <TextInput
-            placeholder="Add comment"
-            placeholderTextColor="#AFAFAF"
-            style={styles.input}
-            editable={false}
-            disableFullscreenUI={true}
-          />
-        </TouchableOpacity>
-      </View>
-    </Pressable>
+      </Pressable>
+    </MenuProvider>
   );
 };
 
