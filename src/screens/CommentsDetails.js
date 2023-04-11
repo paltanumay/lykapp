@@ -807,10 +807,6 @@ const CommentsDetails = () => {
                 </TouchableOpacity>
               </View>
 
-              {/* <Text style={styles.mainDesc}>
-                  {details.title}
-                </Text> */}
-
               {details.imageUrl && (
                 <View style={styles.newsCoverImg}>
                   <Image
@@ -824,6 +820,7 @@ const CommentsDetails = () => {
                   />
                 </View>
               )}
+
               <Text style={styles.secDesc}>
                 {details.title ? details.title : details.typeTitle}
               </Text>
@@ -843,12 +840,9 @@ const CommentsDetails = () => {
                       <Image
                         resizeMode="contain"
                         source={require('../assets/images/liked.png')}
-                        style={[styles.likeImg]}
+                        style={styles.likeImg}
                       />
                     </TouchableOpacity>
-                    {/* <TouchableOpacity style={styles.roundBase}>
-                          <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
-                        </TouchableOpacity> */}
                     <Text style={styles.iconText}>{likes} Like</Text>
                   </View>
                 </View>
@@ -922,6 +916,7 @@ const CommentsDetails = () => {
                   <CommentComponents commentDetails={comment} key={ind} />
                 ))} */}
             </View>
+
             {comments > '0' &&
               comments?.map((comment, ind) => {
                 return (
