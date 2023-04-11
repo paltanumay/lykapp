@@ -539,7 +539,7 @@ const CommentsDetails = () => {
             showsVerticalScrollIndicator={true}>
             <View
               style={[styles.newsCard, {marginBottom: 0}]}
-              key={details.newsId}>
+              key={details.newsId ? details.newsId : details.typeId}>
               <View style={styles.cardTitle}>
                 <View style={styles.cardProImg}>
                   <Image
@@ -552,15 +552,23 @@ const CommentsDetails = () => {
                   <Text style={styles.newsTitletext}>News & Stories</Text>
                   <Text style={styles.newsSubTitletext}>
                     {moment(new Date()).diff(
-                      moment(details.feedTime.replace(' ', 'T') + 'Z'),
+                      moment(
+                        details.feedTime
+                          ? details.feedTime.replace(' ', 'T') + 'Z'
+                          : details.addedOn.replace(' ', 'T') + 'Z',
+                      ),
                       'days',
                     ) < 1
                       ? moment(
-                          details.feedTime.replace(' ', 'T') + 'Z',
+                          details.feedTime
+                            ? details.feedTime.replace(' ', 'T') + 'Z'
+                            : details.addedOn.replace(' ', 'T') + 'Z',
                         ).fromNow('past')
-                      : moment(details.feedTime.replace(' ', 'T') + 'Z').format(
-                          'DD MMM YYYY, h:mm a',
-                        )}
+                      : moment(
+                          details.feedTime
+                            ? details.feedTime.replace(' ', 'T') + 'Z'
+                            : details.addedOn.replace(' ', 'T') + 'Z',
+                        ).format('DD MMM YYYY, h:mm a')}
                   </Text>
                 </View>
                 <TouchableOpacity
@@ -568,30 +576,46 @@ const CommentsDetails = () => {
                   onPress={() =>
                     onPressThreeDot({
                       type,
-                      feedId: details.newsId,
-                      title: details.newsTitle,
-                      imageUrl: details.newsImageUrl,
+                      feedId: details.newsId ? details.newsId : details.typeId,
+                      title: details.newsTitle
+                        ? details.newsTitle
+                        : details.typeTitle,
+                      imageUrl: details.newsImageUrl
+                        ? details.newsImageUrl
+                        : details.typeImageURL,
+                      setFeeds: setFeeds,
                     })
                   }>
                   <EnIcon name="dots-three-horizontal" size={25} color="#333" />
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.mainDesc}>{details.newsTitle}</Text>
+              <Text style={styles.mainDesc}>
+                {details.newsTitle ? details.newsTitle : details.typeTitle}
+              </Text>
 
               <View style={styles.newsCoverImg}>
                 <Image
                   resizeMode="stretch"
                   source={{
-                    uri: details.newsImageUrl,
+                    uri: details.newsImageUrl
+                      ? details.newsImageUrl
+                      : details.typeImageURL,
                   }}
                   style={[styles.postImg]}
                 />
                 <Pressable
                   style={styles.newsLink}
-                  onPress={() => Linking.openURL(details.newsLink)}>
+                  onPress={() =>
+                    Linking.openURL(
+                      details.newsLink ? details.newsLink : details.typeUrl,
+                    )
+                  }>
                   <Text style={styles.newsTextSource}>
-                    Source : {details.newsSource}
+                    Source :{' '}
+                    {details.newsSource
+                      ? details.newsSource
+                      : details.typeSource}
                   </Text>
                 </Pressable>
               </View>
@@ -602,7 +626,9 @@ const CommentsDetails = () => {
                   <View style={styles.likeCommentShareIconWrap}>
                     <TouchableOpacity
                       onPress={() => {
-                        onNewsLike(details.newsId);
+                        onNewsLike(
+                          details.newsId ? details.newsId : details.typeId,
+                        );
                       }}>
                       <Image
                         resizeMode="contain"

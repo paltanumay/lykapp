@@ -183,6 +183,7 @@ export default function Home() {
     setRefresh(prev => !prev);
     // wait(2000).then(() => setRefresh(false));
   }, []);
+
   useEffect(() => {
     async function userInformation() {
       let userDetails = await AsyncStorage.getItem('userId');
@@ -377,6 +378,7 @@ export default function Home() {
       type: type,
     });
   };
+
   moment.updateLocale('en', {
     relativeTime: {
       future: 'in %s',
@@ -636,26 +638,25 @@ export default function Home() {
               type === 'sharenews' ? (
                 <NewsCard
                   details={details}
-                  onRedirectCommentScreen={onRedirectCommentScreen}
                   onPressThreeDot={onPressThreeDot}
                   handleShare={handleShare}
                   handleShareOnLyk={handleShareOnLyk}
+                  onNewsLike={onNewsLike}
                   type={type}
                 />
               ) : type === 'news' ? (
                 <NewsCard
                   details={details}
-                  onRedirectCommentScreen={onRedirectCommentScreen}
                   onPressThreeDot={onPressThreeDot}
                   handleShare={handleShare}
                   handleShareOnLyk={handleShareOnLyk}
+                  onNewsLike={onNewsLike}
                   type={type}
                 />
               ) : (
                 type === 'post' && (
                   <PostCard
                     details={details}
-                    onRedirectCommentScreen={onRedirectCommentScreen}
                     onPressThreeDot={onPressThreeDot}
                     handleShare={handleShare}
                     handleShareOnLyk={handleShareOnLyk}

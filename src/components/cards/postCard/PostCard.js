@@ -28,7 +28,6 @@ import OtherPostThreeDot from '../../otherPostThreeDot';
 
 const PostCard = ({
   details = {},
-  onRedirectCommentScreen = () => {},
   onPressThreeDot = () => {},
   handleShare = () => {},
   handleShareOnLyk = () => {},
@@ -38,6 +37,15 @@ const PostCard = ({
 }) => {
   // const navigation = useNavigation();
   const [popUpOpen, setPopUpOpen] = useState(false);
+  const navigation = useNavigation();
+
+  const onRedirectCommentScreen = ({details, type}) => {
+    navigation.push('comments', {
+      details: details,
+      styles: styles,
+      type: type,
+    });
+  };
 
   moment.updateLocale('en', {
     relativeTime: {
@@ -122,21 +130,20 @@ const PostCard = ({
           </TouchableOpacity>
         )}
       </View>
-      {/* <Text style={styles.mainDesc}>
-                  {details.title}
-                </Text> */}
-      {details.imageUrl && (
+      <Text style={styles.mainDesc}>
+        {details.title ? details.title : details.typeTitle}
+      </Text>
+      {details.imageUrl ? (
         <View style={styles.newsCoverImg}>
           <Image
             resizeMode="stretch"
             source={{
-              uri:
-                'https://cdn.lykapp.com/newsImages/images/' + details.imageUrl,
+              uri: `https://cdn.lykapp.com/newsImages/images/${details.imageUrl}`,
             }}
-            style={[styles.postImg]}
+            style={styles.postImg}
           />
         </View>
-      )}
+      ) : null}
       <Text style={styles.secDesc}>{details.title}</Text>
       <View style={styles.likeCommentShare}>
         <View style={styles.likeCommentShareBox}>

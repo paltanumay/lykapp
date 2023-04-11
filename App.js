@@ -175,11 +175,15 @@ const App = () => {
             name="Login"
             component={Login}
           />
-          <Stack.Screen
-            options={{headerShown: false}}
-            name="Search"
-            component={SearchPage}
-          />
+          <Stack.Screen options={{headerShown: false}} name="Search">
+            {() => {
+              return (
+                <HomeContextProvider>
+                  <SearchPage />
+                </HomeContextProvider>
+              );
+            }}
+          </Stack.Screen>
           <Stack.Screen
             options={{headerShown: false}}
             name="Intro"
