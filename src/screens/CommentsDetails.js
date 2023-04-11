@@ -751,25 +751,43 @@ const CommentsDetails = () => {
                 <View style={styles.cardProImg}>
                   <Image
                     resizeMode="cover"
-                    source={require('../assets/images/avatar.jpg')}
+                    source={
+                      details.createdBy
+                        ? details.createdBy.imageUrl
+                          ? {uri: details.createdBy.imageUrl}
+                          : require('../assets/images/avatar.jpg')
+                        : details.typeCreatorDetails.imageUrl
+                        ? {uri: details.typeCreatorDetails.imageUrl}
+                        : require('../assets/images/avatar.jpg')
+                    }
                     style={[styles.logoImg]}
                   />
                 </View>
                 <View style={styles.newstext}>
                   <Text style={styles.newsTitletext}>
-                    {details.createdBy.firstName}
+                    {details.createdBy
+                      ? details.createdBy.firstName
+                      : details.typeCreatorDetails.firstName}
                   </Text>
                   <Text style={styles.newsSubTitletext}>
                     {moment(new Date()).diff(
-                      moment(details.feedTime.replace(' ', 'T') + 'Z'),
+                      moment(
+                        details.feedTime
+                          ? details.feedTime.replace(' ', 'T') + 'Z'
+                          : details.createdOn.replace(' ', 'T') + 'Z',
+                      ),
                       'days',
                     ) < 1
                       ? moment(
-                          details.feedTime.replace(' ', 'T') + 'Z',
+                          details.feedTime
+                            ? details.feedTime.replace(' ', 'T') + 'Z'
+                            : details.createdOn.replace(' ', 'T') + 'Z',
                         ).fromNow('past')
-                      : moment(details.feedTime.replace(' ', 'T') + 'Z').format(
-                          'DD MMM YYYY, h:mm a',
-                        )}
+                      : moment(
+                          details.feedTime
+                            ? details.feedTime.replace(' ', 'T') + 'Z'
+                            : details.createdOn.replace(' ', 'T') + 'Z',
+                        ).format('DD MMM YYYY, h:mm a')}
                   </Text>
                 </View>
                 <TouchableOpacity
@@ -777,9 +795,12 @@ const CommentsDetails = () => {
                   onPress={() =>
                     onPressThreeDot({
                       type,
-                      feedId: details.postId,
-                      title: details.title,
-                      imageUrl: details.imageUrl,
+                      title: details.title ? details.title : details.typeTitle,
+                      details: details,
+                      feedId: details.postId ? details.postId : details.typeId,
+                      imageUrl: details.imageUrl
+                        ? details.imageUrl
+                        : details.typeUrl,
                     })
                   }>
                   <EnIcon name="dots-three-horizontal" size={25} color="#333" />
@@ -795,22 +816,29 @@ const CommentsDetails = () => {
                   <Image
                     resizeMode="cover"
                     source={{
-                      uri:
-                        'https://cdn.lykapp.com/newsImages/images/' +
-                        details.imageUrl,
+                      uri: `https://cdn.lykapp.com/newsImages/images/${
+                        details.imageUrl ? details.imageUrl : details.typeUrl
+                      }`,
                     }}
                     style={[styles.postImg]}
                   />
                 </View>
               )}
-              <Text style={styles.secDesc}>{details.title}</Text>
+              <Text style={styles.secDesc}>
+                {details.title ? details.title : details.typeTitle}
+              </Text>
 
               <View style={[mainStyles.likeCommentShare]}>
                 <View style={styles.likeCommentShareBox}>
                   <View style={styles.likeCommentShareIconWrap}>
                     <TouchableOpacity
                       onPress={() => {
-                        onPressLike(details.postId, details.createdBy.userId);
+                        onPressLike(
+                          details.postId ? details.postId : details.typeId,
+                          details.createdBy
+                            ? details.createdBy.userId
+                            : details.typeCreatorDetails.userId,
+                        );
                       }}>
                       <Image
                         resizeMode="contain"
