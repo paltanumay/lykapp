@@ -40,6 +40,7 @@ import PostCard from '../components/cards/postCard/PostCard';
 import Header from '../components/Header';
 import Animated, {
   Easing,
+  log,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
@@ -166,6 +167,7 @@ export default function Home() {
       return unsubscribe;
     }, [refresh, liked, shareModalData]),
   );
+
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -176,6 +178,7 @@ export default function Home() {
       console.log('Authorization status:', authStatus);
     }
   }
+
   const wait = timeout => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   };
@@ -286,7 +289,25 @@ export default function Home() {
         // });
         // setFeeds(newState);
         if (response.data.response?.success) {
-          setLiked(!liked);
+          const data = feeds.map(item => {
+            if (item.details.newsId === newsId) {
+              return {
+                ...item,
+                details: {
+                  ...item.details,
+                  myLike: response.data.response?.like === 1 ? true : false,
+                  likeCount:
+                    response.data.response?.like === 1
+                      ? `${parseInt(item.details?.likeCount) + 1}`
+                      : `${parseInt(item.details?.likeCount) - 1}`,
+                },
+              };
+            }
+            return item;
+          });
+          setFeeds(data);
+          console.log('Like response--------------------', response.data);
+          // setLiked(!liked);
         }
       })
       .catch(error => {
@@ -314,17 +335,25 @@ export default function Home() {
       token,
     )
       .then(response => {
-        // const newState = feeds.map(obj => {
-        //   if (obj.postId === postId) {
-        //     if (response.data.response?.liked === 0) {
-        //       return {...obj, likeCount: 0};
-        //     }
-        //     return {...obj, likeCount: obj.likeCount + 1};
-        //   }
-        //   return obj;
-        // });
-        // setFeeds(newState);
         if (response.data.response?.success) {
+          // const data = feeds.map(item => {
+          //   if (item.details.postId === postId) {
+          //     return {
+          //       ...item,
+          //       details: {
+          //         ...item.details,
+          //         myLike: response.data.response.liked === 1 ? true : false,
+          //         likeCount:
+          //           response.data.response.liked === 1
+          //             ? `${parseInt(item.details?.likeCount) + 1}`
+          //             : `${parseInt(item.details?.likeCount) - 1}`,
+          //       },
+          //     };
+          //   }
+          //   return item;
+          // });
+          // setFeeds(data);
+          // console.log('Like response--------------------', response.data);
           setLiked(!liked);
         }
       })
@@ -345,6 +374,7 @@ export default function Home() {
       ],
     };
   });
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       if (
@@ -370,6 +400,7 @@ export default function Home() {
       isScrolling.value = false;
     },
   });
+
   const onRedirectCommentScreen = ({details, type}) => {
     navigation.push('comments', {
       details: details,
@@ -634,27 +665,32 @@ export default function Home() {
           </View>
 
           <View style={styles.newsCardsWrap}>
-            {feeds.map(({type, details}) =>
-              type === 'sharenews' ? (
-                <NewsCard
-                  details={details}
-                  onPressThreeDot={onPressThreeDot}
-                  handleShare={handleShare}
-                  handleShareOnLyk={handleShareOnLyk}
-                  onNewsLike={onNewsLike}
-                  type={type}
-                />
-              ) : type === 'news' ? (
-                <NewsCard
-                  details={details}
-                  onPressThreeDot={onPressThreeDot}
-                  handleShare={handleShare}
-                  handleShareOnLyk={handleShareOnLyk}
-                  onNewsLike={onNewsLike}
-                  type={type}
-                />
-              ) : (
-                type === 'post' && (
+            {feeds.map(({type, details}) => {
+              console.log('Details-------------', details);
+              if (type === 'sharenews') {
+                return (
+                  <NewsCard
+                    details={details}
+                    onPressThreeDot={onPressThreeDot}
+                    handleShare={handleShare}
+                    handleShareOnLyk={handleShareOnLyk}
+                    onNewsLike={onNewsLike}
+                    type={type}
+                  />
+                );
+              } else if (type === 'news') {
+                return (
+                  <NewsCard
+                    details={details}
+                    onPressThreeDot={onPressThreeDot}
+                    handleShare={handleShare}
+                    handleShareOnLyk={handleShareOnLyk}
+                    onNewsLike={onNewsLike}
+                    type={type}
+                  />
+                );
+              } else if (type === 'post') {
+                return (
                   <PostCard
                     details={details}
                     onPressThreeDot={onPressThreeDot}
@@ -666,9 +702,9 @@ export default function Home() {
                     setPopUpOpen={setPopUpOpen}
                     userInfo={userInfo}
                   />
-                )
-              ),
-            )}
+                );
+              }
+            })}
           </View>
         </Animated.ScrollView>
         <Footer style={actionBarStyle} navigation={navigation} />
