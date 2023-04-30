@@ -6,6 +6,7 @@ import avatarImg from '../assets/images/avatar.jpg';
 import {generalApiCallPost} from '../services/homeFeed.service';
 import AsyncStorage from '@react-native-community/async-storage';
 import {getEncTokenAnyUserId, getEncUserId} from '../shared/encryption';
+import MIcon from 'react-native-vector-icons/MaterialIcons';
 
 const API_URL = process.env.API_URL || 'https://socket.lykapp.com:8443';
 export const COMMENT_REPLIES_URL = `${API_URL}/gtfdcmtrpls`;
@@ -22,6 +23,7 @@ const CommentComponents = ({
   parentId = '',
   setParentId = () => {},
   toUserId = '',
+  isPrivate,
   setToUserId = () => {},
 }) => {
   console.log('Comment count----------', commentDetails);
@@ -109,33 +111,49 @@ const CommentComponents = ({
             </Text>
             <Text style={styles.comment}>{commentDetails?.commentText}</Text>
             <View style={styles.socialInfo}>
-              <Pressable
-                onPress={() => {
-                  console.log(
-                    'CommentDetails------------------',
-                    commentDetails,
-                  );
-                  setLike(
-                    commentDetails.commentId,
-                    commentDetails.commentor.userId,
-                  );
-                }}>
-                <Image
-                  resizeMode="contain"
-                  source={require('../assets/images/liked.png')}
-                  style={[styles.likeImg]}
-                />
-              </Pressable>
-              <Text style={styles.like}>{'Like'}</Text>
-              <Pressable
-                onPress={e => {
-                  e.stopPropagation;
-                  pressEvent();
-                  setParentId(commentDetails._id);
-                  setToUserId(commentDetails.toUserId);
-                }}>
-                <Text style={styles.reply}>{'Reply'}</Text>
-              </Pressable>
+              <View style={styles.socialWrap}>
+                <Pressable
+                  onPress={() => {
+                    console.log(
+                      'CommentDetails------------------',
+                      commentDetails,
+                    );
+                    setLike(
+                      commentDetails.commentId,
+                      commentDetails.commentor.userId,
+                    );
+                  }}>
+                  <Image
+                    resizeMode="contain"
+                    source={require('../assets/images/liked.png')}
+                    style={[styles.likeImg]}
+                  />
+                </Pressable>
+                <Text style={styles.like}>{'Like'}</Text>
+                <Pressable
+                  onPress={e => {
+                    e.stopPropagation;
+                    pressEvent();
+                    setParentId(commentDetails._id);
+                    setToUserId(commentDetails.toUserId);
+                  }}>
+                  <Text style={styles.reply}>{'Reply'}</Text>
+                </Pressable>
+              </View>
+              {!isPrivate && (
+                <View style={styles.publicLogo}>
+                  <MIcon name="public" size={15} />
+                  <Text
+                    // eslint-disable-next-line react-native/no-inline-styles
+                    style={{
+                      fontSize: 15,
+                      paddingLeft: 4,
+                      textTransform: 'capitalize',
+                    }}>
+                    public
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
           {commentDetails?.commentCount > 0 ? (
@@ -185,6 +203,16 @@ const CommentComponents = ({
 };
 
 const styles = StyleSheet.create({
+  socialWrap: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  publicLogo: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   addCommentImgWrap: {
     width: 50,
     height: 50,
@@ -203,8 +231,9 @@ const styles = StyleSheet.create({
   },
   socialInfo: {
     display: 'flex',
+    width: '100%',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   addCommentWrap: {

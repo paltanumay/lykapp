@@ -60,7 +60,7 @@ const ThreeDotComponent = ({
               prev.filter(data => data.details.postId !== feedId),
             );
         onClose();
-        !isHome && navigation.goBack();
+        navigation.goBack();
       })
       .catch(err => console.log(err, 'err--->'));
   };

@@ -69,46 +69,44 @@ const NewsCard = ({
   });
 
   return (
-    <MenuProvider>
-      <Pressable
-        style={styles.newsCard}
-        key={details.newsId ? details.newsId : details.typeId}
-        onPress={() => onRedirectCommentScreen({details, type})}>
-        {type === 'sharenews' ? (
-          <View style={styles.shareTitle}>
-            <View style={styles.cardProImg}>
-              <Image
-                resizeMode="contain"
-                source={require('../../../assets/images/logo.png')}
-                style={[styles.logoImg]}
-              />
-            </View>
-            <View style={styles.newstext}>
-              <Text style={styles.newsTitletext}>
-                <Text style={styles.sharedText}>
-                  {details.sharedByUser.firstName}
-                </Text>{' '}
-                shared
-              </Text>
-              <Text style={styles.newsSubTitletext}>
-                {moment(new Date()).diff(
-                  moment(
+    <Pressable
+      style={styles.newsCard}
+      key={details.newsId ? details.newsId : details.typeId}
+      onPress={() => onRedirectCommentScreen({details, type})}>
+      {type === 'sharenews' ? (
+        <View style={styles.shareTitle}>
+          <View style={styles.cardProImg}>
+            <Image
+              resizeMode="contain"
+              source={require('../../../assets/images/logo.png')}
+              style={[styles.logoImg]}
+            />
+          </View>
+          <View style={styles.newstext}>
+            <Text style={styles.newsTitletext}>
+              <Text style={styles.sharedText}>
+                {details.sharedByUser.firstName}
+              </Text>{' '}
+              shared
+            </Text>
+            <Text style={styles.newsSubTitletext}>
+              {moment(new Date()).diff(
+                moment(
+                  details.sharedByUser.lastUpdatedTime.replace(' ', 'T') + 'Z',
+                ),
+                'days',
+              ) < 1
+                ? moment(
                     details.sharedByUser.lastUpdatedTime.replace(' ', 'T') +
                       'Z',
-                  ),
-                  'days',
-                ) < 1
-                  ? moment(
-                      details.sharedByUser.lastUpdatedTime.replace(' ', 'T') +
-                        'Z',
-                    ).fromNow('past')
-                  : moment(
-                      details.sharedByUser.lastUpdatedTime.replace(' ', 'T') +
-                        'Z',
-                    ).format('DD MMM YYYY, h:mm a')}
-              </Text>
-            </View>
-            {/* <TouchableOpacity
+                  ).fromNow('past')
+                : moment(
+                    details.sharedByUser.lastUpdatedTime.replace(' ', 'T') +
+                      'Z',
+                  ).format('DD MMM YYYY, h:mm a')}
+            </Text>
+          </View>
+          {/* <TouchableOpacity
                       style={styles.options}
                       onPress={() =>
                         onPressThreeDot({
@@ -125,198 +123,192 @@ const NewsCard = ({
                         color="#333"
                       />
                     </TouchableOpacity> */}
-          </View>
-        ) : null}
+        </View>
+      ) : null}
 
-        <View style={styles.cardTitle}>
-          <View style={styles.cardProImg}>
-            <Image
-              resizeMode="contain"
-              source={require('../../../assets/images/logo.png')}
-              style={[styles.logoImg]}
-            />
-          </View>
-          <View style={styles.newstext}>
-            <Text style={styles.newsTitletext}>News & Stories</Text>
-            <Text style={styles.newsSubTitletext}>
-              {moment(new Date()).diff(
-                moment(
+      <View style={styles.cardTitle}>
+        <View style={styles.cardProImg}>
+          <Image
+            resizeMode="contain"
+            source={require('../../../assets/images/logo.png')}
+            style={[styles.logoImg]}
+          />
+        </View>
+        <View style={styles.newstext}>
+          <Text style={styles.newsTitletext}>News & Stories</Text>
+          <Text style={styles.newsSubTitletext}>
+            {moment(new Date()).diff(
+              moment(
+                details.feedTime
+                  ? details.feedTime.replace(' ', 'T') + 'Z'
+                  : details.addedOn.replace(' ', 'T') + 'Z',
+              ),
+              'days',
+            ) < 1
+              ? moment(
                   details.feedTime
                     ? details.feedTime.replace(' ', 'T') + 'Z'
                     : details.addedOn.replace(' ', 'T') + 'Z',
-                ),
-                'days',
-              ) < 1
-                ? moment(
-                    details.feedTime
-                      ? details.feedTime.replace(' ', 'T') + 'Z'
-                      : details.addedOn.replace(' ', 'T') + 'Z',
-                  ).fromNow('past')
-                : moment(
-                    details.feedTime
-                      ? details.feedTime.replace(' ', 'T') + 'Z'
-                      : details.addedOn.replace(' ', 'T') + 'Z',
-                  ).format('DD MMM YYYY, h:mm a')}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={styles.options}
-            onPress={() =>
-              onPressThreeDot({
-                type,
-                feedId: details.newsId ? details.newsId : details.typeId,
-                title: details.newsTitle
-                  ? details.newsTitle
-                  : details.typeTitle,
-                imageUrl: details.newsImageUrl
-                  ? details.newsImageUrl
-                  : details.typeImageURL,
-                setFeeds: setFeeds,
-              })
-            }>
-            <EnIcon name="dots-three-horizontal" size={25} color="#333" />
-          </TouchableOpacity>
+                ).fromNow('past')
+              : moment(
+                  details.feedTime
+                    ? details.feedTime.replace(' ', 'T') + 'Z'
+                    : details.addedOn.replace(' ', 'T') + 'Z',
+                ).format('DD MMM YYYY, h:mm a')}
+          </Text>
         </View>
-
-        <Text style={styles.mainDesc}>
-          {details.newsTitle ? details.newsTitle : details.typeTitle}
-        </Text>
-
-        <View style={styles.newsCoverImg}>
-          <Image
-            resizeMode="stretch"
-            source={{
-              uri: details.newsImageUrl
+        <TouchableOpacity
+          style={styles.options}
+          onPress={() =>
+            onPressThreeDot({
+              type,
+              feedId: details.newsId ? details.newsId : details.typeId,
+              title: details.newsTitle ? details.newsTitle : details.typeTitle,
+              imageUrl: details.newsImageUrl
                 ? details.newsImageUrl
                 : details.typeImageURL,
-            }}
-            style={[styles.postImg]}
-          />
-          <Pressable
-            style={styles.newsLink}
-            onPress={() =>
-              Linking.openURL(
-                details.newsLink ? details.newsLink : details.typeUrl,
-              )
-            }>
-            <Text style={styles.newsTextSource}>
-              Source :{' '}
-              {details.newsSource ? details.newsSource : details.typeSource}
-            </Text>
-          </Pressable>
-        </View>
-        <Text style={styles.secDesc}>{details.newsDescription}</Text>
+              setFeeds: setFeeds,
+            })
+          }>
+          <EnIcon name="dots-three-horizontal" size={25} color="#333" />
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.likeCommentShare}>
-          <View style={styles.likeCommentShareBox}>
-            <View style={styles.likeCommentShareIconWrap}>
-              <TouchableOpacity
-                style={styles.likeCommentShareIconWrap}
-                onPress={() => {
-                  console.log('Details------------------', details);
-                  onNewsLike(details.newsId ? details.newsId : details.typeId);
-                }}>
-                <Image
-                  resizeMode="contain"
-                  source={require('../../../assets/images/liked.png')}
-                  style={[styles.likeImg]}
-                />
-                {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
-                      </TouchableOpacity> */}
-              </TouchableOpacity>
-              <Text style={styles.iconText}>{details.likeCount} Like</Text>
-            </View>
-          </View>
+      <Text style={styles.mainDesc}>
+        {details.newsTitle ? details.newsTitle : details.typeTitle}
+      </Text>
 
-          <View style={styles.likeCommentShareBox}>
-            <TouchableOpacity
-              style={styles.likeCommentShareIconWrap}
-              onPress={() => onRedirectCommentScreen({details, type})}>
-              {/* <TouchableOpacity style={styles.roundBase}>
-                        <AntIcon name="message1" size={22} color="#c1cb99" />
-                      </TouchableOpacity> */}
-              <Image
-                resizeMode="contain"
-                source={require('../../../assets/images/comment.png')}
-                style={[styles.likeImg]}
-              />
+      <Pressable
+        style={styles.newsCoverImg}
+        onPress={() =>
+          Linking.openURL(details.newsLink ? details.newsLink : details.typeUrl)
+        }>
+        <Image
+          resizeMode="stretch"
+          source={{
+            uri: details.newsImageUrl
+              ? details.newsImageUrl
+              : details.typeImageURL,
+          }}
+          style={[styles.postImg]}
+        />
 
-              <Text style={styles.iconText}>
-                {details.commentCount} Comment
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.likeCommentShareBox}>
-            <View style={styles.likeCommentShareIconWrap}>
-              <Menu>
-                <MenuTrigger>
-                  <Image
-                    resizeMode="contain"
-                    source={require('../../../assets/images/share.png')}
-                    style={[styles.likeImg]}
-                  />
-                </MenuTrigger>
-                <MenuOptions style={styles.shareWrap}>
-                  <MenuOption
-                    value={1}
-                    style={styles.shareWrapInner}
-                    onSelect={() => handleShareOnLyk(details, type)}>
-                    <Image
-                      resizeMode="contain"
-                      source={require('../../../assets/images/share-on-lyk.png')}
-                      style={[styles.likeShareImg, {width: 22, height: 18}]}
-                    />
-                    <Text style={styles.shareText}>Share on LYK</Text>
-                  </MenuOption>
-                  <MenuOption
-                    value={2}
-                    style={styles.shareWrapInner}
-                    onSelect={handleShare}>
-                    <Image
-                      resizeMode="contain"
-                      source={require('../../../assets/images/external-share.png')}
-                      style={[styles.likeShareImg, {width: 18, height: 24}]}
-                    />
-                    <Text style={styles.shareText}>External share</Text>
-                  </MenuOption>
-                </MenuOptions>
-              </Menu>
-
-              <Text style={styles.iconText}>{details.shareCount} Share</Text>
-            </View>
-          </View>
-        </View>
-        {details.allComments?.map((comment, ind) => (
-          <HomeComments commentDetails={comment} key={ind} />
-        ))}
-
-        <View style={styles.addCommentWrap}>
-          <View style={styles.addCommentImgWrap}>
-            <Image
-              resizeMode="stretch"
-              source={require('../../../assets/images/avatar.jpg')}
-              style={[styles.addCommentImg]}
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.addCommentField}
-            onPress={() => onRedirectCommentScreen({type, details})}>
-            <TextInput
-              placeholderTextColor="#AFAFAF"
-              style={styles.input}
-              editable={false}
-              placeholder="Add comment"
-              textContentType="username"
-              underlineColorAndroid="transparent"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </TouchableOpacity>
+        <View style={styles.newsLink}>
+          <Text style={styles.newsTextSource}>
+            Source :{' '}
+            {details.newsSource ? details.newsSource : details.typeSource}
+          </Text>
         </View>
       </Pressable>
-    </MenuProvider>
+      <Text style={styles.secDesc}>{details.newsDescription}</Text>
+
+      <View style={styles.likeCommentShare}>
+        <View style={styles.likeCommentShareBox}>
+          <View style={styles.likeCommentShareIconWrap}>
+            <TouchableOpacity
+              style={styles.likeCommentShareIconWrap}
+              onPress={() => {
+                console.log('Details------------------', details);
+                onNewsLike(details.newsId ? details.newsId : details.typeId);
+              }}>
+              <Image
+                resizeMode="contain"
+                source={require('../../../assets/images/liked.png')}
+                style={[styles.likeImg]}
+              />
+              {/* <TouchableOpacity style={styles.roundBase}>
+                        <AntIcon name={details.myLike ? "like1" : "like2"} size={22} color="#9c9d9f" />
+                      </TouchableOpacity> */}
+            </TouchableOpacity>
+            <Text style={styles.iconText}>{details.likeCount} Like</Text>
+          </View>
+        </View>
+
+        <View style={styles.likeCommentShareBox}>
+          <TouchableOpacity
+            style={styles.likeCommentShareIconWrap}
+            onPress={() => onRedirectCommentScreen({details, type})}>
+            {/* <TouchableOpacity style={styles.roundBase}>
+                        <AntIcon name="message1" size={22} color="#c1cb99" />
+                      </TouchableOpacity> */}
+            <Image
+              resizeMode="contain"
+              source={require('../../../assets/images/comment.png')}
+              style={[styles.likeImg]}
+            />
+
+            <Text style={styles.iconText}>{details.commentCount} Comment</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.likeCommentShareBox}>
+          <View style={styles.likeCommentShareIconWrap}>
+            <Menu>
+              <MenuTrigger>
+                <Image
+                  resizeMode="contain"
+                  source={require('../../../assets/images/share.png')}
+                  style={[styles.likeImg]}
+                />
+              </MenuTrigger>
+              <MenuOptions style={styles.shareWrap}>
+                <MenuOption
+                  value={1}
+                  style={styles.shareWrapInner}
+                  onSelect={() => handleShareOnLyk(details, type)}>
+                  <Image
+                    resizeMode="contain"
+                    source={require('../../../assets/images/share-on-lyk.png')}
+                    style={[styles.likeShareImg, {width: 22, height: 18}]}
+                  />
+                  <Text style={styles.shareText}>Share on LYK</Text>
+                </MenuOption>
+                <MenuOption
+                  value={2}
+                  style={styles.shareWrapInner}
+                  onSelect={handleShare}>
+                  <Image
+                    resizeMode="contain"
+                    source={require('../../../assets/images/external-share.png')}
+                    style={[styles.likeShareImg, {width: 18, height: 24}]}
+                  />
+                  <Text style={styles.shareText}>External share</Text>
+                </MenuOption>
+              </MenuOptions>
+            </Menu>
+
+            <Text style={styles.iconText}>{details.shareCount} Share</Text>
+          </View>
+        </View>
+      </View>
+      {details.allComments?.map((comment, ind) => (
+        <HomeComments commentDetails={comment} key={ind} />
+      ))}
+
+      <View style={styles.addCommentWrap}>
+        <View style={styles.addCommentImgWrap}>
+          <Image
+            resizeMode="stretch"
+            source={require('../../../assets/images/avatar.jpg')}
+            style={[styles.addCommentImg]}
+          />
+        </View>
+        <TouchableOpacity
+          style={styles.addCommentField}
+          onPress={() => onRedirectCommentScreen({type, details})}>
+          <TextInput
+            placeholderTextColor="#AFAFAF"
+            style={styles.input}
+            editable={false}
+            placeholder="Add comment"
+            textContentType="username"
+            underlineColorAndroid="transparent"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </TouchableOpacity>
+      </View>
+    </Pressable>
   );
 };
 

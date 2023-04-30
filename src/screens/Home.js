@@ -127,7 +127,7 @@ export default function Home() {
             {
               userId: getEncUserId(userDetails.userId),
               limit: limit,
-              country: userDetails.countryName,
+              country: ['India', 'US', 'UK'],
               offset: offset,
               nextPostId: nextPostId,
               pId: pId,
@@ -454,6 +454,7 @@ export default function Home() {
           details={threeDotData.details}
           title={threeDotData.title}
           setFeeds={setFeeds}
+          isHome={true}
         />
       )}
       <View style={globalStyles.innerPagesContainer}>
