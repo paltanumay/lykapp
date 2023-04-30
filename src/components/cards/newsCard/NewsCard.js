@@ -213,7 +213,6 @@ const NewsCard = ({
               <TouchableOpacity
                 style={styles.likeCommentShareIconWrap}
                 onPress={() => {
-                  console.log('Details------------------', details);
                   onNewsLike(details.newsId ? details.newsId : details.typeId);
                 }}>
                 <Image

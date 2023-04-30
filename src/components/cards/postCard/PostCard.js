@@ -167,15 +167,11 @@ const PostCard = ({
             />
           </View>
         ) : null}
-        <Text style={styles.secDesc}>
-          {details.title ? details.title : details.typeTitle}
-        </Text>
         <View style={styles.likeCommentShare}>
           <View style={styles.likeCommentShareBox}>
             <View style={styles.likeCommentShareIconWrap}>
               <TouchableOpacity
                 onPress={() => {
-                  console.log('User details------------', details);
                   onPressLike(
                     details.postId ? details.postId : details.typeId,
                     details.createdBy
