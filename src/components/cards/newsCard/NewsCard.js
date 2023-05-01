@@ -298,7 +298,10 @@ const NewsCard = ({
                 <MenuOption
                   value={2}
                   style={styles.shareWrapInner}
-                  onSelect={handleShare}>
+                  onSelect={() => {
+                    handleShare();
+                    extshare(details);
+                  }}>
                   <Image
                     resizeMode="contain"
                     source={require('../../../assets/images/external-share.png')}
