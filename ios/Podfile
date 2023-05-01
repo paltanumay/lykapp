@@ -18,6 +18,8 @@ target 'lykapp' do
 
   pod 'ReactNativeIncallManager', :path => '../node_modules/react-native-incall-manager'
 
+  pod 'RNShare', :path => '../node_modules/react-native-share'
+
   target 'lykappTests' do
     inherit! :complete
     # Pods for testing

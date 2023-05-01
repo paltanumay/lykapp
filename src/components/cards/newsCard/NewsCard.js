@@ -27,7 +27,12 @@ import HomeComments from '../../HomeComments';
 import {MenuProvider} from 'react-native-popup-menu';
 import {useContext} from 'react';
 import {HomeContext} from '../../../shared/homeFeedCotext';
-
+import Share from 'react-native-share';
+// import {Share} from 'react-native';
+import {captureRef} from 'react-native-view-shot';
+import {useRef} from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
+import RNFetchBlob from 'rn-fetch-blob';
 const NewsCard = ({
   details = {},
   // onRedirectCommentScreen = () => {},
@@ -36,6 +41,7 @@ const NewsCard = ({
   handleShareOnLyk = () => {},
   onNewsLike = () => {},
   type = '',
+  ref = null,
 }) => {
   const navigation = useNavigation();
 
@@ -67,6 +73,32 @@ const NewsCard = ({
       yy: '%d years',
     },
   });
+  async function extshare(details) {
+    try {
+      // const uri = await captureRef(viewRef, {
+      //   format: 'png',
+      //   quality: 0.7,
+      // });
+      // console.log(details.newsImageUrl);
+
+      const response = await RNFetchBlob.config({
+        fileCache: true,
+        appendExt: 'png',
+      }).fetch('GET', details.newsImageUrl);
+
+      const base64Data = await response.base64();
+      await AsyncStorage.setItem(details.newsId, base64Data);
+      const image = `data:image/png;base64,${base64Data}`;
+      console.log(details);
+      const res = await Share.open({
+        message: details.newsDescription,
+        url: image,
+      });
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     <Pressable
